@@ -1,822 +1,89 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Sai Express Tours & Travels | Premium Cab Booking</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        :root {
-            --primary: #f3ba2f;
-            --primary-glow: rgba(243, 186, 47, 0.4);
-            --bg-color: #07090e;
-            --card-bg: rgba(18, 22, 31, 0.85);
-            --card-border: rgba(255, 255, 255, 0.1);
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --input-bg: #0f141f;
-            --input-border: #2a3447;
-            --whatsapp-green: #25d366;
-            --shadow-3d: 0 20px 40px rgba(0, 0, 0, 0.7), inset 0 1px 2px rgba(255, 255, 255, 0.15);
-            --card-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
-        }
-
-        [data-theme="light"] {
-            --bg-color: #f0f4f8;
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --card-border: rgba(0, 0, 0, 0.08);
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --input-bg: #f8fafc;
-            --input-border: #cbd5e1;
-            --shadow-3d: 0 10px 25px rgba(0, 0, 0, 0.06), inset 0 1px 2px rgba(255, 255, 255, 1);
-            --card-shadow: 0 20px 40px rgba(100, 116, 139, 0.15);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: background 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            padding-bottom: 100px;
-            background-image: 
-                radial-gradient(circle at 10% 10%, rgba(243, 186, 47, 0.08) 0%, transparent 45%),
-                radial-gradient(circle at 90% 90%, rgba(37, 211, 102, 0.08) 0%, transparent 45%);
-            background-attachment: fixed;
-        }
-
-        header {
-            background: var(--card-bg);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid var(--card-border);
-            padding: 14px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .brand img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid var(--primary);
-            object-fit: cover;
-            box-shadow: 0 0 15px var(--primary-glow);
-        }
-
-        .brand-text h1 {
-            font-size: 1rem;
-            font-weight: 800;
-            letter-spacing: 0.5px;
-        }
-
-        .brand-text span {
-            font-size: 0.7rem;
-            color: var(--primary);
-            font-weight: 700;
-            letter-spacing: 1.2px;
-            text-transform: uppercase;
-        }
-
-        .header-actions {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .action-icon-btn {
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-main);
-            width: 42px;
-            height: 42px;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            font-size: 1.1rem;
-            box-shadow: var(--shadow-3d);
-        }
-
-        .call-icon { color: var(--whatsapp-green); }
-
-        .hero {
-            padding: 30px 16px 20px;
-            text-align: center;
-        }
-
-        .hero h2 {
-            font-size: 1.65rem;
-            font-weight: 800;
-            margin-bottom: 6px;
-        }
-
-        .hero h2 span {
-            color: var(--primary);
-            text-shadow: 0 0 25px var(--primary-glow);
-        }
-
-        .hero p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .container {
-            max-width: 480px;
-            margin: 0 auto;
-            padding: 0 16px;
-        }
-
-        .booking-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            border-radius: 28px;
-            padding: 24px;
-            box-shadow: var(--card-shadow);
-            position: relative;
-        }
-
-        .car-3d-badge {
-            background: linear-gradient(135deg, rgba(243, 186, 47, 0.18), rgba(243, 186, 47, 0.04));
-            border: 1px solid rgba(243, 186, 47, 0.35);
-            border-radius: 18px;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 24px;
-        }
-
-        .car-3d-badge i {
-            font-size: 2rem;
-            color: var(--primary);
-            filter: drop-shadow(0 4px 10px var(--primary-glow));
-        }
-
-        .car-3d-badge div h4 {
-            font-size: 0.95rem;
-            font-weight: 700;
-        }
-
-        .car-3d-badge div p {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-            margin-top: 3px;
-        }
-
-        .form-group {
-            margin-bottom: 18px;
-            position: relative;
-        }
-
-        .form-row {
-            display: flex;
-            gap: 12px;
-        }
-
-        .form-row .form-group {
-            flex: 1;
-        }
-
-        label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: 700;
-            color: var(--text-muted);
-            margin-bottom: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .input-box-3d {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .input-box-3d i {
-            position: absolute;
-            left: 16px;
-            color: var(--primary);
-            font-size: 1rem;
-            z-index: 2;
-        }
-
-        input {
-            width: 100%;
-            padding: 14px 16px 14px 46px;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-main);
-            border-radius: 14px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            outline: none;
-            box-shadow: var(--shadow-3d);
-        }
-
-        input[type="date"], input[type="time"] {
-            padding-left: 42px;
-        }
-
-        input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px var(--primary-glow), var(--shadow-3d);
-        }
-
-        .suggestions-list {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            right: 0;
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            border-radius: 14px;
-            margin-top: 5px;
-            max-height: 190px;
-            overflow-y: auto;
-            z-index: 99;
-            display: none;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
-        }
-
-        .suggestion-item {
-            padding: 11px 16px;
-            font-size: 0.9rem;
-            color: var(--text-main);
-            cursor: pointer;
-            border-bottom: 1px solid var(--card-border);
-        }
-
-        .suggestion-item:hover {
-            background: rgba(243, 186, 47, 0.2);
-            color: var(--primary);
-        }
-
-        .map-btn-3d {
-            background: var(--input-bg);
-            border: 1px solid var(--input-border);
-            color: var(--text-main);
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            cursor: pointer;
-            margin-bottom: 22px;
-            box-shadow: var(--shadow-3d);
-        }
-
-        .map-btn-3d i { color: #3b82f6; font-size: 1.15rem; }
-
-        .fare-box-3d {
-            background: var(--input-bg);
-            border-radius: 18px;
-            padding: 18px;
-            border: 1px solid var(--input-border);
-            margin-bottom: 22px;
-            box-shadow: var(--shadow-3d);
-        }
-
-        .fare-line {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-
-        .fare-total-line {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid var(--input-border);
-            padding-top: 12px;
-            margin-top: 10px;
-        }
-
-        .fare-total-line span:first-child { font-weight: 700; font-size: 1rem; }
-        .fare-total-line span:last-child {
-            font-weight: 800;
-            font-size: 1.45rem;
-            color: var(--primary);
-            text-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .toll-alert {
-            font-size: 0.74rem;
-            color: #f87171;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 600;
-        }
-
-        .btn-whatsapp-3d {
-            width: 100%;
-            background: linear-gradient(135deg, #25d366, #1ebe5d);
-            color: #ffffff;
-            border: none;
-            padding: 16px;
-            border-radius: 16px;
-            font-size: 1.1rem;
-            font-weight: 800;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            cursor: pointer;
-            box-shadow: 0 10px 30px rgba(37, 211, 102, 0.45);
-        }
-
-        /* --- UNIQUE SLIDESHOW SECTION --- */
-        .showcase-section {
-            margin-top: 35px;
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: var(--card-shadow);
-        }
-
-        .showcase-title {
-            font-size: 1rem;
-            font-weight: 800;
-            margin-bottom: 14px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .showcase-title i { color: var(--primary); }
-
-        .slideshow-container {
-            position: relative;
-            width: 100%;
-            height: 200px;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: var(--shadow-3d);
-        }
-
-        .slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            transition: opacity 1s ease-in-out;
-        }
-
-        .slide.active {
-            opacity: 1;
-        }
-
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .slide-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-            color: #ffffff;
-            padding: 15px 12px 10px;
-            font-size: 0.9rem;
-            font-weight: 700;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .mobile-dock {
-            position: fixed;
-            bottom: 14px;
-            left: 16px;
-            right: 16px;
-            max-width: 460px;
-            margin: 0 auto;
-            background: var(--card-bg);
-            backdrop-filter: blur(20px);
-            border: 1px solid var(--card-border);
-            display: flex;
-            justify-content: space-around;
-            padding: 10px 8px;
-            border-radius: 22px;
-            z-index: 1000;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.6);
-        }
-
-        .dock-item {
-            text-decoration: none;
-            color: var(--text-main);
-            font-size: 0.72rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-weight: 700;
-        }
-
-        .dock-item i { font-size: 1.25rem; color: var(--primary); }
-        .dock-item.wa-icon i { color: var(--whatsapp-green); }
-
-        .footer-credit {
-            text-align: center;
-            padding: 24px 16px 12px;
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Sai Express Tours & Travels</title>
+<style>
+:root{--navy:#09233d;--blue:#087df2;--yellow:#ffc400;--green:#19b86b;--bg:#f4f7fb;--card:#fff;--text:#10243a;--muted:#718096;--line:#e6edf5}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,sans-serif;background:var(--bg);color:var(--text)}
+button,input,select{font:inherit}button{cursor:pointer;border:0}.top{background:linear-gradient(135deg,#071c31,#123d62);color:#fff;padding:16px 20px;position:sticky;top:0;z-index:10}.brand{display:flex;align-items:center;gap:10px;max-width:1180px;margin:auto}.logo{width:48px;height:36px;border:3px solid var(--yellow);border-radius:50% 50% 45% 45%;display:grid;place-items:center;color:var(--yellow);font-size:20px}.brand b{font-size:18px;letter-spacing:.5px}.brand small{display:block;color:#d9e8f7}.wrap{max-width:1180px;margin:auto;padding:18px}.hero{background:linear-gradient(135deg,#0a3154,#0b5d8e);border-radius:24px;padding:25px;color:#fff;overflow:hidden}.hero h1{margin:0 0 8px;font-size:clamp(27px,5vw,42px)}.hero p{margin:0 0 20px;color:#d9edf9}.search{display:grid;grid-template-columns:1fr 1fr auto;gap:10px}.field{background:#fff;border-radius:14px;padding:11px 13px;color:var(--text)}.field label{font-size:11px;color:var(--muted);display:block}.field input{border:0;outline:0;width:100%;font-weight:600;margin-top:4px;background:transparent}.btn{padding:13px 18px;border-radius:13px;font-weight:800}.yellow{background:var(--yellow);color:#16212b}.blue{background:var(--blue);color:#fff}.green{background:var(--green);color:#fff}.white{background:#fff;color:var(--navy)}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:16px}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:17px;box-shadow:0 8px 25px #09233d0b}.card h3{margin:0 0 12px;font-size:16px}.icon{font-size:24px;margin-bottom:8px}.muted{color:var(--muted);font-size:13px}.fare{font-size:30px;font-weight:900}.map{height:260px;border-radius:18px;background:linear-gradient(135deg,#d9eefb,#eef6df);position:relative;overflow:hidden;border:1px solid var(--line)}.map iframe{width:100%;height:100%;border:0;border-radius:18px}.road{position:absolute;width:130%;height:7px;background:#fff;transform:rotate(-20deg);left:-10%;top:48%;box-shadow:0 0 0 2px #d7e2ea}.pin{position:absolute;font-size:28px}.p1{left:14%;top:28%}.p2{right:14%;bottom:20%}.car{position:absolute;left:48%;top:45%;font-size:30px}.section{display:grid;grid-template-columns:1.35fr .65fr;gap:16px;margin-top:16px}.routebox{display:flex;justify-content:space-between;gap:12px;margin:12px 0}.route{background:#f7fafd;border:1px solid var(--line);border-radius:12px;padding:10px;flex:1}.route b{display:block;margin-top:3px}.track{display:flex;gap:0;justify-content:space-between;position:relative;margin:25px 0 8px}.track:before{content:"";position:absolute;top:12px;left:8%;right:8%;height:4px;background:#dce6ef}.step{position:relative;text-align:center;font-size:11px;color:var(--muted);z-index:1}.dot{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid #cbd8e5;margin:auto auto 6px}.done .dot{background:var(--green);border-color:var(--green)}.done{color:var(--green);font-weight:700}.driver{display:flex;align-items:center;gap:13px}.avatar{width:62px;height:62px;border-radius:50%;background:#dce7f0;display:grid;place-items:center;font-size:31px}.carphoto{height:115px;border-radius:15px;background:linear-gradient(135deg,#edf3f8,#cbd8e4);display:grid;place-items:center;font-size:65px;margin-bottom:10px}.support{display:flex;gap:10px}.support button{flex:1}.bottom{margin-top:18px;background:var(--navy);color:#fff;padding:22px;border-radius:20px}.bottomnav{display:none}.modal{position:fixed;inset:0;background:#071827aa;display:none;align-items:center;justify-content:center;padding:18px;z-index:50}.modal.open{display:flex}.modalbox{background:#fff;border-radius:20px;padding:22px;max-width:520px;width:100%;max-height:90vh;overflow:auto}.modalbox h2{margin-top:0}.close{float:right;background:#eef2f6;border-radius:50%;width:34px;height:34px}.form{display:grid;gap:10px}.form input,.form select{padding:13px;border:1px solid var(--line);border-radius:11px;outline:none}.dashboard{display:none}.adminbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.stat{padding:15px;border-radius:14px;background:#f7fafd;border:1px solid var(--line)}.stat b{font-size:24px;display:block}.table{width:100%;border-collapse:collapse;font-size:13px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left}
+@media(max-width:760px){
+ .wrap{padding:12px}.top{padding:12px 14px}.hero{border-radius:18px;padding:19px}.search{grid-template-columns:1fr}.grid{grid-template-columns:1fr 1fr}.section{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.bottom{padding-bottom:80px}.bottomnav{display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--line);z-index:20;justify-content:space-around;padding:9px 4px;box-shadow:0 -5px 20px #0000000d}.bottomnav button{background:none;color:var(--muted);font-size:11px}.bottomnav b{display:block;font-size:18px}.brand b{font-size:15px}
+}
+</style>
 </head>
-<body data-theme="dark">
+<body>
+<header class="top"><div class="brand"><div class="logo">🚕</div><div><b>SAI EXPRESS TOURS & TRAVELS</b><small>Safe Ride • Happy Journey</small></div></div></header>
 
-    <header>
-        <div class="brand">
-            <img src="image.png" alt="Sai Express Logo">
-            <div class="brand-text">
-                <h1>SAI EXPRESS</h1>
-                <span>TOURS & TRAVELS</span>
-            </div>
-        </div>
-        <div class="header-actions">
-            <a href="tel:9702804295" class="action-icon-btn call-icon" title="Call Driver">
-                <i class="fa-solid fa-phone-volume"></i>
-            </a>
-            <button class="action-icon-btn" id="themeBtn" onclick="toggleTheme()" title="Toggle Brightness / Theme">
-                <i class="fa-solid fa-sun" id="themeIcon"></i>
-            </button>
-        </div>
-    </header>
+<main class="wrap" id="customer">
+<section class="hero">
+<h1>Book Your Ride, Explore More</h1>
+<p>Easy cab booking • Transparent fare • Reliable drivers</p>
+<div class="search">
+<div class="field"><label>Pickup Location</label><input id="pickup" value="Navi Mumbai" placeholder="Choose pickup"></div>
+<div class="field"><label>Drop Location</label><input id="drop" value="Lonavala" placeholder="Choose destination"></div>
+<button class="btn yellow" onclick="calculate()">Get Fare Estimate</button>
+</div>
+</section>
 
-    <section class="hero">
-        <h2>Smart Cab <span>Booking</span></h2>
-        <p>Best Rates • Mumbai • Thane • Navi Mumbai • Pune • Nashik</p>
-    </section>
+<div class="grid">
+<div class="card"><div class="icon">🚕</div><h3>Book a Ride</h3><p class="muted">Select route, vehicle and date.</p><button class="btn blue" onclick="openModal('booking')">Book Now</button></div>
+<div class="card"><div class="icon">🔎</div><h3>Track My Booking</h3><p class="muted">Use PNR + mobile last 4.</p><button class="btn green" onclick="openModal('track')">Track Booking</button></div>
+<div class="card"><div class="icon">🚗</div><h3>Our Vehicles</h3><p class="muted">Sedan • SUV • Ertiga</p><button class="btn white" onclick="alert('Sedan, SUV and Ertiga available.')">View</button></div>
+<div class="card"><div class="icon">💬</div><h3>Support</h3><p class="muted">Call or WhatsApp support.</p><button class="btn white" onclick="whatsapp('Hello, I need cab booking support.')">WhatsApp</button></div>
+</div>
 
-    <div class="container">
-        <div class="booking-card">
-            
-            <div class="car-3d-badge">
-                <i class="fa-solid fa-car-side"></i>
-                <div>
-                    <h4>Executive Sedan Fleet</h4>
-                    <p>Verified Drivers, Neat & Clean AC Cabs</p>
-                </div>
-            </div>
+<section class="section">
+<div class="card"><h3>📍 Route & Distance</h3><div class="map" id="mapBox"><iframe id="mapFrame" loading="lazy" referrerpolicy="no-referrer-when-downgrade" src="https://www.google.com/maps?saddr=Navi+Mumbai&daddr=Lonavala&output=embed"></iframe></div><div class="routebox"><div class="route"><span class="muted">Distance</span><b id="km">85 KM</b></div><div class="route"><span class="muted">Est. Time</span><b id="eta">1 hr 45 min</b></div></div></div>
+<div class="card"><h3>💰 Fare Calculator</h3><p class="muted">Sedan (Swift Dzire)</p><p><b>Rate</b> ₹15 / KM</p><p><b>Distance</b> <span id="km2">85</span> KM</p><p><b>Toll</b> Extra</p><p><b>Parking</b> Extra</p><hr><div class="muted">Estimated Customer Fare</div><div class="fare" id="fare">₹1,275</div><button class="btn yellow" style="width:100%;margin-top:12px" onclick="openModal('booking')">Book Now</button></div>
+</section>
 
-            <form id="bookingForm" onsubmit="sendToWhatsApp(event)">
-                
-                <div class="form-group">
-                    <label>Your Name</label>
-                    <div class="input-box-3d">
-                        <i class="fa-solid fa-user"></i>
-                        <input type="text" id="customerName" placeholder="Enter full name" required>
-                    </div>
-                </div>
+<section class="section">
+<div class="card"><h3>📋 Track My Booking</h3><p class="muted">Enter your PNR to see driver, car and live status.</p><button class="btn blue" onclick="openModal('track')">Enter PNR</button></div>
+<div class="card"><h3>📲 Quick Contact</h3><div class="support"><button class="btn blue" onclick="alert('Call support')">Call</button><button class="btn green" onclick="whatsapp('Hello Sai Express, I want to book a cab.')">WhatsApp</button></div></div>
+</section>
 
-                <div class="form-group">
-                    <label>Mobile Number</label>
-                    <div class="input-box-3d">
-                        <i class="fa-solid fa-phone"></i>
-                        <input type="tel" id="customerPhone" placeholder="Enter 10-digit mobile number" pattern="[0-9]{10}" required>
-                    </div>
-                </div>
+<section class="card" style="margin-top:16px"><h3>🚦 Sample Booking Status</h3><div class="track"><div class="step done"><div class="dot">✓</div>Confirmed</div><div class="step done"><div class="dot">✓</div>Driver Assigned</div><div class="step done"><div class="dot">✓</div>On The Way</div><div class="step"><div class="dot"></div>Arrived</div><div class="step"><div class="dot"></div>Completed</div></div></section>
 
-                <div class="form-row">
-                    <div class="form-group">
-                        <label>Travel Date</label>
-                        <div class="input-box-3d">
-                            <i class="fa-solid fa-calendar-days"></i>
-                            <input type="date" id="travelDate" required>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label>Pickup Time</label>
-                        <div class="input-box-3d">
-                            <i class="fa-solid fa-clock"></i>
-                            <input type="time" id="travelTime" required>
-                        </div>
-                    </div>
-                </div>
+<div class="bottom"><b>SAI EXPRESS TOURS & TRAVELS</b><p class="muted" style="color:#cbd8e5">Pune • Lonavala • Nashik • Trimbakeshwar • Shirdi • Mumbai • Palghar • Panvel</p><button class="btn white" onclick="openModal('agent')">Agent Login</button></div>
+</main>
 
-                <div class="form-group">
-                    <label>Pickup Location / Station / Area</label>
-                    <div class="input-box-3d">
-                        <i class="fa-solid fa-location-dot"></i>
-                        <input type="text" id="pickup" placeholder="Type station or area (e.g. Airoli, Dadar)" autocomplete="off" oninput="filterLocations('pickup')" required>
-                    </div>
-                    <div id="pickupList" class="suggestions-list"></div>
-                </div>
+<main class="wrap dashboard" id="dashboard">
+<div class="adminbar"><button class="btn blue" onclick="showCustomer()">← Customer Website</button><button class="btn white" onclick="alert('Settings')">⚙ Settings</button></div>
+<div class="card"><h2>Agent Dashboard</h2><p class="muted">Smart booking & driver management</p>
+<div class="stats"><div class="stat"><span class="muted">Today's Bookings</span><b>12</b></div><div class="stat"><span class="muted">Upcoming</span><b>8</b></div><div class="stat"><span class="muted">Collection</span><b>₹34,500</b></div><div class="stat"><span class="muted">Agent Margin</span><b>₹21,700</b></div></div></div>
+<div class="section"><div class="card"><h3>📅 Recent Bookings</h3><table class="table"><tr><th>PNR</th><th>Route</th><th>Driver</th><th>Status</th></tr><tr><td>SE-45821</td><td>Navi Mumbai → Lonavala</td><td>Rahul</td><td>Assigned</td></tr><tr><td>SE-45820</td><td>Thane → Pune</td><td>Suresh</td><td>Ongoing</td></tr><tr><td>SE-45819</td><td>Panvel → Mumbai</td><td>Priya</td><td>Completed</td></tr></table></div>
+<div class="card"><h3>👨‍✈️ Driver Management</h3><div class="driver"><div class="avatar">👨</div><div><b>Rahul Patil</b><div class="muted">MH-04-XX-1234 • Sedan</div><small>Commission: 20%</small></div></div><button class="btn blue" style="width:100%;margin-top:15px" onclick="alert('Add Driver form')">+ Add Driver</button></div></div>
+<div class="section"><div class="card"><h3>💵 Fare Rates</h3><p>Sedan <b style="float:right">₹15/KM</b></p><p>SUV <b style="float:right">₹20/KM</b></p><p>Ertiga <b style="float:right">₹18/KM</b></p><button class="btn yellow" style="width:100%">Update Rates</button></div><div class="card"><h3>📊 Reports</h3><p class="muted">Monthly booking, KM, collection, commission and margin.</p><button class="btn green" style="width:100%">Generate Report</button></div></div>
+</main>
 
-                <div class="form-group">
-                    <label>Drop Location / City / Area</label>
-                    <div class="input-box-3d">
-                        <i class="fa-solid fa-flag-checkered"></i>
-                        <input type="text" id="drop" placeholder="Type drop point (e.g. Hinjewadi, Nashik)" autocomplete="off" oninput="filterLocations('drop')" required>
-                    </div>
-                    <div id="dropList" class="suggestions-list"></div>
-                </div>
+<nav class="bottomnav"><button onclick="showCustomer()"><b>⌂</b>Home</button><button onclick="openModal('booking')"><b>▣</b>Booking</button><button onclick="openModal('track')"><b>⌖</b>Track</button><button onclick="whatsapp('Hello Sai Express, I need support.')"><b>◉</b>Support</button></nav>
 
-                <button type="button" class="map-btn-3d" onclick="openGoogleMaps()">
-                    <i class="fa-solid fa-map-location-dot"></i> View Route on Google Maps
-                </button>
-
-                <div class="fare-box-3d">
-                    <div class="fare-line">
-                        <span>Estimated Distance:</span>
-                        <span id="estDistance" style="color: var(--text-main); font-weight: 700;">-- km</span>
-                    </div>
-                    <div class="fare-line">
-                        <span>Fare Structure:</span>
-                        <span>Transparent Direct Rates</span>
-                    </div>
-                    <div class="fare-total-line">
-                        <span>Estimated Fare:</span>
-                        <span id="totalFare">₹0</span>
-                    </div>
-                    <div class="toll-alert">
-                        <i class="fa-solid fa-triangle-exclamation"></i> Toll Tax Excluded (Extra as per actuals)
-                    </div>
-                </div>
-
-                <button type="submit" class="btn-whatsapp-3d">
-                    <i class="fa-brands fa-whatsapp" style="font-size: 1.4rem;"></i> Book Instantly via WhatsApp
-                </button>
-
-            </form>
-        </div>
-
-        <!-- UNIQUE LIVE ROUTE & DESTINATION SHOWCASE SLIDESHOW -->
-        <div class="showcase-section">
-            <div class="showcase-title">
-                <i class="fa-solid fa-images"></i> Popular Routes & Destinations
-            </div>
-            <div class="slideshow-container">
-                <div class="slide active">
-                    <img src="https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=800&q=80" alt="Nashik City">
-                    <div class="slide-caption">Nashik Expressway & City Tours</div>
-                </div>
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=800&q=80" alt="Pune City">
-                    <div class="slide-caption">Pune - Hinjewadi & Mumbai Route</div>
-                </div>
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80" alt="Scenic Ghats">
-                    <div class="slide-caption">Safe & Comfortable Outstation Travel</div>
-                </div>
-                <div class="slide">
-                    <img src="https://images.unsplash.com/photo-1563720223185-11003d516935?auto=format&fit=crop&w=800&q=80" alt="Executive Fleet">
-                    <div class="slide-caption">Clean AC Sedans & Verified Drivers</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="footer-credit">
-            <p>Sai Express Tours & Travels © 2026</p>
-            <p style="margin-top: 3px;">Fastest Booking Platform</p>
-        </div>
-    </div>
-
-    <div class="mobile-dock">
-        <a href="tel:9702804295" class="dock-item">
-            <i class="fa-solid fa-phone-flip"></i>
-            Call 1
-        </a>
-        <a href="tel:9653435223" class="dock-item">
-            <i class="fa-solid fa-phone"></i>
-            Call 2
-        </a>
-        <a href="https://wa.me/919702804295?text=Hello%20Sai%20Express,%20I%20want%20to%20book%20a%20Sedan." target="_blank" class="dock-item wa-icon">
-            <i class="fa-brands fa-whatsapp"></i>
-            WhatsApp
-        </a>
-        <a href="#bookingForm" class="dock-item">
-            <i class="fa-solid fa-bolt"></i>
-            Quick Book
-        </a>
-    </div>
-
-    <script>
-        // Automatic Slideshow Logic
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.slide');
-        
-        function nextSlide() {
-            slides[currentSlide].classList.remove('active');
-            currentSlide = (currentSlide + 1) % slides.length;
-            slides[currentSlide].classList.add('active');
-        }
-        setInterval(nextSlide, 3500); // Change image every 3.5 seconds
-
-        // Set minimum date to today automatically
-        document.getElementById('travelDate').valueAsDate = new Date();
-
-        const locations = [
-            "Mumbai", "Thane", "Pune", "Nashik", "Lonawala", "Alibag", "Shirdi", "Vasai Virar",
-            "Pune Station", "Shivaji Nagar", "Hinjewadi", "Wakad", "Kothrud", "Baner", "Aundh", 
-            "Magarpatta", "Hadapsar", "Viman Nagar", "Koregaon Park", "Camp Pune", "Swargate", 
-            "Katraj", "Wadgaon Sheri", "Kharadi", "Pimpri", "Chinchwad", "Bhosari", "Yerawada", 
-            "Sinhagad Road", "Dhankawadi", "Pimple Saudagar", "Warje", "Nigdi",
-            "Nashik Road", "Nashik CBS", "Dwarka Circle", "Panchavati", "Gangapur Road", 
-            "College Road", "Indira Nagar", "CIDCO Nashik", "Satpur", "Adgaon", "Pathardi Phata", 
-            "Ashok Stambh", "Makhmalabad", "Ambad MIDC", "Ozar", "Trimbakeshwar", "Upnagar",
-            "Airoli", "Rabale", "Ghansoli", "Koparkhairane", "Turbhe", "Sanpada", "Vashi", 
-            "Nerul", "Belapur CBD", "Kharghar", "Mansarovar", "Khandeshwar", "Panvel", "Uran", 
-            "Juinagar", "Seawoods", "Ulwe", "Digha",
-            "CST (Mumbai)", "Dadar", "Kurla", "Ghatkopar", "Mulund", "Thane Station", "Kalyan", 
-            "Dombivli", "Ambernath", "Badlapur", "Karjat", "Kasara",
-            "Churchgate", "Bandra", "Andheri", "Borivali", "Vasai Road", "Virar"
-        ];
-
-        const distances = {
-            "Mumbai-Pune": 150, "Thane-Pune": 140, "Airoli-Pune": 135, "Vashi-Pune": 145, "Panvel-Pune": 120,
-            "Mumbai-Nashik": 170, "Thane-Nashik": 155, "Airoli-Nashik": 150, "Nashik-Pune": 210,
-            "Mumbai-Lonawala": 85, "Thane-Lonawala": 75, "Airoli-Lonawala": 70, "Panvel-Lonawala": 60, "Pune-Lonawala": 65,
-            "Mumbai-Alibag": 95, "Thane-Alibag": 110, "Vashi-Alibag": 80, "Panvel-Alibag": 70, "Pune-Alibag": 140,
-            "Mumbai-Shirdi": 240, "Thane-Shirdi": 230, "Airoli-Shirdi": 225, "Nashik-Shirdi": 90, "Pune-Shirdi": 190,
-            "Mumbai-Vasai Virar": 60, "Thane-Vasai Virar": 45, "Airoli-Vasai Virar": 50,
-            "Mumbai-Thane": 30, "Airoli-Thane": 10, "Vashi-Thane": 22, "Panvel-Thane": 35,
-            "Airoli-Mumbai": 25, "Vashi-Mumbai": 30, "Panvel-Mumbai": 45
-        };
-
-        function toggleTheme() {
-            const body = document.body;
-            const themeIcon = document.getElementById('themeIcon');
-            if (body.getAttribute('data-theme') === 'dark') {
-                body.setAttribute('data-theme', 'light');
-                themeIcon.className = 'fa-solid fa-moon';
-            } else {
-                body.setAttribute('data-theme', 'dark');
-                themeIcon.className = 'fa-solid fa-sun';
-            }
-        }
-
-        function filterLocations(fieldId) {
-            const input = document.getElementById(fieldId);
-            const listId = fieldId + 'List';
-            const listDiv = document.getElementById(listId);
-            const query = input.value.toLowerCase().trim();
-
-            listDiv.innerHTML = '';
-            if (!query) {
-                listDiv.style.display = 'none';
-                return;
-            }
-
-            const filtered = locations.filter(loc => loc.toLowerCase().includes(query));
-            if (filtered.length === 0) {
-                listDiv.style.display = 'none';
-                return;
-            }
-
-            filtered.forEach(loc => {
-                const item = document.createElement('div');
-                item.className = 'suggestion-item';
-                item.innerText = loc;
-                item.onclick = function() {
-                    input.value = loc;
-                    listDiv.style.display = 'none';
-                    calculateFare();
-                };
-                listDiv.appendChild(item);
-            });
-
-            listDiv.style.display = 'block';
-        }
-
-        document.addEventListener('click', function(e) {
-            if (!e.target.closest('.form-group')) {
-                document.querySelectorAll('.suggestions-list').forEach(el => el.style.display = 'none');
-            }
-        });
-
-        function calculateFare() {
-            const pickup = document.getElementById('pickup').value.trim();
-            const drop = document.getElementById('drop').value.trim();
-            
-            const distElement = document.getElementById('estDistance');
-            const totalFareElement = document.getElementById('totalFare');
-
-            if (!pickup || !drop) {
-                distElement.innerText = "-- km";
-                totalFareElement.innerText = "₹0";
-                return;
-            }
-
-            if (pickup.toLowerCase() === drop.toLowerCase()) {
-                return;
-            }
-
-            let distance = 100;
-            const key1 = `${pickup}-${drop}`;
-            const key2 = `${drop}-${pickup}`;
-            
-            if (distances[key1]) distance = distances[key1];
-            else if (distances[key2]) distance = distances[key2];
-            else {
-                const p = pickup.toLowerCase();
-                const d = drop.toLowerCase();
-
-                if (p.includes('pune') || d.includes('pune')) {
-                    if (p.includes('nashik') || d.includes('nashik')) distance = 210;
-                    else if (p.includes('shirdi') || d.includes('shirdi')) distance = 190;
-                    else if (p.includes('alibag') || d.includes('alibag')) distance = 140;
-                    else if (p.includes('lonawala') || d.includes('lonawala')) distance = 65;
-                    else distance = 140;
-                } else if (p.includes('nashik') || d.includes('nashik')) {
-                    if (p.includes('shirdi') || d.includes('shirdi')) distance = 90;
-                    else distance = 165;
-                } else if (p.includes('shirdi') || d.includes('shirdi')) {
-                    distance = 230;
-                } else {
-                    distance = 45;
-                }
-            }
-
-            let ratePerKm = 14; 
-            let calculatedFare = distance * ratePerKm;
-            if(calculatedFare < 800) calculatedFare = 800;
-
-            distElement.innerText = distance + " km";
-            totalFareElement.innerText = "₹" + calculatedFare;
-        }
-
-        function openGoogleMaps() {
-            const pickup = document.getElementById('pickup').value;
-            const drop = document.getElementById('drop').value;
-            if(!pickup || !drop) {
-                alert("Please type both Pickup and Drop locations first.");
-                return;
-            }
-            const mapUrl = `https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(drop)}`;
-            window.open(mapUrl, '_blank');
-        }
-
-        function sendToWhatsApp(event) {
-            event.preventDefault();
-
-            const name = document.getElementById('customerName').value;
-            const phone = document.getElementById('customerPhone').value;
-            const date = document.getElementById('travelDate').value;
-            const time = document.getElementById('travelTime').value;
-            const pickup = document.getElementById('pickup').value;
-            const drop = document.getElementById('drop').value;
-            const totalFare = document.getElementById('totalFare').innerText;
-            const distance = document.getElementById('estDistance').innerText;
-
-            if(totalFare === "₹0" || !totalFare) {
-                alert("Please select valid route details.");
-                return;
-            }
-
-            const adminWhatsApp = "919702804295";
-
-            const message = `🚖 *NEW RIDE BOOKING - SAI EXPRESS* 🚖\n\n` +
-                            `📅 *Date:* ${date}\n` +
-                            `⏰ *Time:* ${time}\n\n` +
-                            `👤 *Customer Name:* ${name}\n` +
-                            `📞 *Mobile Number:* ${phone}\n\n` +
-                            `📍 *Pickup Location:* ${pickup}\n` +
-                            `🏁 *Drop Location:* ${drop}\n` +
-                            `📏 *Distance:* ${distance}\n` +
-                            `💰 *Estimated Fare:* ${totalFare}\n\n` +
-                            `⚠️ *Note:* Toll Tax Excluded\n` +
-                            `----------------------------------\n` +
-                            `_Please assign a driver and confirm this booking._`;
-
-            const whatsappUrl = `https://wa.me/${adminWhatsApp}?text=${encodeURIComponent(message)}`;
-            window.open(whatsappUrl, '_blank');
-        }
-    </script>
-</body>
-</html>
+<div class="modal" id="modal"><div class="modalbox"><button class="close" onclick="closeModal()">×</button><div id="modalContent"></div></div></div>
+<script>
+const phone="919876543210";
+function calculate(){
+ let pickup=document.getElementById('pickup').value.trim()||'Navi Mumbai';
+ let drop=document.getElementById('drop').value.trim()||'Lonavala';
+ let km=85;
+ document.getElementById('km').textContent=km+' KM';
+ document.getElementById('km2').textContent=km;
+ document.getElementById('fare').textContent='₹'+(km*15).toLocaleString('en-IN');
+ document.getElementById('mapFrame').src='https://www.google.com/maps?saddr='+encodeURIComponent(pickup)+'&daddr='+encodeURIComponent(drop)+'&output=embed';
+}
+function whatsapp(msg){window.open('https://wa.me/'+phone+'?text='+encodeURIComponent(msg),'_blank')}
+function openModal(type){
+ let c='';
+ if(type==='booking') c=`<h2>🚕 New Booking</h2><div class="form"><input placeholder="Customer Name"><input placeholder="Mobile Number"><input value="Navi Mumbai" placeholder="Pickup"><input value="Lonavala" placeholder="Drop"><input type="date"><input type="time"><select><option>Sedan (Swift Dzire)</option><option>SUV</option><option>Ertiga</option></select><button class="btn yellow" onclick="confirmBooking()">Confirm Booking</button></div>`;
+ if(type==='track') c=`<h2>🔎 Track My Booking</h2><p class="muted">PNR + mobile last 4 digits required.</p><div class="form"><input id="pnr" placeholder="PNR / Booking ID"><input placeholder="Mobile Last 4 Digits" maxlength="4"><button class="btn blue" onclick="showTracking()">Track Booking</button></div>`;
+ if(type==='agent') c=`<h2>🔐 Agent Login</h2><div class="form"><button class="btn white" onclick="login()">Continue with Google / Gmail</button><p class="muted">Production version will use Firebase Google Authentication.</p></div>`;
+ document.getElementById('modalContent').innerHTML=c;document.getElementById('modal').classList.add('open')
+}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function confirmBooking(){let p='SE-'+new Date().getFullYear()+'-'+Math.floor(10000+Math.random()*89999);document.getElementById('modalContent').innerHTML=`<h2>✅ Booking Confirmed!</h2><p>Your PNR / Booking ID</p><h2>${p}</h2><p class="muted">Pickup: Navi Mumbai<br>Drop: Lonavala<br>Vehicle: Sedan<br>Fare: ₹1,275 + Toll</p><button class="btn green" style="width:100%" onclick="whatsapp('Booking Confirmed. PNR: ${p}. Navi Mumbai to Lonavala. Sedan. Fare ₹1,275 + Toll.')">Share on WhatsApp</button>`}
+function showTracking(){document.getElementById('modalContent').innerHTML=`<h2>🚕 Booking Details</h2><div class="card"><b>PNR: SE-2026-45821</b><p>🟢 Driver Assigned</p><p>Navi Mumbai → Lonavala</p><p>20 Sep 2026 • 07:00 AM</p><p>85 KM • ₹1,275 + Toll</p></div><div class="driver"><div class="avatar">👨</div><div><b>Rahul Patil</b><div class="muted">⭐ 4.8 • Sedan Driver</div><button class="btn blue" style="margin-top:7px" onclick="alert('Calling driver')">Call Driver</button></div></div><div class="carphoto">🚘</div><button class="btn green" style="width:100%" onclick="alert('Live tracking placeholder')">📍 Live Tracking</button>`}
+function login(){closeModal();document.getElementById('customer').style.display='none';document.getElementById('dashboard').style.display='block';window.scrollTo(0,0)}
+function showCustomer(){document.getElementById('dashboard').style.display='none';document.getElementById('customer').style.display='block';window.scrollTo(0,0)}
+</script>
+</body></html>
