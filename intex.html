@@ -1,0 +1,1199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Global IPTV - Live TV</title>
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+  font-family:Segoe UI,Arial,sans-serif
+}
+
+body{
+  background:#f5f6f8;
+  color:#151922;
+  padding-bottom:20px
+}
+
+/* HEADER */
+.header{
+  background:#fff;
+  padding:16px 20px;
+  border-bottom:1px solid #e6e8ed;
+  position:sticky;
+  top:0;
+  z-index:100
+}
+
+.header-inner{
+  max-width:1450px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  gap:20px
+}
+
+.logo{
+  font-size:24px;
+  font-weight:800;
+  color:#e50914;
+  white-space:nowrap
+}
+
+.logo span{
+  color:#222;
+  font-size:13px;
+  font-weight:500
+}
+
+.search{
+  flex:1;
+  position:relative
+}
+
+.search input{
+  width:100%;
+  height:44px;
+  border:1px solid #dfe2e7;
+  border-radius:24px;
+  padding:0 20px 0 44px;
+  outline:none;
+  font-size:14px;
+  background:#f8f9fb
+}
+
+.search input:focus{
+  border-color:#e50914;
+  background:#fff
+}
+
+.search-icon{
+  position:absolute;
+  left:17px;
+  top:13px;
+  color:#777
+}
+
+/* MAIN */
+.container{
+  max-width:1450px;
+  margin:auto;
+  padding:18px
+}
+
+/* FILTERS */
+.filters{
+  background:#fff;
+  padding:14px;
+  border-radius:14px;
+  border:1px solid #e5e7eb;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:18px
+}
+
+.filters select{
+  border:1px solid #dfe2e7;
+  background:#fff;
+  padding:10px 14px;
+  border-radius:9px;
+  min-width:160px;
+  outline:none;
+  color:#222;
+  cursor:pointer
+}
+
+.filters select:focus{
+  border-color:#e50914
+}
+
+.reset{
+  border:0;
+  background:#e50914;
+  color:#fff;
+  padding:10px 18px;
+  border-radius:9px;
+  font-weight:600;
+  cursor:pointer
+}
+
+/* PLAYER */
+.player-box{
+  background:#111;
+  border-radius:16px;
+  overflow:hidden;
+  margin-bottom:18px;
+  box-shadow:0 5px 25px #0002
+}
+
+.player{
+  width:100%;
+  aspect-ratio:16/9;
+  position:relative;
+  background:#000
+}
+
+video{
+  width:100%;
+  height:100%;
+  display:block;
+  background:#000
+}
+
+.player-overlay{
+  position:absolute;
+  left:18px;
+  bottom:18px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  pointer-events:none
+}
+
+.player-logo{
+  width:52px;
+  height:52px;
+  background:#fff;
+  border-radius:9px;
+  padding:5px;
+  object-fit:contain
+}
+
+.now-name{
+  color:#fff;
+  font-size:17px;
+  font-weight:700;
+  text-shadow:0 1px 5px #000
+}
+
+.now-meta{
+  color:#ddd;
+  font-size:12px;
+  margin-top:3px
+}
+
+.live{
+  position:absolute;
+  top:15px;
+  left:15px;
+  background:#e50914;
+  color:#fff;
+  font-size:10px;
+  font-weight:bold;
+  padding:5px 10px;
+  border-radius:20px
+}
+
+/* STATUS */
+.status{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  padding:11px 15px;
+  margin-bottom:15px;
+  display:flex;
+  justify-content:space-between;
+  color:#687080;
+  font-size:13px
+}
+
+.count{
+  color:#e50914;
+  font-weight:bold
+}
+
+/* CHANNELS */
+.heading{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:15px 2px
+}
+
+.heading h2{
+  font-size:20px
+}
+
+.channel-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+  gap:13px
+}
+
+.channel{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:14px;
+  overflow:hidden;
+  cursor:pointer;
+  transition:.15s;
+  outline:none
+}
+
+.channel:hover,
+.channel:focus{
+  border-color:#e50914;
+  transform:translateY(-2px);
+  box-shadow:0 7px 20px #0001
+}
+
+.channel-top{
+  height:105px;
+  background:#fafafa;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  border-bottom:1px solid #eee
+}
+
+.channel-logo{
+  width:110px;
+  height:75px;
+  object-fit:contain
+}
+
+.logo-fallback{
+  font-size:34px
+}
+
+.live-badge{
+  position:absolute;
+  left:7px;
+  top:7px;
+  background:#e50914;
+  color:#fff;
+  font-size:8px;
+  padding:3px 7px;
+  border-radius:10px;
+  font-weight:bold
+}
+
+.favorite{
+  position:absolute;
+  right:7px;
+  top:7px;
+  width:27px;
+  height:27px;
+  border:0;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 2px 7px #0002;
+  cursor:pointer;
+  color:#777
+}
+
+.favorite.active{
+  color:#e50914
+}
+
+.channel-info{
+  padding:10px
+}
+
+.channel-name{
+  font-size:13px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
+
+.channel-meta{
+  font-size:10px;
+  color:#7c8492;
+  margin-top:4px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis
+}
+
+.empty{
+  text-align:center;
+  padding:50px;
+  color:#89909c
+}
+
+/* MOBILE */
+@media(max-width:700px){
+
+  .header-inner{
+    flex-wrap:wrap
+  }
+
+  .logo{
+    font-size:20px
+  }
+
+  .search{
+    flex-basis:100%;
+    order:3
+  }
+
+  .container{
+    padding:10px
+  }
+
+  .filters select{
+    flex:1;
+    min-width:120px
+  }
+
+  .channel-grid{
+    grid-template-columns:repeat(2,1fr);
+    gap:9px
+  }
+
+  .channel-top{
+    height:85px
+  }
+
+  .channel-logo{
+    width:90px;
+    height:60px
+  }
+
+  .player-overlay{
+    left:10px;
+    bottom:10px
+  }
+
+  .player-logo{
+    width:40px;
+    height:40px
+  }
+
+  .now-name{
+    font-size:14px
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header class="header">
+  <div class="header-inner">
+
+    <div class="logo">
+      🔴 MY IPTV
+      <span>Live TV</span>
+    </div>
+
+    <div class="search">
+      <span class="search-icon">🔍</span>
+      <input
+        id="search"
+        type="search"
+        placeholder="Search channels..."
+      >
+    </div>
+
+  </div>
+</header>
+
+
+<main class="container">
+
+  <!-- FILTERS -->
+
+  <div class="filters">
+
+    <select id="country">
+      <option value="all">🌍 All Countries</option>
+    </select>
+
+    <select id="language">
+      <option value="all">🗣️ All Languages</option>
+      <option value="Hindi">🇮🇳 Hindi</option>
+      <option value="Marathi">🇮🇳 Marathi</option>
+      <option value="English">🇬🇧 English</option>
+    </select>
+
+    <select id="category">
+      <option value="all">📂 All Categories</option>
+    </select>
+
+    <button class="reset" onclick="resetFilters()">
+      Reset
+    </button>
+
+  </div>
+
+
+  <!-- PLAYER -->
+
+  <section class="player-box">
+
+    <div class="player">
+
+      <video
+        id="video"
+        controls
+        playsinline
+        autoplay
+        muted>
+      </video>
+
+      <div class="live">● LIVE</div>
+
+      <div class="player-overlay">
+
+        <img
+          id="playerLogo"
+          class="player-logo"
+          src=""
+          alt="">
+
+        <div>
+
+          <div
+            id="nowName"
+            class="now-name">
+            Select a channel
+          </div>
+
+          <div
+            id="nowMeta"
+            class="now-meta">
+            Live TV
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- STATUS -->
+
+  <div class="status">
+
+    <span id="status">
+      📡 Loading channels...
+    </span>
+
+    <span
+      id="count"
+      class="count">
+      0 channels
+    </span>
+
+  </div>
+
+
+  <!-- HEADING -->
+
+  <div class="heading">
+
+    <h2>Live Channels</h2>
+
+  </div>
+
+
+  <!-- CHANNEL GRID -->
+
+  <div
+    id="grid"
+    class="channel-grid">
+  </div>
+
+
+  <div
+    id="empty"
+    class="empty"
+    style="display:none">
+    No channels found.
+  </div>
+
+</main>
+
+
+<script>
+
+/* =====================================================
+   PLAYLIST
+===================================================== */
+
+const M3U_URL =
+'https://iptv-org.github.io/iptv/index.m3u';
+
+
+/* =====================================================
+   DATA
+===================================================== */
+
+let channels = [];
+let filtered = [];
+
+let favorites =
+JSON.parse(
+  localStorage.getItem('myiptv_favorites') || '[]'
+);
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const grid =
+document.getElementById('grid');
+
+const country =
+document.getElementById('country');
+
+const language =
+document.getElementById('language');
+
+const category =
+document.getElementById('category');
+
+const search =
+document.getElementById('search');
+
+const status =
+document.getElementById('status');
+
+const count =
+document.getElementById('count');
+
+const video =
+document.getElementById('video');
+
+const playerLogo =
+document.getElementById('playerLogo');
+
+const nowName =
+document.getElementById('nowName');
+
+const nowMeta =
+document.getElementById('nowMeta');
+
+
+/* =====================================================
+   LOAD M3U
+===================================================== */
+
+async function loadM3U(){
+
+  status.textContent =
+  '📡 Downloading playlist...';
+
+  grid.innerHTML =
+  '<div class="empty">⏳ Loading channels...</div>';
+
+  try{
+
+    const response =
+    await fetch(M3U_URL);
+
+    if(!response.ok)
+      throw new Error('Playlist error');
+
+    const text =
+    await response.text();
+
+    channels =
+    parseM3U(text);
+
+    buildFilters();
+
+    applyFilters();
+
+    status.textContent =
+    '✅ Playlist loaded';
+
+  }catch(error){
+
+    console.error(error);
+
+    status.textContent =
+    '❌ Unable to load playlist';
+
+    grid.innerHTML =
+    `<div class="empty">
+      Playlist load failed.<br><br>
+      Browser/server CORS restrictions may block this M3U URL.
+    </div>`;
+
+  }
+
+}
+
+
+/* =====================================================
+   M3U PARSER
+===================================================== */
+
+function parseM3U(data){
+
+  const lines =
+  data.split(/\r?\n/);
+
+  const result = [];
+
+  let info = null;
+
+  for(let line of lines){
+
+    line = line.trim();
+
+    if(line.startsWith('#EXTINF')){
+
+      const nameMatch =
+      line.match(/,(.*)$/);
+
+      const logoMatch =
+      line.match(/tvg-logo="([^"]*)"/i);
+
+      const countryMatch =
+      line.match(/tvg-country="([^"]*)"/i);
+
+      const languageMatch =
+      line.match(/tvg-language="([^"]*)"/i);
+
+      const groupMatch =
+      line.match(/group-title="([^"]*)"/i);
+
+      info = {
+
+        name:
+        nameMatch
+        ? nameMatch[1].trim()
+        : 'Unknown Channel',
+
+        logo:
+        logoMatch
+        ? logoMatch[1]
+        : '',
+
+        country:
+        countryMatch
+        ? countryMatch[1]
+        : '',
+
+        language:
+        languageMatch
+        ? languageMatch[1]
+        : '',
+
+        category:
+        groupMatch
+        ? groupMatch[1]
+        : 'General',
+
+        url:''
+      };
+
+    }
+
+    else if(
+      line &&
+      !line.startsWith('#') &&
+      info
+    ){
+
+      info.url = line;
+
+      if(info.url)
+        result.push(info);
+
+      info = null;
+
+    }
+
+  }
+
+  return result;
+
+}
+
+
+/* =====================================================
+   BUILD FILTERS
+===================================================== */
+
+function buildFilters(){
+
+  const countries =
+  new Set();
+
+  const categories =
+  new Set();
+
+  channels.forEach(ch=>{
+
+    if(ch.country)
+      ch.country
+      .split(';')
+      .forEach(x=>countries.add(x.trim()));
+
+    if(ch.category)
+      categories.add(ch.category);
+
+  });
+
+
+  country.innerHTML =
+  '<option value="all">🌍 All Countries</option>';
+
+  [...countries]
+  .filter(Boolean)
+  .sort()
+  .forEach(c=>{
+
+    country.innerHTML +=
+    `<option value="${escapeHTML(c)}">
+      ${escapeHTML(c)}
+    </option>`;
+
+  });
+
+
+  category.innerHTML =
+  '<option value="all">📂 All Categories</option>';
+
+  [...categories]
+  .filter(Boolean)
+  .sort()
+  .forEach(c=>{
+
+    category.innerHTML +=
+    `<option value="${escapeHTML(c)}">
+      ${escapeHTML(c)}
+    </option>`;
+
+  });
+
+}
+
+
+/* =====================================================
+   FILTER
+===================================================== */
+
+function applyFilters(){
+
+  const selectedCountry =
+  country.value;
+
+  const selectedLanguage =
+  language.value;
+
+  const selectedCategory =
+  category.value;
+
+  const query =
+  search.value
+  .toLowerCase()
+  .trim();
+
+
+  filtered =
+  channels.filter(ch=>{
+
+    const countryOK =
+    selectedCountry === 'all' ||
+    ch.country
+    .split(';')
+    .map(x=>x.trim())
+    .includes(selectedCountry);
+
+
+    /*
+      iptv-org language metadata can contain
+      multiple languages. We also allow common
+      language names.
+    */
+
+    let languageOK = true;
+
+    if(selectedLanguage !== 'all'){
+
+      languageOK =
+      ch.language
+      .toLowerCase()
+      .includes(
+        selectedLanguage.toLowerCase()
+      );
+
+      if(!languageOK){
+
+        const name =
+        ch.name.toLowerCase();
+
+        if(selectedLanguage === 'Hindi')
+          languageOK =
+          /hindi|zee|colors|sony|dd|aaj tak|news18/.test(name);
+
+        if(selectedLanguage === 'Marathi')
+          languageOK =
+          /marathi|abp majha|zee 24 taas|saam|lokmat/.test(name);
+
+        if(selectedLanguage === 'English')
+          languageOK =
+          /english|bbc|cnn|sky news|news|sports/.test(name);
+
+      }
+
+    }
+
+
+    const categoryOK =
+    selectedCategory === 'all' ||
+    ch.category === selectedCategory;
+
+
+    const searchOK =
+    !query ||
+    ch.name
+    .toLowerCase()
+    .includes(query) ||
+
+    ch.category
+    .toLowerCase()
+    .includes(query) ||
+
+    ch.country
+    .toLowerCase()
+    .includes(query) ||
+
+    ch.language
+    .toLowerCase()
+    .includes(query);
+
+
+    return(
+      countryOK &&
+      languageOK &&
+      categoryOK &&
+      searchOK
+    );
+
+  });
+
+
+  render();
+
+}
+
+
+/* =====================================================
+   RENDER
+===================================================== */
+
+function render(){
+
+  grid.innerHTML = '';
+
+  count.textContent =
+  `${filtered.length} channels`;
+
+  if(filtered.length === 0){
+
+    document.getElementById('empty')
+    .style.display = 'block';
+
+    return;
+
+  }
+
+  document.getElementById('empty')
+  .style.display = 'none';
+
+
+  /*
+    Render first 300 cards.
+    This prevents the browser from becoming
+    extremely slow with huge playlists.
+  */
+
+  const visible =
+  filtered.slice(0,300);
+
+
+  visible.forEach((ch,index)=>{
+
+    const card =
+    document.createElement('div');
+
+    card.className = 'channel';
+
+    card.tabIndex = 0;
+
+
+    const favorite =
+    favorites.includes(ch.url);
+
+
+    card.innerHTML = `
+
+      <div class="channel-top">
+
+        ${
+          ch.logo
+
+          ?
+
+          `<img
+            class="channel-logo"
+            src="${escapeAttribute(ch.logo)}"
+            loading="lazy"
+            onerror="this.style.display='none'"
+            alt="">`
+
+          :
+
+          `<div class="logo-fallback">📺</div>`
+        }
+
+        <span class="live-badge">
+          ● LIVE
+        </span>
+
+        <button
+          class="favorite ${favorite?'active':''}"
+          aria-label="Favorite">
+          ${favorite?'★':'☆'}
+        </button>
+
+      </div>
+
+      <div class="channel-info">
+
+        <div class="channel-name">
+          ${escapeHTML(ch.name)}
+        </div>
+
+        <div class="channel-meta">
+          ${escapeHTML(ch.language || 'Language')} •
+          ${escapeHTML(ch.category || 'General')}
+        </div>
+
+        <div class="channel-meta">
+          ${escapeHTML(ch.country || 'Global')}
+        </div>
+
+      </div>
+    `;
+
+
+    card.onclick =
+    () => playChannel(ch);
+
+
+    card.onkeydown =
+    event=>{
+
+      if(event.key === 'Enter'){
+
+        event.preventDefault();
+
+        playChannel(ch);
+
+      }
+
+    };
+
+
+    const favButton =
+    card.querySelector('.favorite');
+
+
+    favButton.onclick =
+    event=>{
+
+      event.stopPropagation();
+
+      toggleFavorite(ch.url);
+
+    };
+
+
+    grid.appendChild(card);
+
+  });
+
+}
+
+
+/* =====================================================
+   PLAY CHANNEL
+===================================================== */
+
+async function playChannel(ch){
+
+  nowName.textContent =
+  ch.name;
+
+  nowMeta.textContent =
+  `${ch.country || 'Global'} •
+   ${ch.language || 'Unknown'} •
+   ${ch.category || 'General'}`;
+
+  playerLogo.src =
+  ch.logo || '';
+
+  video.pause();
+
+  video.src = ch.url;
+
+  video.load();
+
+  /*
+    Browser autoplay rules can block
+    unmuted autoplay.
+  */
+
+  video.muted = true;
+
+  try{
+
+    await video.play();
+
+  }catch(error){
+
+    console.log(
+      'Autoplay blocked:',
+      error
+    );
+
+  }
+
+}
+
+
+/* =====================================================
+   FAVORITES
+===================================================== */
+
+function toggleFavorite(url){
+
+  if(favorites.includes(url)){
+
+    favorites =
+    favorites.filter(x=>x!==url);
+
+  }else{
+
+    favorites.push(url);
+
+  }
+
+  localStorage.setItem(
+    'myiptv_favorites',
+    JSON.stringify(favorites)
+  );
+
+  render();
+
+}
+
+
+/* =====================================================
+   RESET
+===================================================== */
+
+function resetFilters(){
+
+  country.value = 'all';
+
+  language.value = 'all';
+
+  category.value = 'all';
+
+  search.value = '';
+
+  applyFilters();
+
+}
+
+
+/* =====================================================
+   EVENTS
+===================================================== */
+
+country.onchange =
+applyFilters;
+
+language.onchange =
+applyFilters;
+
+category.onchange =
+applyFilters;
+
+search.oninput =
+applyFilters;
+
+
+/* =====================================================
+   VIDEO STATUS
+===================================================== */
+
+video.addEventListener(
+  'playing',
+  ()=>{
+    status.textContent =
+    `🔴 LIVE • ${nowName.textContent}`;
+  }
+);
+
+video.addEventListener(
+  'waiting',
+  ()=>{
+    status.textContent =
+    '⏳ Buffering...';
+  }
+);
+
+video.addEventListener(
+  'error',
+  ()=>{
+    status.textContent =
+    '❌ Stream unavailable';
+  }
+);
+
+
+/* =====================================================
+   HTML SAFETY
+===================================================== */
+
+function escapeHTML(value){
+
+  return String(value || '')
+  .replaceAll('&','&amp;')
+  .replaceAll('<','&lt;')
+  .replaceAll('>','&gt;')
+  .replaceAll('"','&quot;')
+  .replaceAll("'","&#039;");
+
+}
+
+function escapeAttribute(value){
+
+  return String(value || '')
+  .replaceAll('"','&quot;')
+  .replaceAll("'","&#039;");
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+loadM3U();
+
+</script>
+
+</body>
+</html>
