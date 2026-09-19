@@ -2,905 +2,526 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Smart Price & GST Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Cab Fare Calculator | Sai Express Tours & Travels</title>
+    
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Google Maps API (Optional: Replace YOUR_API_KEY with your key if needed) -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places" async defer onerror="handleMapsError()"></script>
+    
     <style>
         :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-            --card-bg: rgba(255, 255, 255, 0.95);
-            --text-main: #0f172a;
+            --primary: #ff5e14;
+            --primary-dark: #e04d0b;
+            --accent: #0f172a;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
             --text-muted: #64748b;
-            --border: #cbd5e1;
-            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
-            --input-bg: #f8fafc;
-            --tab-bg: #f1f5f9;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --whatsapp: #25d366;
+            --radius: 16px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
         }
 
-        body.dark-mode {
-            --primary: #818cf8;
-            --primary-hover: #6366f1;
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card-bg: rgba(30, 41, 59, 0.95);
+        [data-theme="dark"] {
+            --bg-main: #0b0f19;
+            --card-bg: #1e293b;
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --border: #475569;
-            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
-            --input-bg: #0f172a;
-            --tab-bg: #334155;
+            --border: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg-gradient);
-            margin: 0;
-            padding: 12px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            background-color: var(--bg-main);
             color: var(--text-main);
-            box-sizing: border-box;
-            transition: background 0.3s ease;
+            line-height: 1.6;
+            padding-bottom: 50px;
         }
 
-        /* PASSWORD LOCK SCREEN OVERLAY */
-        #lockScreen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: var(--bg-gradient);
-            z-index: 9999;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 16px;
-            box-sizing: border-box;
-        }
-        .lock-card {
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        
+        header {
             background: var(--card-bg);
-            padding: 24px;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 360px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
-
-        .app-container {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            padding: 20px 16px;
-            border-radius: 24px;
-            box-shadow: var(--shadow);
-            width: 100%;
-            max-width: 400px;
-            box-sizing: border-box;
-            border: 1px solid var(--border);
-            display: none;
-        }
-
-        .header {
+            border-bottom: 1px solid var(--border);
+            padding: 15px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
-        h2 {
-            margin: 0;
-            font-size: 22px;
-            color: var(--text-main);
-            font-weight: 800;
-            letter-spacing: -0.5px;
+        .logo-area h1 { font-size: 18px; font-weight: 800; color: var(--primary); }
+        .logo-area span { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+        .header-actions { display: flex; gap: 10px; align-items: center; }
+        .icon-btn {
+            background: var(--bg-main); border: 1px solid var(--border);
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--text-main); cursor: pointer;
         }
 
-        .settings-icon {
-            background: var(--tab-bg);
-            border: none;
-            width: 38px;
-            height: 38px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 25px;
+            margin-top: 25px;
         }
-        .settings-icon:active { transform: scale(0.92); }
 
-        .tab-btns {
-            display: flex;
-            background: var(--tab-bg);
-            padding: 4px;
-            border-radius: 14px;
+        @media(max-width: 900px) {
+            .main-grid { grid-template-columns: 1fr; }
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
             margin-bottom: 20px;
         }
 
-        .tab-btn {
-            flex: 1;
-            padding: 10px 6px;
-            border: none;
-            background: transparent;
-            font-weight: 600;
-            font-size: 13px;
-            cursor: pointer;
-            border-radius: 10px;
-            color: var(--text-muted);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            text-align: center;
-        }
-
-        .tab-btn.active {
-            background: var(--card-bg);
-            color: var(--primary);
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
-        }
-
-        .section-view { display: none; }
-        .section-view.active { display: block; animation: fadeIn 0.3s ease; }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(4px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
             color: var(--text-main);
-            font-size: 13px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 10px;
         }
+        .card-title i { color: var(--primary); }
 
-        select, input {
-            width: 100%;
-            padding: 13px 14px;
-            border: 1.5px solid var(--border);
-            border-radius: 12px;
-            font-size: 14px;
-            box-sizing: border-box;
-            background: var(--input-bg);
-            color: var(--text-main);
-            transition: all 0.2s;
-            appearance: none;
-        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        @media(max-width: 600px) { .form-row { grid-template-columns: 1fr; } }
 
-        select {
-            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-            background-repeat: no-repeat;
-            background-position: right 14px center;
-            background-size: 10px;
-            padding-right: 35px;
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 6px; text-transform: uppercase; }
+        
+        .input-box { position: relative; display: flex; align-items: center; }
+        .input-box i { position: absolute; left: 14px; color: var(--primary); z-index: 2; }
+        .input-box input, .input-box select {
+            width: 100%; padding: 12px 14px 12px 42px;
+            border: 1px solid var(--border); border-radius: 10px;
+            background: var(--bg-main); color: var(--text-main); font-size: 14px; outline: none;
         }
+        .input-box input:focus, .input-box select:focus { border-color: var(--primary); }
 
-        select:focus, input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        .checkbox-group {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--bg-main); padding: 12px 15px;
+            border-radius: 10px; border: 1px solid var(--border);
+            cursor: pointer; margin-bottom: 10px; font-size: 14px; font-weight: 600;
         }
+        .checkbox-group input { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
 
         .btn {
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 12px 20px; border-radius: 10px; font-weight: 600; font-size: 14px;
+            cursor: pointer; border: none; text-decoration: none; width: 100%;
+        }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-whatsapp { background: var(--whatsapp); color: #fff; margin-top: 10px; }
+        .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* Quotation & Result Box */
+        .quotation-box {
+            background: var(--bg-main);
+            border: 2px dashed var(--primary);
             border-radius: 12px;
-            font-size: 15px;
-            cursor: pointer;
-            font-weight: 700;
-            margin-top: 6px;
-            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
-            transition: all 0.2s;
-        }
-        .btn:active { transform: scale(0.98); opacity: 0.9; }
-
-        .result {
-            margin-top: 18px;
-            padding: 16px;
-            background: var(--input-bg);
-            border-radius: 14px;
-            border: 1px solid var(--border);
-        }
-
-        .result p {
-            margin: 8px 0;
-            font-size: 13.5px;
-            display: flex;
-            justify-content: space-between;
-            color: var(--text-muted);
-        }
-
-        .result span {
-            font-weight: 700;
-            color: var(--text-main);
-        }
-
-        /* Settings Modal Overlay */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(4px);
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
-            padding: 16px;
-            box-sizing: border-box;
-        }
-        .modal.active { display: flex; }
-        .modal-content {
-            background: var(--card-bg);
             padding: 20px;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 360px;
-            max-height: 90vh;
-            overflow-y: auto;
-            box-sizing: border-box;
-            position: relative;
-            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+        .q-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .q-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--text-muted); margin-bottom: 8px; }
+        .q-row.total { font-size: 18px; font-weight: 800; color: var(--text-main); border-top: 1px solid var(--border); padding-top: 10px; margin-top: 10px; }
+        .q-row.total span:last-child { color: var(--primary); }
+
+        /* Owner Breakdown (Internal Only) */
+        .owner-box {
+            background: rgba(15, 23, 42, 0.03);
             border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            font-size: 13px;
         }
-        .close-modal {
-            position: absolute;
-            top: 16px; right: 16px;
-            background: var(--tab-bg); border: none;
-            width: 32px; height: 32px; border-radius: 50%;
-            font-size: 14px; cursor: pointer; color: var(--text-main);
-            display: flex; align-items: center; justify-content: center;
-        }
+        [data-theme="dark"] .owner-box { background: rgba(255, 255, 255, 0.03); }
+        .owner-title { font-weight: 700; color: var(--primary); margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        .settings-box {
-            background: var(--tab-bg);
-            padding: 12px;
-            border-radius: 12px;
-            margin-bottom: 14px;
-            border: 1px dashed var(--border);
-        }
-
-        .toggle-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px;
-        }
-
-        .copy-btn {
-            background: #10b981;
-            margin-top: 12px;
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        .saved-card {
+            background: var(--bg-main); border: 1px solid var(--border);
+            padding: 15px; border-radius: 10px; margin-bottom: 10px;
+            display: flex; justify-content: space-between; align-items: center;
         }
     </style>
 </head>
-<body>
+<body data-theme="light">
 
-<!-- PASSWORD LOCK SCREEN -->
-<div id="lockScreen">
-    <div class="lock-card">
-        <h3 style="margin-top:0; color:var(--text-main); font-size:20px;">ð Enter Password</h3>
-        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Access secure calculator app</p>
-        <div class="form-group">
-            <input type="password" id="passInput" placeholder="Enter Password" style="text-align:center; font-size:18px; letter-spacing:2px;">
+    <header>
+        <div class="logo-area">
+            <h1>SAI EXPRESS</h1>
+            <span>Smart Cab Fare Calculator</span>
         </div>
-        <button class="btn" onclick="checkPassword()">Unlock App</button>
-        <p id="lockError" style="color:#ef4444; font-size:12px; margin-top:10px; font-weight:600;"></p>
-    </div>
-</div>
-
-<!-- MAIN APP CONTAINER -->
-<div class="app-container" id="appContainer">
-    <div class="header">
-        <h2>Smart Calculator</h2>
-        <button class="settings-icon" onclick="requestSettingsAccess()" title="Settings">âï¸</button>
-    </div>
-
-    <!-- Navigation Tabs -->
-    <div class="tab-btns">
-        <button class="tab-btn active" onclick="switchTab('calcTab', this)">Price Calc</button>
-        <button class="tab-btn" onclick="switchTab('gstTab', this)">GST Calc</button>
-    </div>
-
-    <!-- 1. PRICE CALCULATOR SECTION -->
-    <div id="calcTab" class="section-view active">
-        <div class="form-group">
-            <label for="brand">Select Brand / Category:</label>
-            <select id="brand" onchange="updateOptions()">
-                <option value="">-- Select Brand --</option>
-                <optgroup label="Laptops">
-                    <option value="hp">HP</option>
-                    <option value="dell">Dell</option>
-                    <option value="lenovo">Lenovo</option>
-                    <option value="asus">Asus</option>
-                    <option value="acer">Acer</option>
-                    <option value="samsung">Samsung</option>
-                </optgroup>
-                <optgroup label="Printers">
-                    <option value="epson">Epson (Printer)</option>
-                    <option value="canon">Canon (Printer)</option>
-                </optgroup>
-                <optgroup label="Others">
-                    <option value="microsoft">Microsoft</option>
-                    <option value="desktop">All Desktops</option>
-                    <option value="tablet">All Tablets</option>
-                    <option value="obs_clear">OBS & Must Clear</option>
-                </optgroup>
-                <optgroup label="Custom Added Models" id="customBrandGroup"></optgroup>
-            </select>
+        <div class="header-actions">
+            <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme"><i class="fas fa-moon" id="themeIcon"></i></button>
         </div>
+    </header>
 
-        <div class="form-group" id="subCategoryGroup" style="display:none;">
-            <label for="subCategory" id="subLabel">Select Description / Model:</label>
-            <select id="subCategory"></select>
-        </div>
+    <div class="container">
+        <div class="main-grid">
+            
+            <!-- LEFT PANEL: Inputs & Parameters -->
+            <div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-route"></i> Trip & Route Details</div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Pickup Location</label>
+                            <div class="input-box"><i class="fas fa-map-marker-alt" style="color:var(--success);"></i><input type="text" id="pickupLoc" placeholder="e.g. Airoli, Navi Mumbai" value="Navi Mumbai"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Drop Location</label>
+                            <div class="input-box"><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i><input type="text" id="dropLoc" placeholder="e.g. Nashik" value="Nashik"></div>
+                        </div>
+                    </div>
 
-        <div class="form-group">
-            <label for="vsp">Enter VSP (â¹):</label>
-            <input type="number" id="vsp" placeholder="e.g. 65000">
-        </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Distance Source</label>
+                            <div class="input-box">
+                                <i class="fas fa-globe"></i>
+                                <select id="distMode" onchange="toggleDistInput()">
+                                    <option value="manual">Manual KM Entry</option>
+                                    <option value="maps">Google Maps API (Auto)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" id="manualDistGroup">
+                            <label>Total Distance (KM)</label>
+                            <div class="input-box"><i class="fas fa-road"></i><input type="number" id="manualKm" value="155" oninput="calculateFare()"></div>
+                        </div>
+                    </div>
 
-        <!-- Accessories Add-on Field -->
-        <div class="form-group">
-            <label for="accessoriesAmt">Accessories / Add-on Amount (â¹):</label>
-            <input type="number" id="accessoriesAmt" placeholder="e.g. 1500 (Bag, Mouse, etc.)" value="0">
-        </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Trip Type</label>
+                            <div class="input-box">
+                                <i class="fas fa-exchange-alt"></i>
+                                <select id="tripType" onchange="calculateFare()">
+                                    <option value="One Way">One Way Trip</option>
+                                    <option value="Round Trip">Round Trip (Return)</option>
+                                    <option value="Local 8H">Local Rental (8 Hours / 80 KM)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Vehicle Fuel Type</label>
+                            <div class="input-box">
+                                <i class="fas fa-gas-pump"></i>
+                                <select id="fuelType" onchange="calculateFare()">
+                                    <option value="CNG">Swift Dzire CNG</option>
+                                    <option value="Petrol">Swift Dzire Petrol</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- EWS (Extended Warranty Scheme) Field -->
-        <div class="form-group">
-            <label for="ewsPlan">EWS (Extended Warranty):</label>
-            <select id="ewsPlan">
-                <option value="0">No Extended Warranty (â¹0)</option>
-                <option value="1">1 Year Extended Warranty</option>
-                <option value="2">2 Years Extended Warranty</option>
-                <option value="printer_ext">Printer Extended Warranty</option>
-                <option value="laptop_ext">Laptop Extended Warranty</option>
-                <option value="laptop_total">Laptop Total Care</option>
-            </select>
-        </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Trip Date</label>
+                            <div class="input-box"><i class="fas fa-calendar-alt"></i><input type="date" id="tripDate"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Number of Days</label>
+                            <div class="input-box"><i class="fas fa-clock"></i><input type="number" id="tripDays" value="1" min="1" oninput="calculateFare()"></div>
+                        </div>
+                    </div>
 
-        <button class="btn" onclick="calculatePrice()">Calculate Total</button>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Passengers</label>
+                            <div class="input-box">
+                                <i class="fas fa-users"></i>
+                                <select id="passengers">
+                                    <option value="1">1 Passenger</option>
+                                    <option value="2">2 Passengers</option>
+                                    <option value="3">3 Passengers</option>
+                                    <option value="4" selected>4 Passengers</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Business Profit Margin (%)</label>
+                            <div class="input-box"><i class="fas fa-chart-line"></i><input type="number" id="profitMargin" value="22" min="10" max="50" oninput="calculateFare()"></div>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="result" id="resultBox" style="display:none;">
-            <p>STORE DISCOUNT VOUCHER: <span id="resPercent">-</span></p>
-            <p>Max Discount Amt: <span>â¹<span id="resDiscountAmt">-</span></span></p>
-            <p>Final Price (Excl. Acc/EWS): <span>â¹<span id="resFinalPrice">-</span></span></p>
-            <p>Accessories Add-on: <span>â¹<span id="resAccAmt">0</span></span></p>
-            <p>EWS Warranty: <span>â¹<span id="resEwsAmt">0</span></span></p>
-            <hr style="border:0; border-top:1px solid var(--border); margin:10px 0;">
-            <p style="font-size: 15px; font-weight: 800;">Grand Total Price: <span style="color: var(--primary);">â¹<span id="resGrandTotal">-</span></span></p>
-            <hr style="border:0; border-top:1px solid var(--border); margin:10px 0;">
-            <p style="font-size: 12px; color: var(--text-muted);">Team Share (50%): <span>â¹<span id="resTeamShare">-</span></span></p>
-            <p style="font-size: 12px; color: var(--text-muted);">TL Share (50%): <span>â¹<span id="resTlShare">-</span></span></p>
-            <button class="btn copy-btn" onclick="copyResult()">ð Copy Details</button>
-        </div>
-    </div>
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-sliders-h"></i> Extra Charges & Options</div>
+                    
+                    <div class="form-row">
+                        <div class="checkbox-group" onclick="toggleCheckbox('driverReturn')">
+                            <input type="checkbox" id="driverReturn" onchange="calculateFare()">
+                            <span>Driver/Car Return Extra KM charge</span>
+                        </div>
+                        <div class="checkbox-group" onclick="toggleCheckbox('nightCharge')">
+                            <input type="checkbox" id="nightCharge" onchange="calculateFare()">
+                            <span>Night Driving Charge (10 PM - 6 AM)</span>
+                        </div>
+                    </div>
 
-    <!-- 2. GST CALCULATOR SECTION -->
-    <div id="gstTab" class="section-view">
-        <div class="form-group">
-            <label for="gstAmount">Amount (â¹):</label>
-            <input type="number" id="gstAmount" placeholder="Enter amount">
-        </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Estimated Toll (â¹)</label>
+                            <div class="input-box"><i class="fas fa-road"></i><input type="number" id="tollCost" value="300" oninput="calculateFare()"></div>
+                        </div>
+                        <div class="form-group">
+                            <label>Parking & Permit (â¹)</label>
+                            <div class="input-box"><i class="fas fa-parking"></i><input type="number" id="parkingCost" value="150" oninput="calculateFare()"></div>
+                        </div>
+                    </div>
 
-        <div class="form-group">
-            <label for="gstRate">GST Rate (%):</label>
-            <select id="gstRate">
-                <option value="18">18% (Standard IT/Electronics)</option>
-                <option value="12">12%</option>
-                <option value="28">28%</option>
-                <option value="5">5%</option>
-            </select>
-        </div>
-
-        <button class="btn" onclick="calculateGST()" style="background: #0ea5e9; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);">Calculate GST</button>
-
-        <div class="result" id="gstResultBox" style="display:none;">
-            <p>Original Amount: <span>â¹<span id="resOrigAmt">-</span></span></p>
-            <p>GST Amount: <span>â¹<span id="resGstOnly">-</span></span></p>
-            <p style="font-size: 15px; font-weight: 800;">Total with GST: <span style="color: #0ea5e9;">â¹<span id="resTotalWithGst">-</span></span></p>
-        </div>
-    </div>
-</div>
-
-<!-- SETTINGS MODAL -->
-<div class="modal" id="settingsModal">
-    <div class="modal-content">
-        <button class="close-modal" onclick="toggleSettings(false)">â</button>
-        <h3 style="margin-top:0; font-size:18px; font-weight:800;">âï¸ Settings & Customization</h3>
-        
-        <!-- Dark Mode Toggle -->
-        <div class="toggle-row" style="margin-top: 15px;">
-            <label for="darkModeToggle" style="margin:0; cursor:pointer;">Dark Mode (Theme)</label>
-            <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" style="width: 20px; height: 20px; cursor: pointer;">
-        </div>
-
-        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
-
-        <!-- Edit Slab Discount Settings -->
-        <h4 style="margin:0 0 10px 0; font-size:14px;">Modify Slab/Brand Percentages</h4>
-        <div class="settings-box">
-            <div class="form-group">
-                <label for="editSlabSelect">Select Item/Slab to Change:</label>
-                <select id="editSlabSelect" onchange="loadSlabValue()">
-                    <option value="slab_under60">Slab: VSP â¤ 60K (Default: 4%)</option>
-                    <option value="slab_60to70">Slab: 60K - 70K (Default: 5%)</option>
-                    <option value="slab_70to90">Slab: 70K - 90K (Default: 6%)</option>
-                    <option value="slab_90to140">Slab: 90K - 1.4L (Default: 7%)</option>
-                    <option value="slab_above140">Slab: > 1.4L (Default: 8%)</option>
-                    <option value="dell_gaming">Dell Gaming (Default: 6%)</option>
-                    <option value="acer_i3_r3">Acer i3/R3 (Default: 3%)</option>
-                    <option value="acer_rest">Acer Rest (Default: 5%)</option>
-                    <option value="samsung">Samsung (Default: 3%)</option>
-                    <option value="microsoft">Microsoft (Default: 2%)</option>
-                    <option value="desktop">Desktops (Default: 3%)</option>
-                    <option value="printer">Printers (Default: 3%)</option>
-                    <option value="tablet">Tablets (Default: 3%)</option>
-                </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Driver Allowance Per Day (â¹)</label>
+                            <div class="input-box"><i class="fas fa-user-tie"></i><input type="number" id="driverAllowance" value="300" oninput="calculateFare()"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group" style="margin-bottom:8px;">
-                <label for="newSlabVal">New Percentage Value (Number):</label>
-                <input type="number" id="newSlabVal" placeholder="e.g. 5 or 6" step="0.1">
+
+            <!-- RIGHT PANEL: Quotation & Owner Analytics -->
+            <div>
+                <div class="card" style="border: 2px solid var(--primary);">
+                    <div class="card-title" style="border:none; margin-bottom:10px;"><i class="fas fa-file-invoice-dollar"></i> Customer Quotation</div>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-bottom: 15px;">Yeh quotation aap customer ko WhatsApp ya share kar sakte hain.</p>
+                    
+                    <div class="quotation-box">
+                        <div class="q-header">
+                            <div><strong>Sai Express Tours & Travels</strong><br><span style="font-size:11px; color:var(--text-muted);">Swift Dzire AC Cab</span></div>
+                            <div style="text-align: right;"><span id="qDate" style="font-size: 12px; color: var(--text-muted);">--/--/----</span></div>
+                        </div>
+                        <div class="q-row"><span>Route:</span> <strong id="qRoute">Navi Mumbai â Nashik</strong></div>
+                        <div class="q-row"><span>Trip Type:</span> <span id="qTripType">One Way</span></div>
+                        <div class="q-row"><span>Distance & Vehicle:</span> <span id="qDistInfo">155 KM (CNG)</span></div>
+                        <div class="q-row"><span>Toll, Parking & Driver:</span> <span>Included</span></div>
+                        <div class="q-row total"><span>Recommended Fare:</span> <span id="qFinalTotal">â¹0</span></div>
+                    </div>
+
+                    <button class="btn btn-primary" onclick="saveQuotation()"><i class="fas fa-bookmark"></i> Save Quotation</button>
+                    <button class="btn btn-whatsapp" onclick="sendWhatsAppQuotation()"><i class="fab fa-whatsapp"></i> Send Quotation on WhatsApp</button>
+                </div>
+
+                <!-- OWNER INTERNAL BREAKDOWN (Hidden from Customer) -->
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-lock" style="color:var(--success);"></i> Owner Cost & Profit Analytics</div>
+                    <p style="font-size: 11px; color: var(--text-muted); margin-bottom: 10px;">*Yeh section sirf aapke (Owner) ke liye hai. Customer ko yeh nahi dikhega.</p>
+                    
+                    <div class="owner-box">
+                        <div class="owner-title"><span>Actual Operational Cost:</span> <span id="ownerTotalCost">â¹0</span></div>
+                        <div class="q-row"><span>Fuel Expense:</span> <span id="internalFuel">â¹0</span></div>
+                        <div class="q-row"><span>Toll & Parking:</span> <span id="internalTollPark">â¹0</span></div>
+                        <div class="q-row"><span>Driver Batta:</span> <span id="internalDriver">â¹0</span></div>
+                        <div class="q-row"><span>Car Maintenance & Wear:</span> <span id="internalMaint">â¹0</span></div>
+                        <hr style="border:0; border-top:1px solid var(--border); margin: 8px 0;">
+                        <div class="owner-title" style="color:var(--success);"><span>Estimated Business Profit:</span> <span id="ownerProfitAmount">â¹0</span></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title"><i class="fas fa-history"></i> Saved Quotations</div>
+                    <div id="savedListContainer" style="max-height: 250px; overflow-y: auto;">
+                        <p style="font-size: 13px; color: var(--text-muted); text-align: center;">No saved quotations yet.</p>
+                    </div>
+                </div>
             </div>
-            <button class="btn" onclick="saveSlabPercentage()" style="padding: 10px; font-size: 13px; background:#0ea5e9;">Update Percentage</button>
+
         </div>
-
-        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
-
-        <!-- Custom Model Add Section -->
-        <h4 style="margin:0 0 10px 0; font-size:14px;">Add Custom Model</h4>
-        <div class="form-group">
-            <label for="customModelName">Model Name:</label>
-            <input type="text" id="customModelName" placeholder="e.g. Special Model X200">
-        </div>
-        <div class="form-group">
-            <label for="customDiscountVal">Discount Value (Number):</label>
-            <input type="number" id="customDiscountVal" placeholder="e.g. 1.5 or 2" step="0.1">
-        </div>
-        <button class="btn" onclick="saveCustomModel()" style="background: #db2777;">Save Custom Model</button>
-
-        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
-
-        <!-- Calculation History Section -->
-        <h4 style="margin:0 0 10px 0; font-size:14px;">Calculation History</h4>
-        <div id="historyContainer" style="max-height: 150px; overflow-y: auto; background: var(--input-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-bottom: 10px;">
-            <p style="color: var(--text-muted); text-align: center; margin: 5px 0;">No history yet</p>
-        </div>
-        <button class="btn" onclick="clearHistory()" style="background: #ef4444; padding: 10px; font-size: 13px;">Clear History</button>
-
-        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
-
-        <!-- Change Password Section -->
-        <h4 style="margin:0 0 10px 0; font-size:14px;">Change App Password</h4>
-        <div class="form-group">
-            <label for="newPassInput">New Password:</label>
-            <input type="text" id="newPassInput" placeholder="Enter new password">
-        </div>
-        <button class="btn" onclick="changePassword()" style="background: #f59e0b;">Update Password</button>
-        <button class="btn" onclick="resetPasswordToDefault()" style="background: #64748b; margin-top: 8px; font-size: 13px; padding: 10px;">Reset to Default (25061998)</button>
-
-        <p id="saveMsg" style="font-size: 13px; color: #10b981; text-align: center; margin-top: 10px; font-weight: 600;"></p>
     </div>
-</div>
 
-<!-- SETTINGS ACCESS PASSWORD MODAL -->
-<div class="modal" id="settingsPassModal">
-    <div class="modal-content" style="max-width: 320px; text-align:center;">
-        <button class="close-modal" onclick="closeSettingsPassModal()">â</button>
-        <h3 style="margin-top:0; font-size:18px; font-weight:800;">ð Settings Locked</h3>
-        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Enter password to access settings</p>
-        <div class="form-group">
-            <input type="password" id="settingsPassInput" placeholder="Enter Password" style="text-align:center; font-size:18px; letter-spacing:2px;">
-        </div>
-        <button class="btn" onclick="checkSettingsPassword()">Unlock Settings</button>
-        <p id="settingsPassError" style="color:#ef4444; font-size:12px; margin-top:10px; font-weight:600;"></p>
-    </div>
-</div>
-
-<script>
-    let customModels = JSON.parse(localStorage.getItem('customModels')) || [];
-    let customPercentages = JSON.parse(localStorage.getItem('customPercentages')) || {};
-    let calcHistory = JSON.parse(localStorage.getItem('calcHistory')) || [];
-    let appPassword = localStorage.getItem('appPassword') || '25061998';
-    let isDarkMode = localStorage.getItem('isDarkMode') === 'true';
-
-    window.onload = function() {
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-            document.getElementById('darkModeToggle').checked = true;
-        }
-        loadCustomModelsToDropdown();
-        loadSlabValue();
-        renderHistory();
-    };
-
-    function checkPassword() {
-        const val = document.getElementById('passInput').value;
-        if (val === appPassword) {
-            document.getElementById('lockScreen').style.display = 'none';
-            document.getElementById('appContainer').style.display = 'block';
-        } else {
-            document.getElementById('lockError').innerText = 'Incorrect Password! Try again.';
-        }
-    }
-
-    // Settings access is gated behind its own password (kept encoded, not plain text)
-    function _getSettingsPass() {
-        // Base64-encoded so it isn't sitting in the source as readable plain text
-        return atob('UEFTUy0oVmlqYXlzYWxlcyk=');
-    }
-
-    function requestSettingsAccess() {
-        document.getElementById('settingsPassInput').value = '';
-        document.getElementById('settingsPassError').innerText = '';
-        document.getElementById('settingsPassModal').classList.add('active');
-        setTimeout(() => document.getElementById('settingsPassInput').focus(), 50);
-    }
-
-    function closeSettingsPassModal() {
-        document.getElementById('settingsPassModal').classList.remove('active');
-    }
-
-    function checkSettingsPassword() {
-        const val = document.getElementById('settingsPassInput').value;
-        if (val === _getSettingsPass()) {
-            closeSettingsPassModal();
-            toggleSettings(true);
-        } else {
-            document.getElementById('settingsPassError').innerText = 'Incorrect Password! Try again.';
-        }
-    }
-
-    function toggleSettings(open) {
-        const modal = document.getElementById('settingsModal');
-        if(open) {
-            renderHistory();
-            modal.classList.add('active');
-        } else {
-            modal.classList.remove('active');
-        }
-    }
-
-    function switchTab(tabId, btnElement) {
-        document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
-        
-        document.getElementById(tabId).classList.add('active');
-        btnElement.classList.add('active');
-    }
-
-    function toggleDarkMode() {
-        const darkOn = document.getElementById('darkModeToggle').checked;
-        if (darkOn) {
-            document.body.classList.add('dark-mode');
-            localStorage.setItem('isDarkMode', 'true');
-        } else {
-            document.body.classList.remove('dark-mode');
-            localStorage.setItem('isDarkMode', 'false');
-        }
-    }
-
-    function loadSlabValue() {
-        const key = document.getElementById('editSlabSelect').value;
-        const defaults = {
-            'slab_under60': 4, 'slab_60to70': 5, 'slab_70to90': 6, 
-            'slab_90to140': 7, 'slab_above140': 8, 'dell_gaming': 6, 
-            'acer_i3_r3': 3, 'acer_rest': 5, 'samsung': 3, 
-            'microsoft': 2, 'desktop': 3, 'printer': 3, 'tablet': 3
+    <script>
+        // Set today's date on load
+        window.onload = function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('tripDate').value = today;
+            calculateFare();
+            loadSavedQuotations();
         };
-        let currentVal = customPercentages[key] !== undefined ? customPercentages[key] : defaults[key];
-        document.getElementById('newSlabVal').value = currentVal;
-    }
 
-    function saveSlabPercentage() {
-        const key = document.getElementById('editSlabSelect').value;
-        const val = parseFloat(document.getElementById('newSlabVal').value);
-        if (isNaN(val)) {
-            alert('Please enter a valid percentage number.');
-            return;
-        }
-        customPercentages[key] = val;
-        localStorage.setItem('customPercentages', JSON.stringify(customPercentages));
-        showMsg('Percentage updated successfully!');
-    }
-
-    function changePassword() {
-        const newPass = document.getElementById('newPassInput').value.trim();
-        if (!newPass) {
-            alert('Password cannot be empty.');
-            return;
-        }
-        appPassword = newPass;
-        localStorage.setItem('appPassword', newPass);
-        document.getElementById('newPassInput').value = '';
-        showMsg('Password updated successfully!');
-    }
-
-    function resetPasswordToDefault() {
-        appPassword = '25061998';
-        localStorage.setItem('appPassword', '25061998');
-        showMsg('Password reset to default (25061998)');
-    }
-
-    function showMsg(txt) {
-        const msg = document.getElementById('saveMsg');
-        msg.innerText = txt;
-        setTimeout(() => { msg.innerText = ''; }, 3000);
-    }
-
-    function saveCustomModel() {
-        const name = document.getElementById('customModelName').value.trim();
-        const disc = parseFloat(document.getElementById('customDiscountVal').value);
-
-        if (!name || isNaN(disc)) {
-            alert('Please enter valid model name and discount value.');
-            return;
-        }
-
-        customModels.push({ name: name, disc: disc });
-        localStorage.setItem('customModels', JSON.stringify(customModels));
-
-        document.getElementById('customModelName').value = '';
-        document.getElementById('customDiscountVal').value = '';
-        showMsg('Custom Model saved successfully!');
-        loadCustomModelsToDropdown();
-    }
-
-    function loadCustomModelsToDropdown() {
-        const group = document.getElementById('customBrandGroup');
-        group.innerHTML = '';
-        customModels.forEach((item, index) => {
-            const opt = document.createElement('option');
-            opt.value = 'custom_' + index;
-            opt.innerText = item.name + ` (${item.disc})`;
-            group.appendChild(opt);
-        });
-    }
-
-    function updateOptions() {
-        const brand = document.getElementById('brand').value;
-        const subGroup = document.getElementById('subCategoryGroup');
-        const subSelect = document.getElementById('subCategory');
-        
-        subSelect.innerHTML = '';
-
-        if (brand.startsWith('custom_')) {
-            subGroup.style.display = 'none';
-            return;
-        }
-
-        if (['hp', 'lenovo', 'asus'].includes(brand)) {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = '<option value="laptop_slab">General Laptop (Slab-based VSP)</option>';
-        } 
-        else if (brand === 'dell') {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = `
-                <option value="laptop_slab">General Laptop (Slab-based VSP)</option>
-                <option value="dell_gaming">Dell Gaming Laptop</option>
-            `;
-        }
-        else if (brand === 'acer') {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = `
-                <option value="acer_i3_r3">Acer i3 / R3</option>
-                <option value="acer_rest">Acer Rest Models</option>
-            `;
-        }
-        else if (brand === 'samsung') {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = '<option value="samsung">Samsung - All Models</option>';
-        }
-        else if (brand === 'epson' || brand === 'canon') {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = `<option value="printer">${brand.toUpperCase()} Printer</option>`;
-        }
-        else if (brand === 'microsoft') {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = '<option value="microsoft">Microsoft - All Models</option>';
-        }
-        else if (brand === 'desktop') {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = '<option value="desktop">All Desktops</option>';
-        }
-        else if (brand === 'tablet') {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = '<option value="tablet">All Tablets</option>';
-        }
-        else if (brand === 'obs_clear') {
-            subGroup.style.display = 'block';
-            subSelect.innerHTML = `
-                <option value="10">10 Discount</option><option value="9">9 Discount</option>
-                <option value="8">8 Discount</option><option value="7">7 Discount</option>
-                <option value="6">6 Discount</option><option value="5">5 Discount</option>
-                <option value="4">4 Discount</option><option value="3">3 Discount</option>
-                <option value="2">2 Discount</option><option value="1">1 Discount</option>
-            `;
-        } else {
-            subGroup.style.display = 'none';
-        }
-    }
-
-    function getStoredPercent(key, defaultVal) {
-        return customPercentages[key] !== undefined ? customPercentages[key] : defaultVal;
-    }
-
-    function getEwsPrice(vsp, plan) {
-        if (plan === "0") return 0;
-
-        if (plan === "printer_ext") {
-            if (vsp <= 10000) return 799;
-            if (vsp <= 20000) return 1299;
-            return 1999;
-        }
-        if (plan === "laptop_ext") {
-            return Math.round(vsp * 0.05);
-        }
-        if (plan === "laptop_total") {
-            return Math.round(vsp * 0.08);
-        }
-
-        const ewsTable = [
-            [0, 15000, 1055, 1424],
-            [15001, 20000, 1477, 1993],
-            [20001, 30000, 1699, 2699],
-            [30001, 40000, 2099, 3149],
-            [40001, 50000, 2699, 4049],
-            [50001, 60000, 3299, 4949],
-            [60001, 70000, 3899, 5849],
-            [70001, 80000, 4499, 6749],
-            [80001, 90000, 5099, 7649],
-            [90001, 100000, 5699, 8549],
-            [100001, 125000, 6749, 10129],
-            [125001, 150000, 8249, 12379],
-            [150001, 175000, 9749, 14629],
-            [175001, 200000, 11249, 16879],
-            [200001, 225000, 12749, 19129],
-            [225001, 250000, 14249, 21379],
-            [250001, 275000, 15749, 23629],
-            [275001, 300000, 17249, 25879]
-        ];
-
-        for (let row of ewsTable) {
-            if (vsp >= row[0] && vsp <= row[1]) {
-                return plan === "1" ? row[2] : row[3];
+        function toggleTheme() {
+            const body = document.body;
+            const icon = document.getElementById('themeIcon');
+            if(body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                icon.className = 'fas fa-sun';
+            } else {
+                body.setAttribute('body', 'light');
+                body.setAttribute('data-theme', 'light');
+                icon.className = 'fas fa-moon';
             }
         }
-        
-        if (vsp > 300000) {
-            let lastRow = ewsTable[ewsTable.length - 1];
-            return plan === "1" ? lastRow[2] : lastRow[3];
+
+        function toggleCheckbox(id) {
+            const cb = document.getElementById(id);
+            cb.checked = !cb.checked;
+            calculateFare();
         }
 
-        return 0;
-    }
-
-    function calculatePrice() {
-        const brand = document.getElementById('brand').value;
-        const vspInput = document.getElementById('vsp').value;
-        const accessoriesInput = document.getElementById('accessoriesAmt').value;
-        const ewsPlan = document.getElementById('ewsPlan').value;
-        
-        if (!brand) {
-            alert('Please select a brand/model.');
-            return;
-        }
-        if (!vspInput || vspInput <= 0) {
-            alert('Please enter a valid VSP amount.');
-            return;
+        function toggleDistInput() {
+            const mode = document.getElementById('distMode').value;
+            const manualGroup = document.getElementById('manualDistGroup');
+            if(mode === 'maps') {
+                manualGroup.style.opacity = '0.5';
+                alert("Google Maps API mode selected. Ensure API key is configured or fallback manual distance will be used.");
+            } else {
+                manualGroup.style.opacity = '1';
+            }
+            calculateFare();
         }
 
-        const vsp = parseFloat(vspInput);
-        const accessories = accessoriesInput ? parseFloat(accessoriesInput) : 0;
-        const ewsAmt = getEwsPrice(vsp, ewsPlan);
-
-        let discountPercent = 0;
-        
-        if (brand.startsWith('custom_')) {
-            const index = parseInt(brand.split('_')[1]);
-            discountPercent = customModels[index].disc;
-        } else {
-            const subCategoryVal = document.getElementById('subCategory').value;
+        function calculateFare() {
+            let km = parseFloat(document.getElementById('manualKm').value) || 100;
+            const tripType = document.getElementById('tripType').value;
+            const fuelType = document.getElementById('fuelType').value;
+            const days = parseInt(document.getElementById('tripDays').value) || 1;
+            const profitMargin = parseFloat(document.getElementById('profitMargin').value) || 20;
             
-            if (brand === 'obs_clear') {
-                discountPercent = parseFloat(subCategoryVal);
-            } else if (subCategoryVal === 'laptop_slab') {
-                if (vsp <= 60000) discountPercent = getStoredPercent('slab_under60', 4);
-                else if (vsp <= 70000) discountPercent = getStoredPercent('slab_60to70', 5);
-                else if (vsp <= 90000) discountPercent = getStoredPercent('slab_70to90', 6);
-                else if (vsp <= 140000) discountPercent = getStoredPercent('slab_90to140', 7);
-                else discountPercent = getStoredPercent('slab_above140', 8);
-            } else if (subCategoryVal === 'dell_gaming') discountPercent = getStoredPercent('dell_gaming', 6);
-            else if (subCategoryVal === 'acer_i3_r3') discountPercent = getStoredPercent('acer_i3_r3', 3);
-            else if (subCategoryVal === 'acer_rest') discountPercent = getStoredPercent('acer_rest', 5);
-            else if (subCategoryVal === 'samsung') discountPercent = getStoredPercent('samsung', 3);
-            else if (subCategoryVal === 'microsoft') discountPercent = getStoredPercent('microsoft', 2);
-            else if (subCategoryVal === 'desktop') discountPercent = getStoredPercent('desktop', 3);
-            else if (subCategoryVal === 'printer') discountPercent = getStoredPercent('printer', 3);
-            else if (subCategoryVal === 'tablet') discountPercent = getStoredPercent('tablet', 3);
+            const toll = parseFloat(document.getElementById('tollCost').value) || 0;
+            const parking = parseFloat(document.getElementById('parkingCost').value) || 0;
+            const allowancePerDay = parseFloat(document.getElementById('driverAllowance').value) || 300;
+            
+            const driverReturn = document.getElementById('driverReturn').checked;
+            const nightCharge = document.getElementById('nightCharge').checked;
+
+            // Adjust KM based on Trip Type
+            let effectiveKm = km;
+            if(tripType === 'Round Trip') {
+                effectiveKm = km * 2;
+            } else if(tripType.includes('Local')) {
+                effectiveKm = 80; // Standard 8H local KM
+            }
+
+            // Driver return extra KM logic (if one way and car needs to return empty)
+            if(tripType === 'One Way' && driverReturn) {
+                effectiveKm += km * 0.5; // Adding 50% return empty distance wear
+            }
+
+            // Fuel Cost calculation (CNG approx â¹3.5/km, Petrol approx â¹7.5/km for Swift Dzire)
+            let fuelCostPerKm = (fuelType === 'CNG') ? 3.8 : 7.5;
+            let totalFuelCost = effectiveKm * fuelCostPerKm;
+
+            // Maintenance / Wear & Tear cost per km (~â¹1.5)
+            let maintenanceCost = effectiveKm * 1.5;
+
+            // Allowances & Extras
+            let totalAllowance = allowancePerDay * days;
+            let totalTollPark = toll + parking;
+            let nightFee = nightCharge ? 300 : 0;
+
+            // Total Actual Operational Cost for Owner
+            let totalActualCost = totalFuelCost + maintenanceCost + totalAllowance + totalTollPark + nightFee;
+
+            // Profit calculation
+            let profitAmount = totalActualCost * (profitMargin / 100);
+            let recommendedFare = totalActualCost + profitAmount;
+
+            // Round to nearest 50
+            recommendedFare = Math.round(recommendedFare / 50) * 50;
+
+            // Update Customer Quotation Display
+            document.getElementById('qDate').innerText = document.getElementById('tripDate').value;
+            document.getElementById('qRoute').innerText = `${document.getElementById('pickupLoc').value} â ${document.getElementById('dropLoc').value}`;
+            document.getElementById('qTripType').innerText = tripType;
+            document.getElementById('qDistInfo').innerText = `${Math.round(effectiveKm)} KM (${fuelType})`;
+            document.getElementById('qFinalTotal').innerText = `â¹${recommendedFare}`;
+
+            // Update Owner Internal Analytics Display
+            document.getElementById('ownerTotalCost').innerText = `â¹${Math.round(totalActualCost)}`;
+            document.getElementById('internalFuel').innerText = `â¹${Math.round(totalFuelCost)}`;
+            document.getElementById('internalTollPark').innerText = `â¹${Math.round(totalTollPark)}`;
+            document.getElementById('internalDriver').innerText = `â¹${Math.round(totalAllowance)}`;
+            document.getElementById('internalMaint').innerText = `â¹${Math.round(maintenanceCost)}`;
+            document.getElementById('ownerProfitAmount').innerText = `â¹${Math.round(profitAmount)} (${profitMargin}%)`;
         }
 
-        const discountAmount = (vsp * discountPercent) / 100;
-        const finalPrice = vsp - discountAmount;
-        const grandTotal = finalPrice + accessories + ewsAmt;
-        const teamShare = discountAmount / 2;
-        const tlShare = discountAmount / 2;
-
-        document.getElementById('resPercent').innerText = `${discountPercent}`;
-        document.getElementById('resDiscountAmt').innerText = discountAmount.toFixed(2);
-        document.getElementById('resFinalPrice').innerText = finalPrice.toFixed(2);
-        document.getElementById('resAccAmt').innerText = accessories.toFixed(2);
-        document.getElementById('resEwsAmt').innerText = ewsAmt.toFixed(2);
-        document.getElementById('resGrandTotal').innerText = grandTotal.toFixed(2);
-        document.getElementById('resTeamShare').innerText = teamShare.toFixed(2);
-        document.getElementById('resTlShare').innerText = tlShare.toFixed(2);
-
-        document.getElementById('resultBox').style.display = 'block';
-
-        const historyItem = `VSP: â¹${vsp} | Disc: ${discountPercent} | Total: â¹${grandTotal.toFixed(2)}`;
-        calcHistory.unshift(historyItem);
-        if (calcHistory.length > 20) calcHistory.pop();
-        localStorage.setItem('calcHistory', JSON.stringify(calcHistory));
-    }
-
-    function calculateGST() {
-        const amt = parseFloat(document.getElementById('gstAmount').value);
-        const rate = parseFloat(document.getElementById('gstRate').value);
-
-        if (!amt || amt <= 0) {
-            alert('Please enter a valid amount.');
-            return;
+        function saveQuotation() {
+            let quotes = JSON.parse(localStorage.getItem('sai_quotations') || '[]');
+            quotes.push({
+                route: `${document.getElementById('pickupLoc').value} to ${document.getElementById('dropLoc').value}`,
+                tripType: document.getElementById('tripType').value,
+                date: document.getElementById('tripDate').value,
+                fare: document.getElementById('qFinalTotal').innerText,
+                dist: document.getElementById('qDistInfo').innerText
+            });
+            localStorage.setItem('sai_quotations', JSON.stringify(quotes));
+            alert('Quotation saved successfully!');
+            loadSavedQuotations();
         }
 
-        const gstAmt = (amt * rate) / 100;
-        const total = amt + gstAmt;
-
-        document.getElementById('resOrigAmt').innerText = amt.toFixed(2);
-        document.getElementById('resGstOnly').innerText = gstAmt.toFixed(2);
-        document.getElementById('resTotalWithGst').innerText = total.toFixed(2);
-        document.getElementById('gstResultBox').style.display = 'block';
-
-        const historyItem = `GST (${rate}%): â¹${amt} -> Total: â¹${total.toFixed(2)}`;
-        calcHistory.unshift(historyItem);
-        if (calcHistory.length > 20) calcHistory.pop();
-        localStorage.setItem('calcHistory', JSON.stringify(calcHistory));
-    }
-
-    function renderHistory() {
-        const container = document.getElementById('historyContainer');
-        if (calcHistory.length === 0) {
-            container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin: 5px 0;">No history yet</p>';
-            return;
+        function loadSavedQuotations() {
+            const container = document.getElementById('savedListContainer');
+            let quotes = JSON.parse(localStorage.getItem('sai_quotations') || '[]');
+            if(quotes.length === 0) {
+                container.innerHTML = `<p style="font-size: 13px; color: var(--text-muted); text-align: center;">No saved quotations yet.</p>`;
+                return;
+            }
+            container.innerHTML = '';
+            quotes.forEach((q, idx) => {
+                container.innerHTML += `
+                    <div class="saved-card">
+                        <div>
+                            <strong style="font-size:14px;">${q.route}</strong><br>
+                            <span style="font-size:12px; color:var(--text-muted);">${q.tripType} | ${q.date}</span>
+                        </div>
+                        <div style="text-align:right;">
+                            <span style="font-size:15px; font-weight:800; color:var(--primary);">${q.fare}</span><br>
+                            <button onclick="deleteQuote(${idx})" style="background:none; border:none; color:red; font-size:11px; cursor:pointer;"><i class="fas fa-trash"></i> Delete</button>
+                        </div>
+                    </div>
+                `;
+            });
         }
-        let html = '';
-        calcHistory.forEach((item) => {
-            html += `<div style="padding: 4px 0; border-bottom: 1px solid var(--border);">${item}</div>`;
-        });
-        container.innerHTML = html;
-    }
 
-    function clearHistory() {
-        calcHistory = [];
-        localStorage.removeItem('calcHistory');
-        renderHistory();
-        showMsg('History cleared successfully!');
-    }
+        function deleteQuote(idx) {
+            let quotes = JSON.parse(localStorage.getItem('sai_quotations') || '[]');
+            quotes.splice(idx, 1);
+            localStorage.setItem('sai_quotations', JSON.stringify(quotes));
+            loadSavedQuotations();
+        }
 
-    function copyResult() {
-        const text = `STORE DISCOUNT VOUCHER: ${document.getElementById('resPercent').innerText}\nDiscount Amt: â¹${document.getElementById('resDiscountAmt').innerText}\nFinal Price: â¹${document.getElementById('resFinalPrice').innerText}\nAccessories: â¹${document.getElementById('resAccAmt').innerText}\nEWS: â¹${document.getElementById('resEwsAmt').innerText}\nGrand Total: â¹${document.getElementById('resGrandTotal').innerText}`;
-        navigator.clipboard.writeText(text);
-        alert('Details copied to clipboard!');
-    }
-</script>
+        function sendWhatsAppQuotation() {
+            const route = `${document.getElementById('pickupLoc').value} to ${document.getElementById('dropLoc').value}`;
+            const tripType = document.getElementById('tripType').value;
+            const date = document.getElementById('tripDate').value;
+            const dist = document.getElementById('qDistInfo').innerText;
+            const total = document.getElementById('qFinalTotal').innerText;
 
-
-<!--visitor-badge--><p style="text-align:center"><img src="https://visitor-badge.laobi.icu/badge?page_id=santoshkamble2309-cyber.my-website" alt="visitors"></p>
+            const msg = `Hello! Here is your cab quotation from *Sai Express Tours & Travels* (Swift Dzire AC):\n\nð Route: ${route}\nð Trip Type: ${tripType}\nð Date: ${date}\nð£ï¸ Distance: ${dist}\nð° *Total Fare: ${total}*\n\n(Includes Toll, Parking & Driver Allowance). Please confirm if you would like to book!`;
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+    </script>
 </body>
 </html>
