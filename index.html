@@ -1,986 +1,903 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sai Express Tours & Travels</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Smart Price & GST Calculator</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border: #cbd5e1;
+            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.08);
+            --input-bg: #f8fafc;
+            --tab-bg: #f1f5f9;
+        }
 
-<style>
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Arial,Helvetica,sans-serif;
-  background:#f5f7fb;
-  color:#172033;
-}
-button,input,select{font:inherit}
-button{cursor:pointer;border:0}
+        body.dark-mode {
+            --primary: #818cf8;
+            --primary-hover: #6366f1;
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --card-bg: rgba(30, 41, 59, 0.95);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #475569;
+            --shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.5);
+            --input-bg: #0f172a;
+            --tab-bg: #334155;
+        }
 
-header{
-  background:#fff;
-  height:70px;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:0 6%;
-  box-shadow:0 2px 12px #00000010;
-  position:sticky;
-  top:0;
-  z-index:100;
-}
-.logo{
-  font-size:21px;
-  font-weight:800;
-  color:#111827;
-}
-.logo span{color:#e63946}
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-gradient);
+            margin: 0;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-main);
+            box-sizing: border-box;
+            transition: background 0.3s ease;
+        }
 
-nav{
-  display:flex;
-  gap:28px;
-}
-nav a{
-  text-decoration:none;
-  color:#374151;
-  font-weight:600;
-}
-nav a:hover{color:#e63946}
+        /* PASSWORD LOCK SCREEN OVERLAY */
+        #lockScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-gradient);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .lock-card {
+            background: var(--card-bg);
+            padding: 24px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 360px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
 
-.menu{
-  display:none;
-  font-size:27px;
-}
+        .app-container {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 20px 16px;
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+            display: none;
+        }
 
-.hero{
-  min-height:560px;
-  padding:70px 6%;
-  display:flex;
-  align-items:center;
-  background:
-  linear-gradient(90deg,#111827ee,#11182799,#11182722),
-  url("https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1800&q=80")
-  center/cover;
-  color:white;
-}
-.hero-content{max-width:650px}
-.badge{
-  display:inline-block;
-  background:#ffffff1c;
-  border:1px solid #ffffff40;
-  padding:9px 15px;
-  border-radius:30px;
-  margin-bottom:20px;
-}
-.hero h1{
-  font-size:52px;
-  line-height:1.08;
-  margin-bottom:18px;
-}
-.hero h1 span{color:#ffcc33}
-.hero p{
-  font-size:18px;
-  line-height:1.6;
-  color:#e5e7eb;
-  margin-bottom:30px;
-}
-.btn{
-  padding:14px 22px;
-  border-radius:10px;
-  font-weight:700;
-  transition:.2s;
-}
-.primary{background:#e63946;color:#fff}
-.primary:hover{transform:translateY(-2px)}
-.white{background:#fff;color:#111827;margin-left:10px}
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
 
-.booking-box{
-  background:#fff;
-  color:#111827;
-  margin-top:-65px;
-  position:relative;
-  z-index:10;
-  width:88%;
-  margin-left:auto;
-  margin-right:auto;
-  border-radius:18px;
-  padding:25px;
-  box-shadow:0 12px 40px #00000018;
-}
-.booking-box h2{margin-bottom:18px}
-.booking-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:14px;
-}
-.field label{
-  display:block;
-  font-size:12px;
-  font-weight:700;
-  color:#6b7280;
-  margin-bottom:7px;
-}
-.field input,.field select{
-  width:100%;
-  border:1px solid #e5e7eb;
-  border-radius:9px;
-  padding:13px;
-  outline:none;
-  background:#fafafa;
-}
-.field input:focus,.field select:focus{
-  border-color:#e63946;
-}
-.booking-submit{
-  margin-top:15px;
-  width:100%;
-}
+        h2 {
+            margin: 0;
+            font-size: 22px;
+            color: var(--text-main);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
 
-section{
-  padding:75px 6%;
-}
-.section-title{
-  text-align:center;
-  margin-bottom:38px;
-}
-.section-title h2{
-  font-size:32px;
-  margin-bottom:10px;
-}
-.section-title p{color:#6b7280}
+        .settings-icon {
+            background: var(--tab-bg);
+            border: none;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .settings-icon:active { transform: scale(0.92); }
 
-.routes{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-}
-.route{
-  background:#fff;
-  padding:24px;
-  border-radius:15px;
-  box-shadow:0 4px 18px #00000009;
-}
-.route .icon{font-size:32px;margin-bottom:15px}
-.route h3{margin-bottom:7px}
-.route p{color:#6b7280;font-size:14px}
+        .tab-btns {
+            display: flex;
+            background: var(--tab-bg);
+            padding: 4px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+        }
 
-.cars{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:22px;
-}
-.car{
-  background:#fff;
-  border-radius:18px;
-  overflow:hidden;
-  box-shadow:0 5px 20px #00000010;
-}
-.car img{
-  width:100%;
-  height:190px;
-  object-fit:cover;
-}
-.car-body{padding:20px}
-.car-body h3{margin-bottom:8px}
-.car-info{
-  display:flex;
-  justify-content:space-between;
-  color:#6b7280;
-  font-size:14px;
-  margin:12px 0 18px;
-}
+        .tab-btn {
+            flex: 1;
+            padding: 10px 6px;
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 13px;
+            cursor: pointer;
+            border-radius: 10px;
+            color: var(--text-muted);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            text-align: center;
+        }
 
-.features{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-}
-.feature{
-  background:#fff;
-  text-align:center;
-  padding:25px 18px;
-  border-radius:15px;
-}
-.feature-icon{font-size:35px;margin-bottom:12px}
-.feature p{color:#6b7280;font-size:14px;margin-top:7px}
+        .tab-btn.active {
+            background: var(--card-bg);
+            color: var(--primary);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.15);
+        }
 
-.track{
-  background:#111827;
-  color:#fff;
-  border-radius:22px;
-  padding:40px;
-  max-width:850px;
-  margin:auto;
-  text-align:center;
-}
-.track h2{font-size:30px;margin-bottom:10px}
-.track p{color:#cbd5e1;margin-bottom:22px}
-.track-form{
-  display:flex;
-  gap:10px;
-  max-width:600px;
-  margin:auto;
-}
-.track-form input{
-  flex:1;
-  padding:15px;
-  border-radius:9px;
-  border:0;
-}
+        .section-view { display: none; }
+        .section-view.active { display: block; animation: fadeIn 0.3s ease; }
 
-.about{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:50px;
-  align-items:center;
-}
-.about img{
-  width:100%;
-  border-radius:20px;
-}
-.about p{
-  color:#6b7280;
-  line-height:1.8;
-  margin:15px 0;
-}
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(4px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-footer{
-  background:#111827;
-  color:#fff;
-  padding:45px 6%;
-}
-.footer-grid{
-  display:grid;
-  grid-template-columns:2fr 1fr 1fr;
-  gap:40px;
-}
-footer h3{margin-bottom:15px}
-footer p,footer a{
-  color:#cbd5e1;
-  line-height:1.8;
-  text-decoration:none;
-  display:block;
-}
-.copyright{
-  border-top:1px solid #ffffff18;
-  margin-top:30px;
-  padding-top:20px;
-  color:#94a3b8;
-}
+        .form-group {
+            margin-bottom: 14px;
+        }
 
-.modal{
-  display:none;
-  position:fixed;
-  inset:0;
-  background:#00000088;
-  z-index:500;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-.modal-box{
-  background:#fff;
-  width:100%;
-  max-width:520px;
-  border-radius:18px;
-  padding:28px;
-  position:relative;
-  max-height:90vh;
-  overflow:auto;
-}
-.close{
-  position:absolute;
-  right:18px;
-  top:14px;
-  background:#f1f5f9;
-  border-radius:50%;
-  width:34px;
-  height:34px;
-}
-.modal-box h2{margin-bottom:20px}
-.modal-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-}
-.modal-grid .full{grid-column:1/-1}
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: var(--text-main);
+            font-size: 13px;
+        }
 
-.result{
-  margin-top:20px;
-  padding:18px;
-  border-radius:12px;
-  background:#f1f5f9;
-  display:none;
-}
-.result strong{color:#e63946}
+        select, input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 12px;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: var(--input-bg);
+            color: var(--text-main);
+            transition: all 0.2s;
+            appearance: none;
+        }
 
-.admin{
-  display:none;
-  padding:40px 6%;
-}
-.admin-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:25px;
-}
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-}
-.stat{
-  background:#fff;
-  padding:22px;
-  border-radius:15px;
-}
-.stat small{color:#6b7280}
-.stat h2{margin-top:8px}
+        select {
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 10px;
+            padding-right: 35px;
+        }
 
-.booking-table{
-  margin-top:25px;
-  background:#fff;
-  border-radius:15px;
-  padding:20px;
-  overflow:auto;
-}
-table{
-  width:100%;
-  border-collapse:collapse;
-}
-th,td{
-  text-align:left;
-  padding:13px;
-  border-bottom:1px solid #eee;
-  white-space:nowrap;
-}
-th{font-size:13px;color:#6b7280}
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+        }
 
-.whatsapp{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  width:56px;
-  height:56px;
-  border-radius:50%;
-  background:#25D366;
-  color:#fff;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  font-size:28px;
-  z-index:200;
-  box-shadow:0 5px 20px #0003;
-}
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 6px;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.35);
+            transition: all 0.2s;
+        }
+        .btn:active { transform: scale(0.98); opacity: 0.9; }
 
-@media(max-width:900px){
-  nav{display:none}
-  .menu{display:block}
-  .hero{padding:55px 6%;min-height:500px}
-  .hero h1{font-size:39px}
-  .booking-grid{grid-template-columns:1fr 1fr}
-  .routes{grid-template-columns:1fr 1fr}
-  .cars{grid-template-columns:1fr 1fr}
-  .features{grid-template-columns:1fr 1fr}
-  .about{grid-template-columns:1fr}
-  .footer-grid{grid-template-columns:1fr 1fr}
-  .stats{grid-template-columns:1fr 1fr}
-}
+        .result {
+            margin-top: 18px;
+            padding: 16px;
+            background: var(--input-bg);
+            border-radius: 14px;
+            border: 1px solid var(--border);
+        }
 
-@media(max-width:600px){
-  header{height:62px;padding:0 5%}
-  .logo{font-size:17px}
-  .hero{padding:45px 5%;min-height:500px}
-  .hero h1{font-size:34px}
-  .hero p{font-size:15px}
-  .white{margin-left:5px}
-  .booking-box{
-    width:92%;
-    margin-top:-35px;
-    padding:18px;
-  }
-  .booking-grid{
-    grid-template-columns:1fr;
-  }
-  section{padding:55px 5%}
-  .section-title h2{font-size:27px}
-  .routes,.cars,.features{
-    grid-template-columns:1fr;
-  }
-  .track{
-    padding:28px 18px;
-  }
-  .track-form{flex-direction:column}
-  .footer-grid{grid-template-columns:1fr}
-  .modal-grid{grid-template-columns:1fr}
-  .modal-grid .full{grid-column:auto}
-}
-</style>
+        .result p {
+            margin: 8px 0;
+            font-size: 13.5px;
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+        }
+
+        .result span {
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        /* Settings Modal Overlay */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(4px);
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            padding: 16px;
+            box-sizing: border-box;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 360px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-sizing: border-box;
+            position: relative;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .close-modal {
+            position: absolute;
+            top: 16px; right: 16px;
+            background: var(--tab-bg); border: none;
+            width: 32px; height: 32px; border-radius: 50%;
+            font-size: 14px; cursor: pointer; color: var(--text-main);
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        .settings-box {
+            background: var(--tab-bg);
+            padding: 12px;
+            border-radius: 12px;
+            margin-bottom: 14px;
+            border: 1px dashed var(--border);
+        }
+
+        .toggle-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px;
+        }
+
+        .copy-btn {
+            background: #10b981;
+            margin-top: 12px;
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+        }
+    </style>
 </head>
-
 <body>
 
-<header>
-  <div class="logo">SAI <span>EXPRESS</span></div>
-
-  <nav>
-    <a href="#home">Home</a>
-    <a href="#cars">Cars</a>
-    <a href="#routes">Routes</a>
-    <a href="#track">Track Booking</a>
-    <a href="#contact">Contact</a>
-    <a href="#" onclick="openAdmin()">Admin</a>
-  </nav>
-
-  <div class="menu">☰</div>
-</header>
-
-<!-- HERO -->
-<div id="home" class="hero">
-  <div class="hero-content">
-    <div class="badge">🚕 Safe • Comfortable • Reliable</div>
-
-    <h1>Travel Easy With <span>Sai Express</span></h1>
-
-    <p>
-      Cab & outstation travel service from Mumbai, Navi Mumbai,
-      Thane and Maharashtra.
-    </p>
-
-    <button class="btn primary" onclick="openBooking()">Book Your Ride</button>
-    <button class="btn white" onclick="location.href='#track'">Track Booking</button>
-  </div>
+<!-- PASSWORD LOCK SCREEN -->
+<div id="lockScreen">
+    <div class="lock-card">
+        <h3 style="margin-top:0; color:var(--text-main); font-size:20px;">ð Enter Password</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Access secure calculator app</p>
+        <div class="form-group">
+            <input type="password" id="passInput" placeholder="Enter Password" style="text-align:center; font-size:18px; letter-spacing:2px;">
+        </div>
+        <button class="btn" onclick="checkPassword()">Unlock App</button>
+        <p id="lockError" style="color:#ef4444; font-size:12px; margin-top:10px; font-weight:600;"></p>
+    </div>
 </div>
 
-<!-- QUICK BOOKING -->
-<div class="booking-box">
-  <h2>🚕 Quick Booking</h2>
-
-  <div class="booking-grid">
-
-    <div class="field">
-      <label>PICKUP LOCATION</label>
-      <input id="pickup" placeholder="e.g. Thane">
+<!-- MAIN APP CONTAINER -->
+<div class="app-container" id="appContainer">
+    <div class="header">
+        <h2>Smart Calculator</h2>
+        <button class="settings-icon" onclick="requestSettingsAccess()" title="Settings">âï¸</button>
     </div>
 
-    <div class="field">
-      <label>DROP LOCATION</label>
-      <input id="drop" placeholder="e.g. Ratnagiri">
+    <!-- Navigation Tabs -->
+    <div class="tab-btns">
+        <button class="tab-btn active" onclick="switchTab('calcTab', this)">Price Calc</button>
+        <button class="tab-btn" onclick="switchTab('gstTab', this)">GST Calc</button>
     </div>
 
-    <div class="field">
-      <label>TRIP TYPE</label>
-      <select id="tripType">
-        <option>One Way</option>
-        <option>Round Trip</option>
-        <option>Local</option>
-      </select>
+    <!-- 1. PRICE CALCULATOR SECTION -->
+    <div id="calcTab" class="section-view active">
+        <div class="form-group">
+            <label for="brand">Select Brand / Category:</label>
+            <select id="brand" onchange="updateOptions()">
+                <option value="">-- Select Brand --</option>
+                <optgroup label="Laptops">
+                    <option value="hp">HP</option>
+                    <option value="dell">Dell</option>
+                    <option value="lenovo">Lenovo</option>
+                    <option value="asus">Asus</option>
+                    <option value="acer">Acer</option>
+                    <option value="samsung">Samsung</option>
+                </optgroup>
+                <optgroup label="Printers">
+                    <option value="epson">Epson (Printer)</option>
+                    <option value="canon">Canon (Printer)</option>
+                </optgroup>
+                <optgroup label="Others">
+                    <option value="microsoft">Microsoft</option>
+                    <option value="desktop">All Desktops</option>
+                    <option value="tablet">All Tablets</option>
+                    <option value="obs_clear">OBS & Must Clear</option>
+                </optgroup>
+                <optgroup label="Custom Added Models" id="customBrandGroup"></optgroup>
+            </select>
+        </div>
+
+        <div class="form-group" id="subCategoryGroup" style="display:none;">
+            <label for="subCategory" id="subLabel">Select Description / Model:</label>
+            <select id="subCategory"></select>
+        </div>
+
+        <div class="form-group">
+            <label for="vsp">Enter VSP (â¹):</label>
+            <input type="number" id="vsp" placeholder="e.g. 65000">
+        </div>
+
+        <!-- Accessories Add-on Field -->
+        <div class="form-group">
+            <label for="accessoriesAmt">Accessories / Add-on Amount (â¹):</label>
+            <input type="number" id="accessoriesAmt" placeholder="e.g. 1500 (Bag, Mouse, etc.)" value="0">
+        </div>
+
+        <!-- EWS (Extended Warranty Scheme) Field -->
+        <div class="form-group">
+            <label for="ewsPlan">EWS (Extended Warranty):</label>
+            <select id="ewsPlan">
+                <option value="0">No Extended Warranty (â¹0)</option>
+                <option value="1">1 Year Extended Warranty</option>
+                <option value="2">2 Years Extended Warranty</option>
+                <option value="printer_ext">Printer Extended Warranty</option>
+                <option value="laptop_ext">Laptop Extended Warranty</option>
+                <option value="laptop_total">Laptop Total Care</option>
+            </select>
+        </div>
+
+        <button class="btn" onclick="calculatePrice()">Calculate Total</button>
+
+        <div class="result" id="resultBox" style="display:none;">
+            <p>STORE DISCOUNT VOUCHER: <span id="resPercent">-</span></p>
+            <p>Max Discount Amt: <span>â¹<span id="resDiscountAmt">-</span></span></p>
+            <p>Final Price (Excl. Acc/EWS): <span>â¹<span id="resFinalPrice">-</span></span></p>
+            <p>Accessories Add-on: <span>â¹<span id="resAccAmt">0</span></span></p>
+            <p>EWS Warranty: <span>â¹<span id="resEwsAmt">0</span></span></p>
+            <hr style="border:0; border-top:1px solid var(--border); margin:10px 0;">
+            <p style="font-size: 15px; font-weight: 800;">Grand Total Price: <span style="color: var(--primary);">â¹<span id="resGrandTotal">-</span></span></p>
+            <hr style="border:0; border-top:1px solid var(--border); margin:10px 0;">
+            <p style="font-size: 12px; color: var(--text-muted);">Team Share (50%): <span>â¹<span id="resTeamShare">-</span></span></p>
+            <p style="font-size: 12px; color: var(--text-muted);">TL Share (50%): <span>â¹<span id="resTlShare">-</span></span></p>
+            <button class="btn copy-btn" onclick="copyResult()">ð Copy Details</button>
+        </div>
     </div>
 
-    <div class="field">
-      <label>DATE</label>
-      <input id="date" type="date">
+    <!-- 2. GST CALCULATOR SECTION -->
+    <div id="gstTab" class="section-view">
+        <div class="form-group">
+            <label for="gstAmount">Amount (â¹):</label>
+            <input type="number" id="gstAmount" placeholder="Enter amount">
+        </div>
+
+        <div class="form-group">
+            <label for="gstRate">GST Rate (%):</label>
+            <select id="gstRate">
+                <option value="18">18% (Standard IT/Electronics)</option>
+                <option value="12">12%</option>
+                <option value="28">28%</option>
+                <option value="5">5%</option>
+            </select>
+        </div>
+
+        <button class="btn" onclick="calculateGST()" style="background: #0ea5e9; box-shadow: 0 4px 14px rgba(14, 165, 233, 0.35);">Calculate GST</button>
+
+        <div class="result" id="gstResultBox" style="display:none;">
+            <p>Original Amount: <span>â¹<span id="resOrigAmt">-</span></span></p>
+            <p>GST Amount: <span>â¹<span id="resGstOnly">-</span></span></p>
+            <p style="font-size: 15px; font-weight: 800;">Total with GST: <span style="color: #0ea5e9;">â¹<span id="resTotalWithGst">-</span></span></p>
+        </div>
     </div>
-
-  </div>
-
-  <button class="btn primary booking-submit" onclick="openBooking()">
-    Continue Booking →
-  </button>
 </div>
 
-<!-- ROUTES -->
-<section id="routes">
-  <div class="section-title">
-    <h2>Popular Routes</h2>
-    <p>Book your comfortable journey with Sai Express</p>
-  </div>
-
-  <div class="routes">
-    <div class="route">
-      <div class="icon">🏙️</div>
-      <h3>Mumbai</h3>
-      <p>Mumbai ↔ Maharashtra & Outstation</p>
-    </div>
-
-    <div class="route">
-      <div class="icon">⛰️</div>
-      <h3>Lonavala</h3>
-      <p>Mumbai / Navi Mumbai → Lonavala</p>
-    </div>
-
-    <div class="route">
-      <div class="icon">🛕</div>
-      <h3>Shirdi</h3>
-      <p>Comfortable family pilgrimage trips</p>
-    </div>
-
-    <div class="route">
-      <div class="icon">🌊</div>
-      <h3>Ratnagiri</h3>
-      <p>One-way & round-trip available</p>
-    </div>
-  </div>
-</section>
-
-<!-- CARS -->
-<section id="cars">
-  <div class="section-title">
-    <h2>Our Cars</h2>
-    <p>Choose a vehicle according to your trip</p>
-  </div>
-
-  <div class="cars">
-
-    <div class="car">
-      <img src="https://images.unsplash.com/photo-1542362567-b07e54358753?auto=format&fit=crop&w=900&q=80">
-      <div class="car-body">
-        <h3>Swift Dzire</h3>
-        <div class="car-info">
-          <span>👥 4+1</span>
-          <span>⛽ CNG/Petrol</span>
+<!-- SETTINGS MODAL -->
+<div class="modal" id="settingsModal">
+    <div class="modal-content">
+        <button class="close-modal" onclick="toggleSettings(false)">â</button>
+        <h3 style="margin-top:0; font-size:18px; font-weight:800;">âï¸ Settings & Customization</h3>
+        
+        <!-- Dark Mode Toggle -->
+        <div class="toggle-row" style="margin-top: 15px;">
+            <label for="darkModeToggle" style="margin:0; cursor:pointer;">Dark Mode (Theme)</label>
+            <input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode()" style="width: 20px; height: 20px; cursor: pointer;">
         </div>
-        <button class="btn primary" onclick="selectCar('Swift Dzire')">
-          Book This Car
-        </button>
-      </div>
-    </div>
 
-    <div class="car">
-      <img src="https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?auto=format&fit=crop&w=900&q=80">
-      <div class="car-body">
-        <h3>Sedan</h3>
-        <div class="car-info">
-          <span>👥 4+1</span>
-          <span>⛽ Petrol/CNG</span>
+        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
+
+        <!-- Edit Slab Discount Settings -->
+        <h4 style="margin:0 0 10px 0; font-size:14px;">Modify Slab/Brand Percentages</h4>
+        <div class="settings-box">
+            <div class="form-group">
+                <label for="editSlabSelect">Select Item/Slab to Change:</label>
+                <select id="editSlabSelect" onchange="loadSlabValue()">
+                    <option value="slab_under60">Slab: VSP â¤ 60K (Default: 4%)</option>
+                    <option value="slab_60to70">Slab: 60K - 70K (Default: 5%)</option>
+                    <option value="slab_70to90">Slab: 70K - 90K (Default: 6%)</option>
+                    <option value="slab_90to140">Slab: 90K - 1.4L (Default: 7%)</option>
+                    <option value="slab_above140">Slab: > 1.4L (Default: 8%)</option>
+                    <option value="dell_gaming">Dell Gaming (Default: 6%)</option>
+                    <option value="acer_i3_r3">Acer i3/R3 (Default: 3%)</option>
+                    <option value="acer_rest">Acer Rest (Default: 5%)</option>
+                    <option value="samsung">Samsung (Default: 3%)</option>
+                    <option value="microsoft">Microsoft (Default: 2%)</option>
+                    <option value="desktop">Desktops (Default: 3%)</option>
+                    <option value="printer">Printers (Default: 3%)</option>
+                    <option value="tablet">Tablets (Default: 3%)</option>
+                </select>
+            </div>
+            <div class="form-group" style="margin-bottom:8px;">
+                <label for="newSlabVal">New Percentage Value (Number):</label>
+                <input type="number" id="newSlabVal" placeholder="e.g. 5 or 6" step="0.1">
+            </div>
+            <button class="btn" onclick="saveSlabPercentage()" style="padding: 10px; font-size: 13px; background:#0ea5e9;">Update Percentage</button>
         </div>
-        <button class="btn primary" onclick="selectCar('Sedan')">
-          Book This Car
-        </button>
-      </div>
-    </div>
 
-    <div class="car">
-      <img src="https://images.unsplash.com/photo-1549317661-bd32c8ce0db2?auto=format&fit=crop&w=900&q=80">
-      <div class="car-body">
-        <h3>Premium Car</h3>
-        <div class="car-info">
-          <span>👥 4+1</span>
-          <span>✨ Premium</span>
+        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
+
+        <!-- Custom Model Add Section -->
+        <h4 style="margin:0 0 10px 0; font-size:14px;">Add Custom Model</h4>
+        <div class="form-group">
+            <label for="customModelName">Model Name:</label>
+            <input type="text" id="customModelName" placeholder="e.g. Special Model X200">
         </div>
-        <button class="btn primary" onclick="selectCar('Premium Car')">
-          Book This Car
-        </button>
-      </div>
+        <div class="form-group">
+            <label for="customDiscountVal">Discount Value (Number):</label>
+            <input type="number" id="customDiscountVal" placeholder="e.g. 1.5 or 2" step="0.1">
+        </div>
+        <button class="btn" onclick="saveCustomModel()" style="background: #db2777;">Save Custom Model</button>
+
+        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
+
+        <!-- Calculation History Section -->
+        <h4 style="margin:0 0 10px 0; font-size:14px;">Calculation History</h4>
+        <div id="historyContainer" style="max-height: 150px; overflow-y: auto; background: var(--input-bg); padding: 8px; border-radius: 8px; border: 1px solid var(--border); font-size: 12px; margin-bottom: 10px;">
+            <p style="color: var(--text-muted); text-align: center; margin: 5px 0;">No history yet</p>
+        </div>
+        <button class="btn" onclick="clearHistory()" style="background: #ef4444; padding: 10px; font-size: 13px;">Clear History</button>
+
+        <hr style="border:0; border-top:1px solid var(--border); margin:14px 0;">
+
+        <!-- Change Password Section -->
+        <h4 style="margin:0 0 10px 0; font-size:14px;">Change App Password</h4>
+        <div class="form-group">
+            <label for="newPassInput">New Password:</label>
+            <input type="text" id="newPassInput" placeholder="Enter new password">
+        </div>
+        <button class="btn" onclick="changePassword()" style="background: #f59e0b;">Update Password</button>
+        <button class="btn" onclick="resetPasswordToDefault()" style="background: #64748b; margin-top: 8px; font-size: 13px; padding: 10px;">Reset to Default (25061998)</button>
+
+        <p id="saveMsg" style="font-size: 13px; color: #10b981; text-align: center; margin-top: 10px; font-weight: 600;"></p>
     </div>
-
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section>
-  <div class="section-title">
-    <h2>Why Choose Us?</h2>
-    <p>Simple, transparent and comfortable travel</p>
-  </div>
-
-  <div class="features">
-    <div class="feature">
-      <div class="feature-icon">💰</div>
-      <h3>Affordable Fare</h3>
-      <p>Competitive pricing for your journey.</p>
-    </div>
-
-    <div class="feature">
-      <div class="feature-icon">🚗</div>
-      <h3>Clean Cars</h3>
-      <p>Comfortable and maintained vehicles.</p>
-    </div>
-
-    <div class="feature">
-      <div class="feature-icon">👨‍✈️</div>
-      <h3>Professional Drivers</h3>
-      <p>Experienced drivers for your trip.</p>
-    </div>
-
-    <div class="feature">
-      <div class="feature-icon">📞</div>
-      <h3>Easy Support</h3>
-      <p>Call or WhatsApp us whenever needed.</p>
-    </div>
-  </div>
-</section>
-
-<!-- TRACK BOOKING -->
-<section id="track">
-  <div class="track">
-    <h2>🔎 Track Your Booking</h2>
-    <p>Enter your Booking ID / PNR number</p>
-
-    <div class="track-form">
-      <input id="pnrInput" placeholder="Example: SAI1025">
-      <button class="btn primary" onclick="trackBooking()">Track</button>
-    </div>
-
-    <div id="trackResult" class="result"></div>
-  </div>
-</section>
-
-<!-- ABOUT -->
-<section>
-  <div class="about">
-
-    <img src="https://images.unsplash.com/photo-1519003722824-194d4455a60c?auto=format&fit=crop&w=1000&q=80">
-
-    <div>
-      <h2>About Sai Express Tours & Travels</h2>
-
-      <p>
-        Sai Express Tours & Travels provides local, outstation,
-        one-way and round-trip travel services.
-      </p>
-
-      <p>
-        We focus on comfortable cars, transparent communication
-        and convenient booking.
-      </p>
-
-      <button class="btn primary" onclick="openBooking()">
-        Book Now
-      </button>
-    </div>
-
-  </div>
-</section>
-
-<!-- CONTACT -->
-<footer id="contact">
-  <div class="footer-grid">
-
-    <div>
-      <h3>SAI EXPRESS TOURS & TRAVELS</h3>
-      <p>Reliable travel partner for Maharashtra & outstation journeys.</p>
-    </div>
-
-    <div>
-      <h3>Quick Links</h3>
-      <a href="#home">Home</a>
-      <a href="#cars">Cars</a>
-      <a href="#routes">Routes</a>
-      <a href="#track">Track Booking</a>
-    </div>
-
-    <div>
-      <h3>Contact</h3>
-      <p>📞 Call for Booking</p>
-      <p>📱 WhatsApp Available</p>
-      <p>📍 Mumbai / Navi Mumbai</p>
-    </div>
-
-  </div>
-
-  <div class="copyright">
-    © 2026 Sai Express Tours & Travels. All Rights Reserved.
-  </div>
-</footer>
-
-<!-- WHATSAPP -->
-<a class="whatsapp" href="https://wa.me/" target="_blank">☏</a>
-
-<!-- BOOKING MODAL -->
-<div id="bookingModal" class="modal">
-  <div class="modal-box">
-
-    <button class="close" onclick="closeBooking()">✕</button>
-
-    <h2>🚕 Book Your Ride</h2>
-
-    <div class="modal-grid">
-
-      <div class="field">
-        <label>NAME</label>
-        <input id="customerName" placeholder="Your Name">
-      </div>
-
-      <div class="field">
-        <label>MOBILE</label>
-        <input id="customerMobile" placeholder="Mobile Number">
-      </div>
-
-      <div class="field">
-        <label>PICKUP</label>
-        <input id="bookPickup" placeholder="Pickup Location">
-      </div>
-
-      <div class="field">
-        <label>DROP</label>
-        <input id="bookDrop" placeholder="Drop Location">
-      </div>
-
-      <div class="field">
-        <label>DATE</label>
-        <input id="bookDate" type="date">
-      </div>
-
-      <div class="field">
-        <label>TIME</label>
-        <input id="bookTime" type="time">
-      </div>
-
-      <div class="field full">
-        <label>CAR</label>
-        <select id="bookCar">
-          <option>Swift Dzire</option>
-          <option>Sedan</option>
-          <option>Premium Car</option>
-        </select>
-      </div>
-
-    </div>
-
-    <button class="btn primary" style="width:100%;margin-top:18px" onclick="createBooking()">
-      Confirm Booking
-    </button>
-
-    <div id="bookingResult" class="result"></div>
-
-  </div>
 </div>
 
-<!-- ADMIN -->
-<div id="adminPanel" class="admin">
-
-  <div class="admin-head">
-    <div>
-      <h1>Admin Dashboard</h1>
-      <p style="color:#6b7280">Sai Express Tours & Travels</p>
+<!-- SETTINGS ACCESS PASSWORD MODAL -->
+<div class="modal" id="settingsPassModal">
+    <div class="modal-content" style="max-width: 320px; text-align:center;">
+        <button class="close-modal" onclick="closeSettingsPassModal()">â</button>
+        <h3 style="margin-top:0; font-size:18px; font-weight:800;">ð Settings Locked</h3>
+        <p style="font-size:13px; color:var(--text-muted); margin-bottom:16px;">Enter password to access settings</p>
+        <div class="form-group">
+            <input type="password" id="settingsPassInput" placeholder="Enter Password" style="text-align:center; font-size:18px; letter-spacing:2px;">
+        </div>
+        <button class="btn" onclick="checkSettingsPassword()">Unlock Settings</button>
+        <p id="settingsPassError" style="color:#ef4444; font-size:12px; margin-top:10px; font-weight:600;"></p>
     </div>
-
-    <button class="btn primary" onclick="closeAdmin()">Close</button>
-  </div>
-
-  <div class="stats">
-
-    <div class="stat">
-      <small>Total Bookings</small>
-      <h2 id="totalBookings">0</h2>
-    </div>
-
-    <div class="stat">
-      <small>Today's Bookings</small>
-      <h2 id="todayBookings">0</h2>
-    </div>
-
-    <div class="stat">
-      <small>Customers</small>
-      <h2 id="totalCustomers">0</h2>
-    </div>
-
-    <div class="stat">
-      <small>Cars</small>
-      <h2>3</h2>
-    </div>
-
-  </div>
-
-  <div class="booking-table">
-    <h2 style="margin-bottom:18px">Booking History</h2>
-
-    <table>
-      <thead>
-        <tr>
-          <th>PNR</th>
-          <th>Customer</th>
-          <th>Route</th>
-          <th>Date</th>
-          <th>Car</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-
-      <tbody id="bookingTable"></tbody>
-    </table>
-  </div>
-
 </div>
 
 <script>
+    let customModels = JSON.parse(localStorage.getItem('customModels')) || [];
+    let customPercentages = JSON.parse(localStorage.getItem('customPercentages')) || {};
+    let calcHistory = JSON.parse(localStorage.getItem('calcHistory')) || [];
+    let appPassword = localStorage.getItem('appPassword') || '25061998';
+    let isDarkMode = localStorage.getItem('isDarkMode') === 'true';
 
-let bookings = JSON.parse(localStorage.getItem("saiBookings") || "[]");
+    window.onload = function() {
+        if (isDarkMode) {
+            document.body.classList.add('dark-mode');
+            document.getElementById('darkModeToggle').checked = true;
+        }
+        loadCustomModelsToDropdown();
+        loadSlabValue();
+        renderHistory();
+    };
 
-function openBooking(){
-  document.getElementById("bookingModal").style.display="flex";
+    function checkPassword() {
+        const val = document.getElementById('passInput').value;
+        if (val === appPassword) {
+            document.getElementById('lockScreen').style.display = 'none';
+            document.getElementById('appContainer').style.display = 'block';
+        } else {
+            document.getElementById('lockError').innerText = 'Incorrect Password! Try again.';
+        }
+    }
 
-  document.getElementById("bookPickup").value =
-    document.getElementById("pickup").value;
+    // Settings access is gated behind its own password (kept encoded, not plain text)
+    function _getSettingsPass() {
+        // Base64-encoded so it isn't sitting in the source as readable plain text
+        return atob('UEFTUy0oVmlqYXlzYWxlcyk=');
+    }
 
-  document.getElementById("bookDrop").value =
-    document.getElementById("drop").value;
+    function requestSettingsAccess() {
+        document.getElementById('settingsPassInput').value = '';
+        document.getElementById('settingsPassError').innerText = '';
+        document.getElementById('settingsPassModal').classList.add('active');
+        setTimeout(() => document.getElementById('settingsPassInput').focus(), 50);
+    }
 
-  document.getElementById("bookDate").value =
-    document.getElementById("date").value;
-}
+    function closeSettingsPassModal() {
+        document.getElementById('settingsPassModal').classList.remove('active');
+    }
 
-function closeBooking(){
-  document.getElementById("bookingModal").style.display="none";
-}
+    function checkSettingsPassword() {
+        const val = document.getElementById('settingsPassInput').value;
+        if (val === _getSettingsPass()) {
+            closeSettingsPassModal();
+            toggleSettings(true);
+        } else {
+            document.getElementById('settingsPassError').innerText = 'Incorrect Password! Try again.';
+        }
+    }
 
-function selectCar(car){
-  openBooking();
-  document.getElementById("bookCar").value=car;
-}
+    function toggleSettings(open) {
+        const modal = document.getElementById('settingsModal');
+        if(open) {
+            renderHistory();
+            modal.classList.add('active');
+        } else {
+            modal.classList.remove('active');
+        }
+    }
 
-function createBooking(){
+    function switchTab(tabId, btnElement) {
+        document.querySelectorAll('.section-view').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        
+        document.getElementById(tabId).classList.add('active');
+        btnElement.classList.add('active');
+    }
 
-  const name=document.getElementById("customerName").value.trim();
-  const mobile=document.getElementById("customerMobile").value.trim();
-  const pickup=document.getElementById("bookPickup").value.trim();
-  const drop=document.getElementById("bookDrop").value.trim();
-  const date=document.getElementById("bookDate").value;
-  const time=document.getElementById("bookTime").value;
-  const car=document.getElementById("bookCar").value;
+    function toggleDarkMode() {
+        const darkOn = document.getElementById('darkModeToggle').checked;
+        if (darkOn) {
+            document.body.classList.add('dark-mode');
+            localStorage.setItem('isDarkMode', 'true');
+        } else {
+            document.body.classList.remove('dark-mode');
+            localStorage.setItem('isDarkMode', 'false');
+        }
+    }
 
-  if(!name || !mobile || !pickup || !drop || !date){
-    alert("Please fill all required details.");
-    return;
-  }
+    function loadSlabValue() {
+        const key = document.getElementById('editSlabSelect').value;
+        const defaults = {
+            'slab_under60': 4, 'slab_60to70': 5, 'slab_70to90': 6, 
+            'slab_90to140': 7, 'slab_above140': 8, 'dell_gaming': 6, 
+            'acer_i3_r3': 3, 'acer_rest': 5, 'samsung': 3, 
+            'microsoft': 2, 'desktop': 3, 'printer': 3, 'tablet': 3
+        };
+        let currentVal = customPercentages[key] !== undefined ? customPercentages[key] : defaults[key];
+        document.getElementById('newSlabVal').value = currentVal;
+    }
 
-  const pnr="SAI"+Math.floor(1000+Math.random()*9000);
+    function saveSlabPercentage() {
+        const key = document.getElementById('editSlabSelect').value;
+        const val = parseFloat(document.getElementById('newSlabVal').value);
+        if (isNaN(val)) {
+            alert('Please enter a valid percentage number.');
+            return;
+        }
+        customPercentages[key] = val;
+        localStorage.setItem('customPercentages', JSON.stringify(customPercentages));
+        showMsg('Percentage updated successfully!');
+    }
 
-  const booking={
-    pnr,
-    name,
-    mobile,
-    pickup,
-    drop,
-    date,
-    time,
-    car,
-    status:"Confirmed"
-  };
+    function changePassword() {
+        const newPass = document.getElementById('newPassInput').value.trim();
+        if (!newPass) {
+            alert('Password cannot be empty.');
+            return;
+        }
+        appPassword = newPass;
+        localStorage.setItem('appPassword', newPass);
+        document.getElementById('newPassInput').value = '';
+        showMsg('Password updated successfully!');
+    }
 
-  bookings.push(booking);
+    function resetPasswordToDefault() {
+        appPassword = '25061998';
+        localStorage.setItem('appPassword', '25061998');
+        showMsg('Password reset to default (25061998)');
+    }
 
-  localStorage.setItem("saiBookings",JSON.stringify(bookings));
+    function showMsg(txt) {
+        const msg = document.getElementById('saveMsg');
+        msg.innerText = txt;
+        setTimeout(() => { msg.innerText = ''; }, 3000);
+    }
 
-  document.getElementById("bookingResult").style.display="block";
+    function saveCustomModel() {
+        const name = document.getElementById('customModelName').value.trim();
+        const disc = parseFloat(document.getElementById('customDiscountVal').value);
 
-  document.getElementById("bookingResult").innerHTML=
-  `
-  <h3>✅ Booking Confirmed</h3>
-  <p>Your Booking ID / PNR:</p>
-  <h2>${pnr}</h2>
-  <p>${pickup} → ${drop}</p>
-  <p>🚗 ${car}</p>
-  <p>📅 ${date}</p>
-  <p style="margin-top:8px">
-  Please save your PNR number for tracking.
-  </p>
-  `;
+        if (!name || isNaN(disc)) {
+            alert('Please enter valid model name and discount value.');
+            return;
+        }
 
-  updateAdmin();
-}
+        customModels.push({ name: name, disc: disc });
+        localStorage.setItem('customModels', JSON.stringify(customModels));
 
-function trackBooking(){
+        document.getElementById('customModelName').value = '';
+        document.getElementById('customDiscountVal').value = '';
+        showMsg('Custom Model saved successfully!');
+        loadCustomModelsToDropdown();
+    }
 
-  const pnr=document.getElementById("pnrInput").value.trim().toUpperCase();
+    function loadCustomModelsToDropdown() {
+        const group = document.getElementById('customBrandGroup');
+        group.innerHTML = '';
+        customModels.forEach((item, index) => {
+            const opt = document.createElement('option');
+            opt.value = 'custom_' + index;
+            opt.innerText = item.name + ` (${item.disc})`;
+            group.appendChild(opt);
+        });
+    }
 
-  const booking=bookings.find(b=>b.pnr===pnr);
+    function updateOptions() {
+        const brand = document.getElementById('brand').value;
+        const subGroup = document.getElementById('subCategoryGroup');
+        const subSelect = document.getElementById('subCategory');
+        
+        subSelect.innerHTML = '';
 
-  const result=document.getElementById("trackResult");
+        if (brand.startsWith('custom_')) {
+            subGroup.style.display = 'none';
+            return;
+        }
 
-  result.style.display="block";
+        if (['hp', 'lenovo', 'asus'].includes(brand)) {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = '<option value="laptop_slab">General Laptop (Slab-based VSP)</option>';
+        } 
+        else if (brand === 'dell') {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = `
+                <option value="laptop_slab">General Laptop (Slab-based VSP)</option>
+                <option value="dell_gaming">Dell Gaming Laptop</option>
+            `;
+        }
+        else if (brand === 'acer') {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = `
+                <option value="acer_i3_r3">Acer i3 / R3</option>
+                <option value="acer_rest">Acer Rest Models</option>
+            `;
+        }
+        else if (brand === 'samsung') {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = '<option value="samsung">Samsung - All Models</option>';
+        }
+        else if (brand === 'epson' || brand === 'canon') {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = `<option value="printer">${brand.toUpperCase()} Printer</option>`;
+        }
+        else if (brand === 'microsoft') {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = '<option value="microsoft">Microsoft - All Models</option>';
+        }
+        else if (brand === 'desktop') {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = '<option value="desktop">All Desktops</option>';
+        }
+        else if (brand === 'tablet') {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = '<option value="tablet">All Tablets</option>';
+        }
+        else if (brand === 'obs_clear') {
+            subGroup.style.display = 'block';
+            subSelect.innerHTML = `
+                <option value="10">10 Discount</option><option value="9">9 Discount</option>
+                <option value="8">8 Discount</option><option value="7">7 Discount</option>
+                <option value="6">6 Discount</option><option value="5">5 Discount</option>
+                <option value="4">4 Discount</option><option value="3">3 Discount</option>
+                <option value="2">2 Discount</option><option value="1">1 Discount</option>
+            `;
+        } else {
+            subGroup.style.display = 'none';
+        }
+    }
 
-  if(!booking){
-    result.innerHTML="❌ Booking not found. Please check your PNR.";
-    return;
-  }
+    function getStoredPercent(key, defaultVal) {
+        return customPercentages[key] !== undefined ? customPercentages[key] : defaultVal;
+    }
 
-  result.innerHTML=
-  `
-  <h3>✅ ${booking.status}</h3>
-  <p><strong>PNR:</strong> ${booking.pnr}</p>
-  <p><strong>Customer:</strong> ${booking.name}</p>
-  <p><strong>Route:</strong> ${booking.pickup} → ${booking.drop}</p>
-  <p><strong>Date:</strong> ${booking.date}</p>
-  <p><strong>Time:</strong> ${booking.time || "Not specified"}</p>
-  <p><strong>Car:</strong> ${booking.car}</p>
-  <p><strong>Driver:</strong> Will be assigned</p>
-  `;
-}
+    function getEwsPrice(vsp, plan) {
+        if (plan === "0") return 0;
 
-function openAdmin(){
+        if (plan === "printer_ext") {
+            if (vsp <= 10000) return 799;
+            if (vsp <= 20000) return 1299;
+            return 1999;
+        }
+        if (plan === "laptop_ext") {
+            return Math.round(vsp * 0.05);
+        }
+        if (plan === "laptop_total") {
+            return Math.round(vsp * 0.08);
+        }
 
-  const password=prompt("Enter Admin Password:");
+        const ewsTable = [
+            [0, 15000, 1055, 1424],
+            [15001, 20000, 1477, 1993],
+            [20001, 30000, 1699, 2699],
+            [30001, 40000, 2099, 3149],
+            [40001, 50000, 2699, 4049],
+            [50001, 60000, 3299, 4949],
+            [60001, 70000, 3899, 5849],
+            [70001, 80000, 4499, 6749],
+            [80001, 90000, 5099, 7649],
+            [90001, 100000, 5699, 8549],
+            [100001, 125000, 6749, 10129],
+            [125001, 150000, 8249, 12379],
+            [150001, 175000, 9749, 14629],
+            [175001, 200000, 11249, 16879],
+            [200001, 225000, 12749, 19129],
+            [225001, 250000, 14249, 21379],
+            [250001, 275000, 15749, 23629],
+            [275001, 300000, 17249, 25879]
+        ];
 
-  if(password!=="1234"){
-    alert("Wrong password");
-    return;
-  }
+        for (let row of ewsTable) {
+            if (vsp >= row[0] && vsp <= row[1]) {
+                return plan === "1" ? row[2] : row[3];
+            }
+        }
+        
+        if (vsp > 300000) {
+            let lastRow = ewsTable[ewsTable.length - 1];
+            return plan === "1" ? lastRow[2] : lastRow[3];
+        }
 
-  document.querySelector("header").style.display="none";
+        return 0;
+    }
 
-  document.querySelectorAll("body > section, body > footer, body > .hero, body > .booking-box")
-  .forEach(x=>x.style.display="none");
+    function calculatePrice() {
+        const brand = document.getElementById('brand').value;
+        const vspInput = document.getElementById('vsp').value;
+        const accessoriesInput = document.getElementById('accessoriesAmt').value;
+        const ewsPlan = document.getElementById('ewsPlan').value;
+        
+        if (!brand) {
+            alert('Please select a brand/model.');
+            return;
+        }
+        if (!vspInput || vspInput <= 0) {
+            alert('Please enter a valid VSP amount.');
+            return;
+        }
 
-  document.getElementById("adminPanel").style.display="block";
+        const vsp = parseFloat(vspInput);
+        const accessories = accessoriesInput ? parseFloat(accessoriesInput) : 0;
+        const ewsAmt = getEwsPrice(vsp, ewsPlan);
 
-  updateAdmin();
-  window.scrollTo(0,0);
-}
+        let discountPercent = 0;
+        
+        if (brand.startsWith('custom_')) {
+            const index = parseInt(brand.split('_')[1]);
+            discountPercent = customModels[index].disc;
+        } else {
+            const subCategoryVal = document.getElementById('subCategory').value;
+            
+            if (brand === 'obs_clear') {
+                discountPercent = parseFloat(subCategoryVal);
+            } else if (subCategoryVal === 'laptop_slab') {
+                if (vsp <= 60000) discountPercent = getStoredPercent('slab_under60', 4);
+                else if (vsp <= 70000) discountPercent = getStoredPercent('slab_60to70', 5);
+                else if (vsp <= 90000) discountPercent = getStoredPercent('slab_70to90', 6);
+                else if (vsp <= 140000) discountPercent = getStoredPercent('slab_90to140', 7);
+                else discountPercent = getStoredPercent('slab_above140', 8);
+            } else if (subCategoryVal === 'dell_gaming') discountPercent = getStoredPercent('dell_gaming', 6);
+            else if (subCategoryVal === 'acer_i3_r3') discountPercent = getStoredPercent('acer_i3_r3', 3);
+            else if (subCategoryVal === 'acer_rest') discountPercent = getStoredPercent('acer_rest', 5);
+            else if (subCategoryVal === 'samsung') discountPercent = getStoredPercent('samsung', 3);
+            else if (subCategoryVal === 'microsoft') discountPercent = getStoredPercent('microsoft', 2);
+            else if (subCategoryVal === 'desktop') discountPercent = getStoredPercent('desktop', 3);
+            else if (subCategoryVal === 'printer') discountPercent = getStoredPercent('printer', 3);
+            else if (subCategoryVal === 'tablet') discountPercent = getStoredPercent('tablet', 3);
+        }
 
-function closeAdmin(){
+        const discountAmount = (vsp * discountPercent) / 100;
+        const finalPrice = vsp - discountAmount;
+        const grandTotal = finalPrice + accessories + ewsAmt;
+        const teamShare = discountAmount / 2;
+        const tlShare = discountAmount / 2;
 
-  document.getElementById("adminPanel").style.display="none";
+        document.getElementById('resPercent').innerText = `${discountPercent}`;
+        document.getElementById('resDiscountAmt').innerText = discountAmount.toFixed(2);
+        document.getElementById('resFinalPrice').innerText = finalPrice.toFixed(2);
+        document.getElementById('resAccAmt').innerText = accessories.toFixed(2);
+        document.getElementById('resEwsAmt').innerText = ewsAmt.toFixed(2);
+        document.getElementById('resGrandTotal').innerText = grandTotal.toFixed(2);
+        document.getElementById('resTeamShare').innerText = teamShare.toFixed(2);
+        document.getElementById('resTlShare').innerText = tlShare.toFixed(2);
 
-  document.querySelector("header").style.display="flex";
+        document.getElementById('resultBox').style.display = 'block';
 
-  document.querySelectorAll("body > section, body > footer, body > .hero, body > .booking-box")
-  .forEach(x=>x.style.display="");
+        const historyItem = `VSP: â¹${vsp} | Disc: ${discountPercent} | Total: â¹${grandTotal.toFixed(2)}`;
+        calcHistory.unshift(historyItem);
+        if (calcHistory.length > 20) calcHistory.pop();
+        localStorage.setItem('calcHistory', JSON.stringify(calcHistory));
+    }
 
-}
+    function calculateGST() {
+        const amt = parseFloat(document.getElementById('gstAmount').value);
+        const rate = parseFloat(document.getElementById('gstRate').value);
 
-function updateAdmin(){
+        if (!amt || amt <= 0) {
+            alert('Please enter a valid amount.');
+            return;
+        }
 
-  document.getElementById("totalBookings").innerText=bookings.length;
+        const gstAmt = (amt * rate) / 100;
+        const total = amt + gstAmt;
 
-  const today=new Date().toISOString().split("T")[0];
+        document.getElementById('resOrigAmt').innerText = amt.toFixed(2);
+        document.getElementById('resGstOnly').innerText = gstAmt.toFixed(2);
+        document.getElementById('resTotalWithGst').innerText = total.toFixed(2);
+        document.getElementById('gstResultBox').style.display = 'block';
 
-  document.getElementById("todayBookings").innerText=
-    bookings.filter(b=>b.date===today).length;
+        const historyItem = `GST (${rate}%): â¹${amt} -> Total: â¹${total.toFixed(2)}`;
+        calcHistory.unshift(historyItem);
+        if (calcHistory.length > 20) calcHistory.pop();
+        localStorage.setItem('calcHistory', JSON.stringify(calcHistory));
+    }
 
-  document.getElementById("totalCustomers").innerText=
-    new Set(bookings.map(b=>b.mobile)).size;
+    function renderHistory() {
+        const container = document.getElementById('historyContainer');
+        if (calcHistory.length === 0) {
+            container.innerHTML = '<p style="color: var(--text-muted); text-align: center; margin: 5px 0;">No history yet</p>';
+            return;
+        }
+        let html = '';
+        calcHistory.forEach((item) => {
+            html += `<div style="padding: 4px 0; border-bottom: 1px solid var(--border);">${item}</div>`;
+        });
+        container.innerHTML = html;
+    }
 
-  const table=document.getElementById("bookingTable");
+    function clearHistory() {
+        calcHistory = [];
+        localStorage.removeItem('calcHistory');
+        renderHistory();
+        showMsg('History cleared successfully!');
+    }
 
-  table.innerHTML="";
-
-  bookings.slice().reverse().forEach(b=>{
-
-    const tr=document.createElement("tr");
-
-    tr.innerHTML=
-    `
-    <td>${b.pnr}</td>
-    <td>${b.name}</td>
-    <td>${b.pickup} → ${b.drop}</td>
-    <td>${b.date}</td>
-    <td>${b.car}</td>
-    <td>🟢 ${b.status}</td>
-    `;
-
-    table.appendChild(tr);
-
-  });
-}
-
-window.addEventListener("click",function(e){
-  if(e.target===document.getElementById("bookingModal")){
-    closeBooking();
-  }
-});
-
-updateAdmin();
-
+    function copyResult() {
+        const text = `STORE DISCOUNT VOUCHER: ${document.getElementById('resPercent').innerText}\nDiscount Amt: â¹${document.getElementById('resDiscountAmt').innerText}\nFinal Price: â¹${document.getElementById('resFinalPrice').innerText}\nAccessories: â¹${document.getElementById('resAccAmt').innerText}\nEWS: â¹${document.getElementById('resEwsAmt').innerText}\nGrand Total: â¹${document.getElementById('resGrandTotal').innerText}`;
+        navigator.clipboard.writeText(text);
+        alert('Details copied to clipboard!');
+    }
 </script>
 
 </body>
