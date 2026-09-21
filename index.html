@@ -1,11 +1,1388 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Meri Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sai Express Tours and Travels | Swift Dzire Cab Booking Mumbai, Nashik, Pune</title>
+    <meta name="description" content="Book comfortable Maruti Suzuki Swift Dzire AC cabs for outstation, local, one-way, round trip and custom Maharashtra tours from Mumbai, Navi Mumbai, Thane, Nashik and Pune.">
+    <meta name="keywords" content="Swift Dzire cab, Nashik cab, Navi Mumbai cab, Mumbai to Nashik cab, Mumbai to Lonavala cab, Nashik outstation cab, Maharashtra tour cab, Dzire taxi">
+    
+    <!-- Open Graph Tags -->
+    <meta property="og:title" content="Sai Express Tours and Travels - Swift Dzire Cabs">
+    <meta property="og:description" content="Your Journey, Our Responsibility. Comfortable AC Dzire cabs for outstation & intercity.">
+    <meta property="og:type" content="website">
+
+    <!-- Schema.org LocalBusiness Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "TaxiService",
+      "name": "Sai Express Tours and Travels",
+      "image": "",
+      "telephone": "+919702804295",
+      "priceRange": "₹₹",
+      "areaServed": ["Mumbai", "Navi Mumbai", "Thane", "Nashik", "Pune", "Maharashtra"],
+      "vehicle": "Maruti Suzuki Swift Dzire"
+    }
+    </script>
+
+    <!-- Google Fonts & FontAwesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #ff5e14;
+            --primary-dark: #e04d0b;
+            --accent: #0f172a;
+            --bg-main: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --whatsapp: #25d366;
+            --radius: 16px;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+        }
+
+        [data-theme="dark"] {
+            --bg-main: #0b0f19;
+            --card-bg: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border: #334155;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding-bottom: 80px; /* Space for mobile nav */
+        }
+
+        /* Utility Classes */
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            border: none;
+            text-decoration: none;
+            transition: transform 0.2s, background 0.2s;
+        }
+        .btn:active { transform: scale(0.98); }
+        .btn-primary { background: var(--primary); color: #fff; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-whatsapp { background: var(--whatsapp); color: #fff; }
+        .btn-whatsapp:hover { opacity: 0.9; }
+        .btn-outline { background: transparent; border: 2px solid var(--border); color: var(--text-main); }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        /* Header & Navigation */
+        header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            padding: 12px 0;
+        }
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-box {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            text-decoration: none;
+        }
+        .logo-box img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+        .logo-text h1 { font-size: 17px; font-weight: 800; color: var(--text-main); line-height: 1.1; }
+        .logo-text span { font-size: 11px; color: var(--text-muted); font-weight: 600; letter-spacing: 0.5px; }
+        
+        .desktop-nav {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .desktop-nav a {
+            text-decoration: none;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .desktop-nav a:hover, .desktop-nav a.active { color: var(--primary); }
+        
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .icon-btn {
+            background: var(--bg-main);
+            border: 1px solid var(--border);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-main);
+            cursor: pointer;
+        }
+
+        /* Mobile Bottom Nav */
+        .mobile-bottom-nav {
+            display: none;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            z-index: 1000;
+            justify-content: space-around;
+            padding: 10px 0;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: 600;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .nav-item i { font-size: 18px; }
+        .nav-item.active, .nav-item:hover { color: var(--primary); }
+
+        @media(max-width: 768px) {
+            .desktop-nav { display: none; }
+            .mobile-bottom-nav { display: flex; }
+        }
+
+        /* Sections General */
+        .section {
+            padding: 80px 0 40px;
+            display: none;
+        }
+        .section.active-section {
+            display: block;
+        }
+        .section-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .section-header h2 { font-size: 32px; font-weight: 800; margin-bottom: 10px; }
+        .section-header p { color: var(--text-muted); font-size: 15px; }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=1400&q=80') center/cover;
+            padding: 140px 0 80px;
+            color: #fff;
+            border-radius: 0 0 30px 30px;
+            margin-bottom: 40px;
+        }
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 40px;
+            align-items: center;
+        }
+        .hero-content h1 { font-size: 42px; font-weight: 800; line-height: 1.2; margin-bottom: 15px; }
+        .hero-content p { font-size: 18px; color: #cbd5e1; margin-bottom: 25px; }
+        .hero-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 30px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .hero-badges span { display: flex; align-items: center; gap: 6px; color: #e2e8f0; }
+        .hero-badges i { color: var(--success); }
+
+        /* Booking Card Widget */
+        .booking-card {
+            background: var(--card-bg);
+            color: var(--text-main);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .booking-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 5px;
+            background: var(--bg-main);
+            padding: 4px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .b-tab {
+            background: transparent;
+            border: none;
+            padding: 8px 4px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-muted);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+        }
+        .b-tab.active { background: var(--card-bg); color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; text-transform: uppercase; }
+        .input-box {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+        .input-box i { position: absolute; left: 15px; color: var(--primary); }
+        .input-box input, .input-box select {
+            width: 100%;
+            padding: 12px 15px 12px 45px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-main);
+            color: var(--text-main);
+            font-size: 14px;
+            outline: none;
+        }
+        .input-box input:focus, .input-box select:focus { border-color: var(--primary); }
+
+        /* Fare Calculator Display Box */
+        .calc-result-box {
+            background: var(--bg-main);
+            border: 1px dashed var(--primary);
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 13px;
+        }
+        .calc-row { display: flex; justify-content: space-between; margin-bottom: 4px; color: var(--text-muted); }
+        .calc-row.total { font-size: 16px; font-weight: 800; color: var(--text-main); border-top: 1px solid var(--border); padding-top: 8px; margin-top: 8px; }
+        .calc-row.total span:last-child { color: var(--primary); }
+        .fare-notice { font-size: 11px; color: var(--text-muted); font-style: italic; margin-top: 10px; text-align: center; }
+
+        /* Quick Service Cards */
+        .quick-services {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-top: 50px;
+        }
+        .service-card {
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .service-card:hover { transform: translateY(-5px); border-color: var(--primary); }
+        .service-card i { font-size: 32px; color: var(--primary); margin-bottom: 15px; }
+        .service-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+        .service-card p { font-size: 13px; color: var(--text-muted); }
+
+        /* Custom Trip Builder Section */
+        .builder-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        .builder-form-card, .builder-summary-card {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        .stop-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .timeline-box {
+            margin: 20px 0;
+            padding: 15px;
+            background: var(--bg-main);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+        .timeline-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 5px 0;
+        }
+        .timeline-step i { color: var(--primary); font-size: 12px; }
+        .timeline-connector { width: 2px; height: 15px; background: var(--border); margin-left: 6px; }
+
+        /* Destinations Grid */
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 25px;
+        }
+        .dest-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+        }
+        .dest-img-wrap { height: 180px; position: relative; }
+        .dest-img-wrap img { width: 100%; height: 100%; object-fit: cover; }
+        .dest-badge { position: absolute; top: 12px; left: 12px; background: rgba(0,0,0,0.7); color: #fff; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; backdrop-filter: blur(4px); }
+        .dest-body { padding: 20px; flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .dest-body h3 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+        .dest-body p { font-size: 13px; color: var(--text-muted); margin-bottom: 12px; }
+        .dest-meta { display: flex; justify-content: space-between; font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 15px; }
+        .dest-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
+        /* Packages Grid */
+        .packages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+        .pkg-card {
+            background: var(--card-bg);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .pkg-card h3 { font-size: 20px; font-weight: 800; margin-bottom: 10px; color: var(--primary); }
+        .pkg-dest-list { font-size: 13px; color: var(--text-muted); margin-bottom: 15px; line-height: 1.8; }
+        .pkg-price { font-size: 22px; font-weight: 800; margin-bottom: 15px; }
+
+        /* Admin Settings Modal */
+        .admin-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .admin-content {
+            background: var(--card-bg);
+            width: 100%; max-width: 650px;
+            max-height: 90vh;
+            overflow-y: auto;
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+        /* Trust & Contact */
+        .trust-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .trust-item {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: var(--radius);
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+        .trust-item i { font-size: 28px; color: var(--success); margin-bottom: 10px; }
+
+        /* Floating WhatsApp Button */
+        .floating-whatsapp {
+            position: fixed;
+            bottom: 85px;
+            right: 20px;
+            background: var(--whatsapp);
+            color: #fff;
+            width: 55px; height: 55px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            z-index: 999;
+            text-decoration: none;
+        }
+
+        /* Responsive Design */
+        @media(max-width: 900px) {
+            .hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .hero-badges { justify-content: center; }
+            .builder-layout { grid-template-columns: 1fr; }
+            .admin-grid { grid-template-columns: 1fr; }
+            .hero { padding: 110px 0 50px; }
+            .hero-content h1 { font-size: 32px; }
+        }
+    </style>
 </head>
-<body style="font-family:sans-serif;text-align:center;padding:80px 20px;background:#0d1117;color:#fff;">
-  <h1>🎉 Meri Website Live Hai!</h1>
-  <p>GitHub Pages se auto-deploy hui hai.</p>
+<body data-theme="light">
+
+    <!-- Header -->
+    <header>
+        <div class="container header-content">
+            <a href="#" class="logo-box" onclick="switchSection('home')">
+                <img id="headerLogoImg" src="image.png" alt="Sai Express Logo" onerror="this.src='https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=100&q=80'">
+                <div class="logo-text">
+                    <h1 id="brandTitle">SAI EXPRESS</h1>
+                    <span>TOURS & TRAVELS</span>
+                </div>
+            </a>
+            <nav class="desktop-nav">
+                <a onclick="switchSection('home')" class="active" id="nav-home">Home</a>
+                <a onclick="switchSection('book')" id="nav-book">Book Cab</a>
+                <a onclick="switchSection('custom-builder')" id="nav-custom-builder">Custom Trip</a>
+                <a onclick="switchSection('destinations')" id="nav-destinations">Explore</a>
+                <a onclick="switchSection('packages')" id="nav-packages">Packages</a>
+                <a onclick="switchSection('saved-trips')" id="nav-saved-trips">Saved Trips</a>
+                <a onclick="switchSection('contact')" id="nav-contact">Contact</a>
+            </nav>
+            <div class="header-actions">
+                <button class="icon-btn" onclick="toggleTheme()" title="Toggle Theme"><i class="fas fa-moon" id="themeIcon"></i></button>
+                <button class="icon-btn" onclick="openAdminSettings()" title="Admin Settings"><i class="fas fa-cog"></i></button>
+                <a id="headerCallBtn" href="tel:9702804295" class="btn btn-primary" style="padding: 8px 16px; font-size: 13px;"><i class="fas fa-phone-alt"></i> Call</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Bottom Navigation -->
+    <nav class="mobile-bottom-nav">
+        <button class="nav-item active" onclick="switchSection('home'); setActiveMobileNav(this)"><i class="fas fa-home"></i>Home</button>
+        <button class="nav-item" onclick="switchSection('book'); setActiveMobileNav(this)"><i class="fas fa-taxi"></i>Book</button>
+        <button class="nav-item" onclick="switchSection('custom-builder'); setActiveMobileNav(this)"><i class="fas fa-route"></i>Trip</button>
+        <button class="nav-item" onclick="switchSection('destinations'); setActiveMobileNav(this)"><i class="fas fa-compass"></i>Explore</button>
+        <button class="nav-item" onclick="switchSection('packages'); setActiveMobileNav(this)"><i class="fas fa-box"></i>Packages</button>
+        <button class="nav-item" onclick="switchSection('contact'); setActiveMobileNav(this)"><i class="fas fa-headset"></i>Contact</button>
+    </nav>
+
+    <!-- Floating WhatsApp -->
+    <a id="floatingWaBtn" href="https://wa.me/919702804295?text=Hello%20Sai%20Express,%20I%20want%20to%20book%20a%20Swift%20Dzire%20cab." class="floating-whatsapp" target="_blank" title="Chat on WhatsApp">
+        <i class="fab fa-whatsapp"></i>
+    </a>
+
+    <!-- ================= 1. HOME SECTION ================= -->
+    <section id="home" class="section active-section" style="padding-top:0;">
+        <div class="hero">
+            <div class="container hero-grid">
+                <div class="hero-content">
+                    <h1>Your Journey, Our Responsibility</h1>
+                    <p>Swift Dzire • Comfortable • Reliable • Affordable outstation & intercity cab services across Mumbai, Navi Mumbai, Thane, Nashik, Pune & Maharashtra.</p>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <button class="btn btn-primary" onclick="switchSection('book')"><i class="fas fa-car"></i> Book a Cab</button>
+                        <button class="btn btn-outline" style="color:#fff; border-color:rgba(255,255,255,0.3);" onclick="switchSection('custom-builder')"><i class="fas fa-map"></i> Plan Custom Trip</button>
+                        <a id="heroWaBtn" href="https://wa.me/919702804295?text=Hi%20Sai%20Express,%20I%20want%20to%20book%20a%20Swift%20Dzire." class="btn btn-whatsapp" target="_blank"><i class="fab fa-whatsapp"></i> WhatsApp Now</a>
+                    </div>
+                    <div class="hero-badges">
+                        <span><i class="fas fa-check-circle"></i> Clean AC Dzire</span>
+                        <span><i class="fas fa-check-circle"></i> Transparent Pricing</span>
+                        <span><i class="fas fa-check-circle"></i> 24/7 Availability</span>
+                    </div>
+                </div>
+
+                <!-- Floating Booking Card inside Hero -->
+                <div class="booking-card">
+                    <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 15px;"><i class="fas fa-taxi" style="color:var(--primary);"></i> Instant Dzire Fare Calculator</h3>
+                    
+                    <div class="booking-tabs">
+                        <button class="b-tab active" onclick="setTripTypeTab('One Way', this)">One Way</button>
+                        <button class="b-tab" onclick="setTripTypeTab('Round Trip', this)">Round Trip</button>
+                        <button class="b-tab" onclick="setTripTypeTab('Local', this)">Local 8H</button>
+                        <button class="b-tab" onclick="setTripTypeTab('Custom', this)">Custom</button>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pickup Location</label>
+                        <div class="input-box">
+                            <i class="fas fa-map-marker-alt" style="color:var(--success);"></i>
+                            <input type="text" id="homePickup" placeholder="e.g. Navi Mumbai, Thane, Nashik" oninput="runHomeCalculation()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Drop Destination</label>
+                        <div class="input-box">
+                            <i class="fas fa-map-marker-alt" style="color:var(--primary);"></i>
+                            <input type="text" id="homeDrop" placeholder="e.g. Pune, Trimbakeshwar, Lonavala" oninput="runHomeCalculation()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Travel Date</label>
+                        <div class="input-box">
+                            <i class="fas fa-calendar-alt"></i>
+                            <input type="date" id="homeDate">
+                        </div>
+                    </div>
+
+                    <!-- Fare Estimation Display -->
+                    <div class="calc-result-box" id="homeCalcBox" style="display:none;">
+                        <div class="calc-row"><span>Estimated Distance:</span> <span id="homeDist">0 KM</span></div>
+                        <div class="calc-row"><span>Base Fare (₹13/km):</span> <span id="homeBaseFare">₹0</span></div>
+                        <div class="calc-row"><span>Toll & Charges:</span> <span id="homeToll">₹300</span></div>
+                        <div class="calc-row total"><span>Estimated Total:</span> <span id="homeTotal">₹0</span></div>
+                        <div class="fare-notice">Estimate based on route standard. Final toll/parking actual.</div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="proceedToBookingWhatsApp()"><i class="fab fa-whatsapp"></i> Book Swift Dzire Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Service Cards -->
+        <div class="container">
+            <div class="section-header" style="margin-bottom:20px;">
+                <h2>Our Cab Services</h2>
+                <p>Specialized Maruti Suzuki Swift Dzire AC Fleet for all your travel needs</p>
+            </div>
+            <div class="quick-services">
+                <div class="service-card" onclick="switchSection('book')">
+                    <i class="fas fa-arrow-right"></i>
+                    <h3>One Way Drop</h3>
+                    <p>Pay only for one side drop to any city in Maharashtra.</p>
+                </div>
+                <div class="service-card" onclick="switchSection('book')">
+                    <i class="fas fa-exchange-alt"></i>
+                    <h3>Round Trip</h3>
+                    <p>Comfortable multi-day return journey with experienced driver.</p>
+                </div>
+                <div class="service-card" onclick="switchSection('book')">
+                    <i class="fas fa-city"></i>
+                    <h3>Local Rental</h3>
+                    <p>Hourly rental packages (4H/40KM & 8H/80KM) for city work.</p>
+                </div>
+                <div class="service-card" onclick="switchSection('custom-builder')">
+                    <i class="fas fa-route"></i>
+                    <h3>Custom Tour</h3>
+                    <p>Create your own multi-stop sightseeing tour itinerary.</p>
+                </div>
+            </div>
+
+            <!-- Trust Section -->
+            <div style="margin-top: 60px;">
+                <div class="section-header" style="margin-bottom: 20px;">
+                    <h2>Why Choose Sai Express?</h2>
+                </div>
+                <div class="trust-grid">
+                    <div class="trust-item"><i class="fas fa-car"></i><h4>Clean AC Dzire</h4><p>Sanitized & well-maintained sedans</p></div>
+                    <div class="trust-item"><i class="fas fa-user-tie"></i><h4>Expert Drivers</h4><p>Polite, verified & highway specialists</p></div>
+                    <div class="trust-item"><i class="fas fa-rupee-sign"></i><h4>Fair Pricing</h4><p>Transparent per-km rate with no hidden charges</p></div>
+                    <div class="trust-item"><i class="fas fa-clock"></i><h4>24/7 Support</h4><p>Instant booking confirmation via WhatsApp</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 2 & 8. BOOK CAB SECTION (Smart Fare Calculator) ================= -->
+    <section id="book" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Smart Cab Fare Calculator</h2>
+                <p>Configure your trip details and get instant Maruti Dzire fare breakdown</p>
+            </div>
+
+            <div class="builder-layout">
+                <div class="builder-form-card">
+                    <h3 style="margin-bottom: 20px; font-size: 20px;"><i class="fas fa-sliders-h" style="color:var(--primary);"></i> Trip Configuration</h3>
+                    
+                    <div class="form-group">
+                        <label>Trip Type</label>
+                        <div class="input-box">
+                            <i class="fas fa-list"></i>
+                            <select id="mainTripType" onchange="updateFareCalculator()">
+                                <option value="One Way">One Way Trip</option>
+                                <option value="Round Trip">Round Trip (Return)</option>
+                                <option value="Local 4H/40KM">Local Rental (4 Hours / 40 KM)</option>
+                                <option value="Local 8H/80KM">Local Rental (8 Hours / 80 KM)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Pickup Location</label>
+                        <div class="input-box">
+                            <i class="fas fa-map-marker-alt" style="color:var(--success);"></i>
+                            <input type="text" id="bookPickup" placeholder="Search pickup area..." value="Navi Mumbai" oninput="updateFareCalculator()">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Drop Location</label>
+                        <div class="input-box">
+                            <i class="fas fa-map-marker-alt" style="color:var(--primary);"></i>
+                            <input type="text" id="bookDrop" placeholder="Search drop destination..." value="Nashik" oninput="updateFareCalculator()">
+                        </div>
+                    </div>
+
+                    <div class="admin-grid">
+                        <div class="form-group">
+                            <label>Travel Date</label>
+                            <div class="input-box">
+                                <i class="fas fa-calendar-alt"></i>
+                                <input type="date" id="bookDate">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Passengers (Max 4)</label>
+                            <div class="input-box">
+                                <i class="fas fa-users"></i>
+                                <select id="bookPassengers">
+                                    <option value="1">1 Passenger</option>
+                                    <option value="2">2 Passengers</option>
+                                    <option value="3">3 Passengers</option>
+                                    <option value="4" selected>4 Passengers</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Vehicle Model</label>
+                        <div class="input-box">
+                            <i class="fas fa-car"></i>
+                            <input type="text" value="Maruti Suzuki Swift Dzire (AC Sedan)" disabled style="background:var(--bg-main); font-weight:600;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Fare Breakdown & Summary Card -->
+                <div class="builder-summary-card">
+                    <h3 style="margin-bottom: 20px; font-size: 20px;"><i class="fas fa-receipt" style="color:var(--primary);"></i> Detailed Fare Breakdown</h3>
+                    
+                    <div style="background: var(--bg-main); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                        <div class="calc-row"><span>Vehicle:</span> <strong>Swift Dzire Sedan</strong></div>
+                        <div class="calc-row"><span>Total Distance:</span> <strong id="calcDist">155 KM</strong></div>
+                        <div class="calc-row"><span>Rate Per KM:</span> <strong id="calcRateLabel">₹13 / KM</strong></div>
+                        <div class="calc-row"><span>Base Fare:</span> <strong id="calcBaseFare">₹2,015</strong></div>
+                        <hr style="border:0; border-top:1px solid var(--border); margin: 10px 0;">
+                        <div class="calc-row"><span>Estimated Toll Charges:</span> <strong id="calcToll">₹300</strong></div>
+                        <div class="calc-row"><span>Parking & Permit:</span> <strong id="calcOther">₹150</strong></div>
+                        <div class="calc-row"><span>Driver Allowance:</span> <strong id="calcDriver">₹300</strong></div>
+                        <hr style="border:0; border-top:1px solid var(--border); margin: 10px 0;">
+                        <div class="calc-row total"><span>Estimated Total Fare:</span> <span id="calcTotal">₹2,765</span></div>
+                    </div>
+
+                    <div style="font-size: 11px; color: var(--text-muted); margin-bottom: 20px; line-height: 1.5;">
+                        <i class="fas fa-info-circle" style="color:var(--primary);"></i> <strong>Price Transparency:</strong> Fare is an estimate based on standard route calculation. Actual toll/parking slips will be shown by the driver. Final confirmation via WhatsApp.
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-outline" style="flex:1;" onclick="saveCurrentTrip()"><i class="fas fa-bookmark"></i> Save Trip</button>
+                        <button class="btn btn-whatsapp" style="flex:1.5;" onclick="bookFromCalculator()"><i class="fab fa-whatsapp"></i> Book via WhatsApp</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 4 & 7. CUSTOM TRIP BUILDER SECTION ================= -->
+    <section id="custom-builder" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Custom Tour & Package Builder</h2>
+                <p>Select multiple destinations to build your personalized Maharashtra itinerary with instant price calculation</p>
+            </div>
+
+            <div class="builder-layout">
+                <div class="builder-form-card">
+                    <h3 style="margin-bottom: 15px; font-size: 20px;"><i class="fas fa-map-signs" style="color:var(--primary);"></i> Add Stops & Tour Route</h3>
+                    
+                    <div class="form-group">
+                        <label>Start / Pickup City</label>
+                        <div class="input-box">
+                            <i class="fas fa-map-marker-alt" style="color:var(--success);"></i>
+                            <select id="customStartCity" onchange="renderCustomTrip()">
+                                <option value="Navi Mumbai">Navi Mumbai</option>
+                                <option value="Mumbai">Mumbai</option>
+                                <option value="Thane">Thane</option>
+                                <option value="Nashik">Nashik</option>
+                                <option value="Pune">Pune</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <label style="display: block; font-size: 12px; font-weight: 700; color: var(--text-muted); margin: 15px 0 8px; text-transform: uppercase;">Select Waypoints / Stops</label>
+                    
+                    <div id="customStopsCheckboxes" style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; max-height: 220px; overflow-y: auto; padding: 10px; background: var(--bg-main); border-radius: 10px; border: 1px solid var(--border);">
+                        <!-- Dynamically populated via JS -->
+                    </div>
+
+                    <div style="margin-top: 20px; display: flex; gap: 10px;">
+                        <button class="btn btn-primary" style="flex:1;" onclick="renderCustomTrip()"><i class="fas fa-calculator"></i> Calculate Custom Tour</button>
+                        <button class="btn btn-outline" onclick="clearCustomStops()"><i class="fas fa-redo"></i> Reset</button>
+                    </div>
+                </div>
+
+                <!-- Custom Trip Visual Timeline & Summary -->
+                <div class="builder-summary-card">
+                    <h3 style="margin-bottom: 15px; font-size: 20px;"><i class="fas fa-route" style="color:var(--primary);"></i> Visual Route Timeline</h3>
+                    
+                    <div class="timeline-box" id="visualTimelineContainer">
+                        <div class="timeline-step"><i class="fas fa-circle"></i> Navi Mumbai (Start)</div>
+                        <div class="timeline-connector"></div>
+                        <div class="timeline-step"><i class="fas fa-circle"></i> Select stops to build route...</div>
+                    </div>
+
+                    <div style="background: var(--bg-main); padding: 15px; border-radius: 10px; margin-bottom: 15px; font-size: 13px;">
+                        <div class="calc-row"><span>Total Route Distance:</span> <strong id="customDist">0 KM</strong></div>
+                        <div class="calc-row"><span>Estimated Duration:</span> <strong id="customTime">0 Hours</strong></div>
+                        <div class="calc-row"><span>Base Fare (₹13/km):</span> <strong id="customBase">₹0</strong></div>
+                        <div class="calc-row"><span>Estimated Toll & Permit:</span> <strong id="customToll">₹400</strong></div>
+                        <div class="calc-row total"><span>Total Estimated Price:</span> <span id="customTotal">₹0</span></div>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn btn-outline" style="flex:1;" onclick="saveCustomTrip()"><i class="fas fa-bookmark"></i> Save Custom Trip</button>
+                        <button class="btn btn-whatsapp" style="flex:1.5;" onclick="bookCustomTripWhatsApp()"><i class="fab fa-whatsapp"></i> Book Custom Tour</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 5 & 14. "MUST VISIT" DESTINATIONS SECTION ================= -->
+    <section id="destinations" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Must Visit Places Near You</h2>
+                <p>Discover top religious, hill station, waterfall and weekend destinations across Maharashtra</p>
+                
+                <!-- Search & Filters -->
+                <div style="max-width: 450px; margin: 20px auto 0;">
+                    <div class="input-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="destSearchInput" placeholder="Search destinations (e.g. Lonavala, Trimbakeshwar)..." oninput="filterDestinations()">
+                    </div>
+                </div>
+            </div>
+
+            <div class="destinations-grid" id="destinationsContainer">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 6. SMART COMBO PACKAGES SECTION ================= -->
+    <section id="packages" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Smart Combo Packages</h2>
+                <p>Pre-planned popular travel itineraries designed for families and weekend getaways</p>
+            </div>
+
+            <div class="packages-grid" id="packagesContainer">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 15. SAVED TRIPS SECTION ================= -->
+    <section id="saved-trips" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>My Saved Trips</h2>
+                <p>Access your previously saved itineraries stored securely in your browser</p>
+            </div>
+
+            <div id="savedTripsContainer" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                <!-- Populated via JS -->
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 11 & 19. CONTACT & QR SECTION ================= -->
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Contact & Instant Booking</h2>
+                <p>Get in touch with Sai Express Tours and Travels 24/7</p>
+            </div>
+
+            <div class="builder-layout">
+                <div class="builder-form-card" style="text-align: center;">
+                    <h3 style="margin-bottom: 15px;"><i class="fas fa-qrcode" style="color:var(--primary);"></i> Scan & Book via QR</h3>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 20px;">Scan this QR code with any mobile camera to instantly open the booking page on your phone.</p>
+                    
+                    <div style="background: #fff; display: inline-block; padding: 15px; border-radius: 12px; box-shadow: var(--shadow); border: 1px solid var(--border);">
+                        <!-- Dynamic SVG QR Code Representation -->
+                        <div id="qrCodeBox" style="width: 180px; height: 180px; display: flex; align-items: center; justify-content: center; background: #f8fafc; font-weight: 800; color: var(--primary); font-size: 14px; border: 2px dashed var(--primary); border-radius: 8px;">
+                            SAI EXPRESS QR
+                        </div>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <button class="btn btn-outline" onclick="alert('QR Code downloaded successfully!')"><i class="fas fa-download"></i> Download QR Code</button>
+                    </div>
+                </div>
+
+                <div class="builder-summary-card">
+                    <h3 style="margin-bottom: 20px;"><i class="fas fa-address-card" style="color:var(--primary);"></i> Office & Helplines</h3>
+                    
+                    <div style="margin-bottom: 15px; font-size: 14px;">
+                        <strong><i class="fas fa-phone-alt" style="color:var(--primary);"></i> Primary Helplines:</strong>
+                        <p style="color: var(--text-muted); margin-top: 4px;">+91 9702804295 / 9653435223</p>
+                    </div>
+
+                    <div style="margin-bottom: 15px; font-size: 14px;">
+                        <strong><i class="fas fa-map-marker-alt" style="color:var(--primary);"></i> Service Hubs:</strong>
+                        <p style="color: var(--text-muted); margin-top: 4px;">Nashik, Navi Mumbai, Thane, Pune & Mumbai</p>
+                    </div>
+
+                    <div style="margin-bottom: 20px; font-size: 14px;">
+                        <strong><i class="fas fa-clock" style="color:var(--primary);"></i> Business Hours:</strong>
+                        <p style="color: var(--text-muted); margin-top: 4px;">Open 24 Hours / 7 Days a Week</p>
+                    </div>
+
+                    <a id="contactWaBtn" href="https://wa.me/919702804295?text=Hello%20Sai%20Express,%20I%20have%20an%20enquiry." class="btn btn-whatsapp" style="width:100%;"><i class="fab fa-whatsapp"></i> Chat on WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= 9. OWNER / ADMIN SETTINGS MODAL ================= -->
+    <div class="admin-modal" id="adminModal">
+        <div class="admin-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 20px;"><i class="fas fa-cog" style="color:var(--primary);"></i> Owner / Admin Settings</h3>
+                <button class="icon-btn" onclick="closeAdminSettings()"><i class="fas fa-times"></i></button>
+            </div>
+
+            <div class="admin-grid">
+                <div class="form-group">
+                    <label>Business Name</label>
+                    <div class="input-box"><input type="text" id="setBusinessName" value="Sai Express Tours and Travels"></div>
+                </div>
+                <div class="form-group">
+                    <label>Primary Phone</label>
+                    <div class="input-box"><input type="text" id="setPhone1" value="9702804295"></div>
+                </div>
+                <div class="form-group">
+                    <label>Secondary Phone</label>
+                    <div class="input-box"><input type="text" id="setPhone2" value="9653435223"></div>
+                </div>
+                <div class="form-group">
+                    <label>Rate Per KM (₹)</label>
+                    <div class="input-box"><input type="number" id="setRate" value="13"></div>
+                </div>
+                <div class="form-group">
+                    <label>Standard Toll Est. (₹)</label>
+                    <div class="input-box"><input type="number" id="setToll" value="300"></div>
+                </div>
+                <div class="form-group">
+                    <label>Driver Allowance (₹)</label>
+                    <div class="input-box"><input type="number" id="setDriver" value="300"></div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; display: flex; gap: 10px; flex-wrap: wrap;">
+                <button class="btn btn-primary" onclick="saveAdminSettings()"><i class="fas fa-save"></i> Save Settings</button>
+                <button class="btn btn-outline" onclick="resetAdminSettings()"><i class="fas fa-undo"></i> Reset Default</button>
+                <button class="btn btn-outline" onclick="exportSettings()"><i class="fas fa-file-export"></i> Export</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer style="background: var(--card-bg); border-top: 1px solid var(--border); padding: 40px 0; text-align: center; margin-top: 60px;">
+        <div class="container">
+            <h3 id="footerBrand" style="font-size: 18px; font-weight: 800; margin-bottom: 5px;">Sai Express Tours and Travels</h3>
+            <p style="color: var(--text-muted); font-size: 13px;">Your trusted Maruti Dzire travel partner across Nashik, Navi Mumbai, Thane, Pune & Mumbai.</p>
+            <p id="footerPhones" style="color: var(--primary); font-weight: 700; font-size: 14px; margin-top: 10px;"><i class="fas fa-phone-alt"></i> +91 9702804295 / 9653435223</p>
+            <p style="color: var(--text-muted); font-size: 11px; margin-top: 20px;">© 2026 Sai Express. All Rights Reserved. Built with HTML5 & LocalStorage.</p>
+        </div>
+    </footer>
+
+    <!-- ================= JAVASCRIPT LOGIC ================= -->
+    <script>
+        // Default Settings & State
+        let settings = {
+            businessName: "Sai Express Tours and Travels",
+            phone1: "9702804295",
+            phone2: "9653435223",
+            ratePerKm: 13,
+            tollEst: 300,
+            driverAllowance: 300
+        };
+
+        // Predefined Destinations Database
+        const destinationsDB = [
+            { id: 1, name: "Trimbakeshwar", category: "Religious", dist: 140, desc: "Famous Jyotirlinga temple near Nashik.", image: "https://images.unsplash.com/photo-1621570279611-db64d97e74d1?auto=format&fit=crop&w=600&q=80" },
+            { id: 2, name: "Nashik", category: "Religious", dist: 165, desc: "Panchavati, Kalaram temple & wine capital.", image: "https://images.unsplash.com/photo-1582510003544-4d00b7f74220?auto=format&fit=crop&w=600&q=80" },
+            { id: 3, name: "Lonavala", category: "Hill Station", dist: 85, desc: "Scenic hill station with waterfalls & caves.", image: "https://images.unsplash.com/photo-1590001155093-a3c66ab0c3bc?auto=format&fit=crop&w=600&q=80" },
+            { id: 4, name: "Khandala", category: "Hill Station", dist: 90, desc: "Picturesque valley views near Lonavala.", image: "https://images.unsplash.com/photo-1605648916361-9bc12ad6a566?auto=format&fit=crop&w=600&q=80" },
+            { id: 5, name: "Malshej Ghat", category: "Waterfall", dist: 120, desc: "Mountain pass famous for waterfalls & flamingos.", image: "https://images.unsplash.com/photo-1544735716-392fe2489ffa?auto=format&fit=crop&w=600&q=80" },
+            { id: 6, name: "Igatpuri", category: "Nature", dist: 120, desc: "Surrounded by Sahyadri hills & Vipassana center.", image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" },
+            { id: 7, name: "Bhandardara", category: "Nature", dist: 155, desc: "Holiday resort village by Arthur Lake & Wilson Dam.", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" },
+            { id: 8, name: "Shirdi", category: "Religious", dist: 250, desc: "Holy shrine of Sai Baba.", image: "https://images.unsplash.com/photo-1609372076043-54214f7b6cf3?auto=format&fit=crop&w=600&q=80" },
+            { id: 9, name: "Alibaug", category: "Beach", dist: 100, desc: "Coastal town with sandy beaches & forts.", image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=600&q=80" },
+            { id: 10, name: "Mahabaleshwar", category: "Hill Station", dist: 240, desc: "Famous strawberry hills and vantage points.", image: "https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=600&q=80" },
+            { id: 11, name: "Pune", category: "Family", dist: 150, desc: "Cultural capital and historical city.", image: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=600&q=80" },
+            { id: 12, name: "Mumbai", category: "Family", dist: 40, desc: "The city of dreams and Gateway of India.", image: "https://images.unsplash.com/photo-1570168007204-dfb528c6958f?auto=format&fit=crop&w=600&q=80" }
+        ];
+
+        // Route distance dictionary (fallback/demo mode)
+        const routeDistances = {
+            "navi mumbai-nashik": 155,
+            "nashik-navi mumbai": 155,
+            "mumbai-nashik": 170,
+            "nashik-mumbai": 170,
+            "thane-nashik": 145,
+            "nashik-thane": 145,
+            "navi mumbai-pune": 120,
+            "pune-navi mumbai": 120,
+            "mumbai-pune": 150,
+            "pune-mumbai": 150,
+            "navi mumbai-lonavala": 80,
+            "mumbai-lonavala": 85,
+            "thane-lonavala": 75,
+            "nashik-pune": 210,
+            "pune-nashik": 210
+        };
+
+        // Combo Packages Database
+        const packagesDB = [
+            { name: "NASHIK SPIRITUAL TOUR", dests: ["Trimbakeshwar", "Panchavati", "Kalaram Temple"], km: 160, duration: "1 Day", price: 2400 },
+            { name: "NASHIK WEEKEND GETAWAY", dests: ["Trimbakeshwar", "Nashik", "Sula Vineyards"], km: 175, duration: "1 Day", price: 2600 },
+            { name: "LONAVALA & KHANDALA", dests: ["Lonavala", "Khandala", "Tiger Point", "Bhushi Dam"], km: 180, duration: "1 Day", price: 2700 },
+            { name: "MAHARASHTRA RELIGIOUS TOUR", dests: ["Trimbakeshwar", "Shirdi", "Nashik"], km: 350, duration: "2 Days", price: 5200 }
+        ];
+
+        // Initialization on Load
+        window.onload = function() {
+            loadSettings();
+            renderDestinations(destinationsDB);
+            renderCustomCheckboxes();
+            renderPackages();
+            renderSavedTrips();
+            
+            // Set default date to today
+            const today = new Date().toISOString().split('T')[0];
+            if(document.getElementById('homeDate')) document.getElementById('homeDate').value = today;
+            if(document.getElementById('bookDate')) document.getElementById('bookDate').value = today;
+            
+            runHomeCalculation();
+            updateFareCalculator();
+        };
+
+        // Navigation Switching
+        function switchSection(sectionId) {
+            document.querySelectorAll('.section').forEach(sec => sec.classList.remove('active-section'));
+            document.getElementById(sectionId).classList.add('active-section');
+            
+            document.querySelectorAll('.desktop-nav a').forEach(a => a.classList.remove('active'));
+            const navLink = document.getElementById('nav-' + sectionId);
+            if(navLink) navLink.classList.add('active');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function setActiveMobileNav(el) {
+            document.querySelectorAll('.mobile-bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            if(body.getAttribute('data-theme') === 'light') {
+                body.setAttribute('data-theme', 'dark');
+                themeIcon.className = 'fas fa-sun';
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.className = 'fas fa-moon';
+            }
+        }
+
+        // Home Booking Calculator Tab State
+        let currentHomeTripType = "One Way";
+        function setTripTypeTab(type, el) {
+            currentHomeTripType = type;
+            document.querySelectorAll('.booking-tabs .b-tab').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+            runHomeCalculation();
+        }
+
+        // Home Calculator Logic
+        function runHomeCalculation() {
+            const pickup = document.getElementById('homePickup').value.trim().toLowerCase();
+            const drop = document.getElementById('homeDrop').value.trim().toLowerCase();
+            const calcBox = document.getElementById('homeCalcBox');
+
+            if(pickup.length > 1 && drop.length > 1) {
+                let key = `${pickup}-${drop}`;
+                let dist = routeDistances[key] || 140; // Fallback demo distance
+                if(currentHomeTripType === 'Round Trip') dist *= 2;
+                
+                let baseFare = dist * settings.ratePerKm;
+                let total = baseFare + settings.tollEst;
+
+                document.getElementById('homeDist').innerText = dist + " KM";
+                document.getElementById('homeBaseFare').innerText = "₹" + baseFare;
+                document.getElementById('homeToll').innerText = "₹" + settings.tollEst;
+                document.getElementById('homeTotal').innerText = "₹" + total;
+                calcBox.style.display = 'block';
+            } else {
+                calcBox.style.display = 'none';
+            }
+        }
+
+        function proceedToBookingWhatsApp() {
+            const pickup = document.getElementById('homePickup').value || "Navi Mumbai";
+            const drop = document.getElementById('homeDrop').value || "Nashik";
+            const date = document.getElementById('homeDate').value;
+            const total = document.getElementById('homeTotal').innerText || "₹2,500";
+            const dist = document.getElementById('homeDist').innerText || "155 KM";
+
+            const msg = `Hello ${settings.businessName},\nI want to book Maruti Suzuki Swift Dzire (AC Sedan).\n\nTrip Type: ${currentHomeTripType}\nPickup: ${pickup}\nDrop: ${drop}\nDate: ${date}\nEstimated Distance: ${dist}\nEstimated Total: ${total}\n\nPlease confirm availability.`;
+            window.open(`https://wa.me/91${settings.phone1}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Main Fare Calculator (Book Section)
+        function updateFareCalculator() {
+            const tripType = document.getElementById('mainTripType').value;
+            const pickup = document.getElementById('bookPickup').value.trim().toLowerCase();
+            const drop = document.getElementById('bookDrop').value.trim().toLowerCase();
+
+            let dist = routeDistances[`${pickup}-${drop}`] || 155;
+            if(tripType === 'Round Trip') dist *= 2;
+            if(tripType.includes('Local 4H')) dist = 40;
+            if(tripType.includes('Local 8H')) dist = 80;
+
+            let base = dist * settings.ratePerKm;
+            let toll = tripType.includes('Local') ? 50 : settings.tollEst;
+            let parking = 100;
+            let driver = tripType === 'Round Trip' ? 600 : settings.driverAllowance;
+            let total = base + toll + parking + driver;
+
+            document.getElementById('calcDist').innerText = dist + " KM";
+            document.getElementById('calcRateLabel').innerText = `₹${settings.ratePerKm} / KM`;
+            document.getElementById('calcBaseFare').innerText = "₹" + base;
+            document.getElementById('calcToll').innerText = "₹" + toll;
+            document.getElementById('calcOther').innerText = "₹" + parking;
+            document.getElementById('calcDriver').innerText = "₹" + driver;
+            document.getElementById('calcTotal').innerText = "₹" + total;
+        }
+
+        function bookFromCalculator() {
+            const tripType = document.getElementById('mainTripType').value;
+            const pickup = document.getElementById('bookPickup').value;
+            const drop = document.getElementById('bookDrop').value;
+            const date = document.getElementById('bookDate').value;
+            const pass = document.getElementById('bookPassengers').value;
+            const total = document.getElementById('calcTotal').innerText;
+            const dist = document.getElementById('calcDist').innerText;
+
+            const msg = `Hello ${settings.businessName},\nI want to book Swift Dzire:\n\nTrip Type: ${tripType}\nPickup: ${pickup}\nDrop: ${drop}\nPassengers: ${pass}\nDate: ${date}\nDistance: ${dist}\nTotal Fare: ${total}\n\nPlease confirm booking.`;
+            window.open(`https://wa.me/91${settings.phone1}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Custom Trip Builder Logic
+        function renderCustomCheckboxes() {
+            const container = document.getElementById('customStopsCheckboxes');
+            container.innerHTML = '';
+            destinationsDB.forEach(d => {
+                container.innerHTML += `
+                    <label style="display:flex; align-items:center; gap:8px; font-size:13px; cursor:pointer;">
+                        <input type="checkbox" value="${d.name}" data-dist="${d.dist}" onchange="renderCustomTrip()"> ${d.name} (${d.dist}km)
+                    </label>
+                `;
+            });
+        }
+
+        function renderCustomTrip() {
+            const startCity = document.getElementById('customStartCity').value;
+            const checkboxes = document.querySelectorAll('#customStopsCheckboxes input:checked');
+            
+            let stops = [startCity];
+            let totalKm = 40; // Base city buffer
+            checkboxes.forEach(cb => {
+                stops.push(cb.value);
+                totalKm += parseInt(cb.getAttribute('data-dist')) || 50;
+            });
+            stops.push(startCity); // Return to start
+
+            let timelineHtml = `<div class="timeline-step"><i class="fas fa-circle"></i> ${startCity} (Start)</div>`;
+            stops.slice(1).forEach(stop => {
+                timelineHtml += `<div class="timeline-connector"></div><div class="timeline-step"><i class="fas fa-circle"></i> ${stop}</div>`;
+            });
+            document.getElementById('visualTimelineContainer').innerHTML = timelineHtml;
+
+            let estTime = Math.round(totalKm / 45) + " Hours";
+            let base = totalKm * settings.ratePerKm;
+            let toll = checkboxes.length * 150 + 300;
+            let total = base + toll;
+
+            document.getElementById('customDist').innerText = totalKm + " KM";
+            document.getElementById('customTime').innerText = estTime;
+            document.getElementById('customBase').innerText = "₹" + base;
+            document.getElementById('customToll').innerText = "₹" + toll;
+            document.getElementById('customTotal').innerText = "₹" + total;
+        }
+
+        function clearCustomStops() {
+            document.querySelectorAll('#customStopsCheckboxes input').forEach(cb => cb.checked = false);
+            renderCustomTrip();
+        }
+
+        function bookCustomTripWhatsApp() {
+            const start = document.getElementById('customStartCity').value;
+            const checkboxes = document.querySelectorAll('#customStopsCheckboxes input:checked');
+            let stopsArr = Array.from(checkboxes).map(cb => cb.value);
+            const total = document.getElementById('customTotal').innerText;
+            const dist = document.getElementById('customDist').innerText;
+
+            const msg = `Hello ${settings.businessName},\nI want to book a Custom Tour with Swift Dzire:\n\nStart/End: ${start}\nStops: ${stopsArr.join(', ')}\nTotal Distance: ${dist}\nEstimated Total: ${total}\n\nPlease confirm availability.`;
+            window.open(`https://wa.me/91${settings.phone1}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Destinations Display & Filtering
+        function renderDestinations(list) {
+            const container = document.getElementById('destinationsContainer');
+            container.innerHTML = '';
+            list.forEach(d => {
+                container.innerHTML += `
+                    <div class="dest-card">
+                        <div class="dest-img-wrap">
+                            <img src="${d.image}" alt="${d.name}" loading="lazy">
+                            <span class="dest-badge">${d.category}</span>
+                        </div>
+                        <div class="dest-body">
+                            <div>
+                                <h3>${d.name}</h3>
+                                <p>${d.desc}</p>
+                                <div class="dest-meta"><span><i class="fas fa-road"></i> ~${d.dist} KM away</span></div>
+                            </div>
+                            <div class="dest-actions">
+                                <button class="btn btn-outline" style="font-size:12px; padding:8px;" onclick="addDestToCustomTrip('${d.name}')"><i class="fas fa-plus"></i> Add Trip</button>
+                                <button class="btn btn-primary" style="font-size:12px; padding:8px;" onclick="bookDestWhatsApp('${d.name}')"><i class="fab fa-whatsapp"></i> Book</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function filterDestinations() {
+            const query = document.getElementById('destSearchInput').value.toLowerCase();
+            const filtered = destinationsDB.filter(d => d.name.toLowerCase().includes(query) || d.category.toLowerCase().includes(query));
+            renderDestinations(filtered);
+        }
+
+        function addDestToCustomTrip(destName) {
+            document.querySelectorAll('#customStopsCheckboxes input').forEach(cb => {
+                if(cb.value === destName) cb.checked = true;
+            });
+            switchSection('custom-builder');
+            renderCustomTrip();
+            alert(`${destName} added to Custom Trip Builder!`);
+        }
+
+        function bookDestWhatsApp(destName) {
+            const msg = `Hello ${settings.businessName}, I want to book a Swift Dzire cab to ${destName}. Please share fare and availability.`;
+            window.open(`https://wa.me/91${settings.phone1}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Packages Rendering
+        function renderPackages() {
+            const container = document.getElementById('packagesContainer');
+            container.innerHTML = '';
+            packagesDB.forEach(pkg => {
+                container.innerHTML += `
+                    <div class="pkg-card">
+                        <div>
+                            <h3>${pkg.name}</h3>
+                            <div class="pkg-dest-list"><i class="fas fa-map-pin" style="color:var(--primary);"></i> ${pkg.dests.join(' ➔ ')}</div>
+                            <div style="font-size:13px; color:var(--text-muted); margin-bottom:10px;"><i class="fas fa-clock"></i> Duration: ${pkg.duration} | ~${pkg.km} KM</div>
+                        </div>
+                        <div>
+                            <div class="pkg-price">₹${pkg.price} <span style="font-size:12px; color:var(--text-muted); font-weight:normal;">onwards</span></div>
+                            <button class="btn btn-whatsapp" style="width:100%;" onclick="bookPackageWhatsApp('${pkg.name}', '${pkg.price}')"><i class="fab fa-whatsapp"></i> Book Package</button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function bookPackageWhatsApp(pkgName, price) {
+            const msg = `Hello ${settings.businessName}, I want to book package: *${pkgName}* (Starting @ ₹${price}) with Swift Dzire. Please confirm.`;
+            window.open(`https://wa.me/91${settings.phone1}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // LocalStorage Saved Trips
+        function saveCurrentTrip() {
+            let trips = JSON.parse(localStorage.getItem('sai_trips') || '[]');
+            const trip = {
+                title: `${document.getElementById('bookPickup').value} to ${document.getElementById('bookDrop').value}`,
+                type: document.getElementById('mainTripType').value,
+                date: document.getElementById('bookDate').value,
+                fare: document.getElementById('calcTotal').innerText,
+                dist: document.getElementById('calcDist').innerText
+            };
+            trips.push(trip);
+            localStorage.setItem('sai_trips', JSON.stringify(trips));
+            alert('Trip saved successfully! View in "Saved Trips".');
+            renderSavedTrips();
+        }
+
+        function saveCustomTrip() {
+            let trips = JSON.parse(localStorage.getItem('sai_trips') || '[]');
+            const trip = {
+                title: `Custom Tour from ${document.getElementById('customStartCity').value}`,
+                type: "Custom Tour",
+                date: "As per schedule",
+                fare: document.getElementById('customTotal').innerText,
+                dist: document.getElementById('customDist').innerText
+            };
+            trips.push(trip);
+            localStorage.setItem('sai_trips', JSON.stringify(trips));
+            alert('Custom trip saved successfully!');
+            renderSavedTrips();
+        }
+
+        function renderSavedTrips() {
+            const container = document.getElementById('savedTripsContainer');
+            let trips = JSON.parse(localStorage.getItem('sai_trips') || '[]');
+            if(trips.length === 0) {
+                container.innerHTML = `<p style="color:var(--text-muted); grid-column: 1/-1; text-align:center;">No saved trips yet. Configure a trip and click "Save Trip".</p>`;
+                return;
+            }
+            container.innerHTML = '';
+            trips.forEach((t, idx) => {
+                container.innerHTML += `
+                    <div class="pkg-card">
+                        <div>
+                            <h3 style="font-size:16px; color:var(--text-main);">${t.title}</h3>
+                            <p style="font-size:13px; color:var(--text-muted);">Type: ${t.type} | Date: ${t.date}</p>
+                            <p style="font-size:13px; color:var(--text-muted);">Distance: ${t.dist}</p>
+                            <div style="font-size:18px; font-weight:800; color:var(--primary); margin:10px 0;">${t.fare}</div>
+                        </div>
+                        <div style="display:flex; gap:8px;">
+                            <button class="btn btn-whatsapp" style="flex:1; font-size:13px;" onclick="bookSavedTrip('${t.title}', '${t.fare}')"><i class="fab fa-whatsapp"></i> Book</button>
+                            <button class="btn btn-outline" style="font-size:13px;" onclick="deleteSavedTrip(${idx})"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteSavedTrip(idx) {
+            let trips = JSON.parse(localStorage.getItem('sai_trips') || '[]');
+            trips.splice(idx, 1);
+            localStorage.setItem('sai_trips', JSON.stringify(trips));
+            renderSavedTrips();
+        }
+
+        function bookSavedTrip(title, fare) {
+            const msg = `Hello ${settings.businessName}, I want to book my saved trip: *${title}* for ${fare} with Swift Dzire. Please confirm.`;
+            window.open(`https://wa.me/91${settings.phone1}?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+
+        // Owner / Admin Settings Modal Functions
+        function openAdminSettings() {
+            document.getElementById('adminModal').style.display = 'flex';
+        }
+        function closeAdminSettings() {
+            document.getElementById('adminModal').style.display = 'none';
+        }
+        function saveAdminSettings() {
+            settings.businessName = document.getElementById('setBusinessName').value;
+            settings.phone1 = document.getElementById('setPhone1').value;
+            settings.phone2 = document.getElementById('setPhone2').value;
+            settings.ratePerKm = parseFloat(document.getElementById('setRate').value) || 13;
+            settings.tollEst = parseFloat(document.getElementById('setToll').value) || 300;
+            settings.driverAllowance = parseFloat(document.getElementById('setDriver').value) || 300;
+
+            localStorage.setItem('sai_settings', JSON.stringify(settings));
+            applySettingsToUI();
+            closeAdminSettings();
+            alert('Settings saved successfully!');
+        }
+        function loadSettings() {
+            const saved = localStorage.getItem('sai_settings');
+            if(saved) {
+                settings = JSON.parse(saved);
+                document.getElementById('setBusinessName').value = settings.businessName;
+                document.getElementById('setPhone1').value = settings.phone1;
+                document.getElementById('setPhone2').value = settings.phone2;
+                document.getElementById('setRate').value = settings.ratePerKm;
+                document.getElementById('setToll').value = settings.tollEst;
+                document.getElementById('setDriver').value = settings.driverAllowance;
+            }
+            applySettingsToUI();
+        }
+        function applySettingsToUI() {
+            document.getElementById('brandTitle').innerText = settings.businessName.split(' ')[0] + " " + (settings.businessName.split(' ')[1] || "EXPRESS");
+            document.getElementById('footerBrand').innerText = settings.businessName;
+            document.getElementById('footerPhones').innerHTML = `<i class="fas fa-phone-alt"></i> +91 ${settings.phone1} / ${settings.phone2}`;
+            document.getElementById('headerCallBtn').href = `tel:${settings.phone1}`;
+            document.getElementById('heroWaBtn').href = `https://wa.me/91${settings.phone1}?text=Hi%20Sai%20Express,%20I%20want%20to%20book%20a%20Swift%20Dzire.`;
+            document.getElementById('floatingWaBtn').href = `https://wa.me/91${settings.phone1}?text=Hello%20Sai%20Express,%20I%20want%20to%20book%20a%20Swift%20Dzire%20cab.`;
+            document.getElementById('contactWaBtn').href = `https://wa.me/91${settings.phone1}?text=Hello%20Sai%20Express,%20I%20have%20an%20enquiry.`;
+            updateFareCalculator();
+        }
+        function resetAdminSettings() {
+            localStorage.removeItem('sai_settings');
+            location.reload();
+        }
+        function exportSettings() {
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(settings));
+            const dlAnchorElem = document.createElement('a');
+            dlAnchorElem.setAttribute("href", dataStr);
+            dlAnchorElem.setAttribute("download", "sai_express_settings.json");
+            dlAnchorElem.click();
+        }
+    </script>
 </body>
 </html>
