@@ -1,11 +1,2306 @@
 <!DOCTYPE html>
-<html lang="hi">
+<html lang="hi" class="dark">
 <head>
-<meta charset="UTF-8">
-<title>Meri Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SanCam IP • Worldwide CCTV & Cloud Hub</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter & JetBrains Mono -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@0.454.0/dist/umd/lucide.min.js"></script>
+    <!-- Firebase Compat SDKs (App, Auth, Realtime Database) -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            -webkit-tap-highlight-color: transparent;
+        }
+        .apple-card {
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .video-mirror {
+            transform: scaleX(-1);
+        }
+        ::-webkit-scrollbar {
+            width: 5px;
+            height: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(120, 120, 128, 0.35);
+            border-radius: 9999px;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.85); opacity: 0.9; }
+            70% { transform: scale(1.7); opacity: 0; }
+            100% { transform: scale(1.7); opacity: 0; }
+        }
+        .rec-pulse::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 9999px;
+            background-color: #ef4444;
+            animation: pulse-ring 1.5s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        .tile-expanded {
+            position: fixed !important;
+            inset: 0.75rem !important;
+            z-index: 50 !important;
+            height: auto !important;
+            aspect-ratio: auto !important;
+        }
+
+        /* ---------- SanZone splash screen (white) ---------- */
+        .splash {
+            position: fixed; inset: 0; z-index: 9999;
+            background: #ffffff; color: #111111;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px;
+            animation: splashOut 0.6s ease 2.4s forwards;
+        }
+        .splash-logo { width: 96px; height: 96px; animation: splashPop 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+        .splash-logo-img { max-width: 160px; max-height: 120px; object-fit: contain; animation: splashPop 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+        .splash-name { font-family: 'Inter', sans-serif; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; animation: splashRise 0.7s ease 0.35s both; }
+        .splash-name span { color: #059669; }
+        .splash-tag { font-family: 'Inter', sans-serif; font-size: 12px; color: #71717a; letter-spacing: 0.18em; text-transform: uppercase; margin-top: -10px; animation: splashRise 0.7s ease 0.55s both; }
+        .splash-bar { width: 120px; height: 3px; border-radius: 9999px; background: #e4e4e7; overflow: hidden; margin-top: 10px; }
+        .splash-bar::after { content: ''; display: block; height: 100%; width: 40%; border-radius: 9999px; background: #059669; animation: splashLoad 1.1s ease-in-out infinite; }
+        @keyframes splashPop { from { opacity: 0; transform: scale(0.6); } to { opacity: 1; transform: scale(1); } }
+        @keyframes splashRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes splashLoad { 0% { transform: translateX(-110%); } 100% { transform: translateX(300%); } }
+        @keyframes splashOut { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+    </style>
 </head>
-<body style="font-family:sans-serif;text-align:center;padding:80px 20px;background:#0d1117;color:#fff;">
-  <h1>🎉 Meri Website Live Hai!</h1>
-  <p>GitHub Pages se auto-deploy hui hai.</p>
+<body class="min-h-screen bg-zinc-50 text-zinc-900 dark:bg-black dark:text-white flex flex-col justify-between pb-16 sm:pb-0 transition-colors duration-200 selection:bg-zinc-500/30">
+
+    <!-- SanZone Splash Screen -->
+    <div id="splashScreen" class="splash" aria-label="SanZone">
+        <svg id="splashLogoSvg" class="splash-logo" viewBox="0 0 96 96" xmlns="http://www.w3.org/2000/svg">
+            <rect width="96" height="96" rx="24" fill="#111111"/>
+            <circle cx="48" cy="48" r="22" fill="none" stroke="#ffffff" stroke-width="5"/>
+            <circle cx="48" cy="48" r="10" fill="#10b981"/>
+            <circle cx="62" cy="34" r="3.5" fill="#ffffff"/>
+        </svg>
+        <img id="splashLogoImg" class="splash-logo-img" alt="SanZone" style="display:none">
+        <div class="splash-name">San<span>Zone</span></div>
+        <div class="splash-tag">Live CCTV Hub</div>
+        <div class="splash-bar"></div>
+    </div>
+    <script>
+        // Apni logo image use karni ho to yahan URL / data:image paste karein (khali = default SanZone logo)
+        const SPLASH_LOGO_SRC = '';
+        if (SPLASH_LOGO_SRC) {
+            const img = document.getElementById('splashLogoImg');
+            img.src = SPLASH_LOGO_SRC;
+            img.style.display = 'block';
+            document.getElementById('splashLogoSvg').style.display = 'none';
+        }
+    </script>
+
+    <!-- Toast Notifications -->
+    <div id="toastContainer" class="fixed top-4 right-4 z-50 flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
+
+    <!-- ===================================================================== -->
+    <!-- AUTHENTICATION GATE (WORLDWIDE LOGIN / SIGN UP OR GUEST DEMO)         -->
+    <!-- ===================================================================== -->
+    <div id="authGateScreen" class="fixed inset-0 z-40 bg-zinc-50 dark:bg-black flex items-center justify-center p-4 overflow-y-auto">
+        <div class="w-full max-w-md apple-card bg-white/95 dark:bg-zinc-950/95 border border-zinc-200 dark:border-white/15 rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6">
+            <!-- Brand Header -->
+            <div class="text-center space-y-2">
+                <div class="w-12 h-12 rounded-2xl bg-zinc-900 text-white dark:bg-white dark:text-black flex items-center justify-center mx-auto shadow-md">
+                    <i data-lucide="cctv" class="w-6 h-6"></i>
+                </div>
+                <h1 class="text-xl sm:text-2xl font-bold tracking-tight">SanCam IP • Cloud CCTV</h1>
+                <p class="text-xs text-zinc-500 dark:text-zinc-400">
+                    Duniya ke kisi bhi kone se login karke apne sabhi cameras live dekhein aur record karke device mein save karein.
+                </p>
+            </div>
+
+            <!-- Firebase Status Pill inside Auth -->
+            <div class="flex items-center justify-between px-3.5 py-2.5 rounded-2xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs">
+                <div class="flex items-center gap-2">
+                    <span id="authFbDot" class="w-2 h-2 rounded-full bg-amber-400"></span>
+                    <span id="authFbStatusText" class="font-medium text-zinc-700 dark:text-zinc-300">Firebase Config Pending</span>
+                </div>
+                <button onclick="openSettingsModal()" class="font-semibold text-zinc-900 dark:text-white underline hover:opacity-80">
+                    Setup Firebase
+                </button>
+            </div>
+
+            <!-- Login / Sign Up Mode Switch -->
+            <div class="grid grid-cols-2 p-1 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-xs font-semibold">
+                <button id="authTabLogin" onclick="setAuthMode('login')" class="py-2 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm transition">
+                    Login
+                </button>
+                <button id="authTabSignup" onclick="setAuthMode('signup')" class="py-2 rounded-lg text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white transition">
+                    Create Account
+                </button>
+            </div>
+
+            <!-- Email & Password Form -->
+            <form onsubmit="handleAuthSubmit(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">Email Address</label>
+                    <input id="authEmailInput" type="email" required placeholder="you@example.com"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-zinc-600 dark:text-zinc-400 mb-1">Password</label>
+                    <input id="authPasswordInput" type="password" required minlength="6" placeholder="••••••••"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 text-sm focus:outline-none focus:border-zinc-900 dark:focus:border-white">
+                </div>
+                <button id="authSubmitBtn" type="submit" class="w-full py-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-sm transition shadow-sm">
+                    Sign In to CCTV Hub
+                </button>
+            </form>
+
+            <!-- Divider -->
+            <div class="relative flex items-center justify-center">
+                <div class="border-t border-zinc-200 dark:border-white/10 w-full"></div>
+                <span class="bg-white dark:bg-zinc-950 px-3 text-[11px] text-zinc-400 uppercase tracking-wider">Or</span>
+            </div>
+
+            <!-- Guest / Offline Demo Mode -->
+            <button onclick="enterGuestDemoMode()" class="w-full py-2.5 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-white/10 text-xs sm:text-sm font-semibold text-zinc-800 dark:text-zinc-200 transition flex items-center justify-center gap-2">
+                <i data-lucide="play-circle" class="w-4 h-4 text-emerald-500"></i>
+                <span>Guest / Offline Demo Mode</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MAIN DASHBOARD SHELL (HIDDEN UNTIL LOGGED IN OR GUEST MODE)           -->
+    <!-- ===================================================================== -->
+    <div id="mainAppShell" class="hidden flex-1 flex flex-col justify-between">
+
+        <!-- Sticky Top Navigation Bar -->
+        <header class="sticky top-0 z-30 apple-card bg-white/85 dark:bg-zinc-950/85 border-b border-zinc-200 dark:border-white/10 px-4 py-3">
+            <div class="max-w-7xl mx-auto flex items-center justify-between gap-3">
+                <!-- Brand & Connection Badge -->
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-black flex items-center justify-center shadow-sm">
+                        <i data-lucide="cctv" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 class="font-bold text-sm sm:text-base tracking-tight">SanCam IP</h1>
+                            <span id="globalStatusBadge" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10">
+                                <span id="globalStatusDot" class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                                <span id="globalStatusText">Guest Mode</span>
+                            </span>
+                        </div>
+                        <p id="loggedUserEmailLabel" class="text-[11px] text-zinc-500 dark:text-zinc-400 truncate max-w-[160px] sm:max-w-xs">Offline / Local Session</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Top Tabs -->
+                <nav class="hidden sm:flex items-center gap-1 bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl border border-zinc-200 dark:border-white/10">
+                    <button onclick="switchTab('broadcaster')" id="deskTab-broadcaster" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm">
+                        <i data-lucide="video" class="w-3.5 h-3.5"></i>
+                        <span>Camera Broadcaster</span>
+                    </button>
+                    <button onclick="switchTab('multiview')" id="deskTab-multiview" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
+                        <i data-lucide="layout-grid" class="w-3.5 h-3.5"></i>
+                        <span>Multi-View CCTV Wall</span>
+                    </button>
+                    <button onclick="switchTab('recordings')" id="deskTab-recordings" class="px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white">
+                        <i data-lucide="cloud" class="w-3.5 h-3.5"></i>
+                        <span>Recordings</span>
+                    </button>
+                </nav>
+
+                <!-- Right Utility Actions (Theme, Settings, Logout) -->
+                <div class="flex items-center gap-1.5 sm:gap-2">
+                    <button onclick="toggleTheme()" class="p-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-white/10 transition" title="Toggle Dark/Light Theme">
+                        <i data-lucide="sun-moon" class="w-4 h-4"></i>
+                    </button>
+                    <button onclick="openSettingsModal()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-white/10 transition text-xs font-semibold">
+                        <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+                        <span class="hidden md:inline">Firebase Config</span>
+                    </button>
+                    <button onclick="handleLogout()" class="p-2 rounded-xl bg-zinc-100 hover:bg-red-50 dark:bg-zinc-900 dark:hover:bg-red-950/60 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-300 hover:text-red-500 transition" title="Logout / Switch Account">
+                        <i data-lucide="log-out" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- ================================================================= -->
+        <!-- TAB 1: CAMERA BROADCASTER                                         -->
+        <!-- ================================================================= -->
+        <main id="section-broadcaster" class="flex-1 w-full max-w-5xl mx-auto px-4 py-5 flex flex-col gap-5">
+
+            <!-- Compact Live Camera & Microphone Preview Card -->
+            <section class="apple-card bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-xl">
+                <!-- Screen Header Bar -->
+                <div class="px-4 py-2.5 bg-zinc-100/90 dark:bg-zinc-900/90 border-b border-zinc-200 dark:border-white/10 flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <div class="flex items-center gap-2">
+                        <span id="broadcastLiveBadge" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-semibold bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300">
+                            <span id="broadcastDot" class="w-2 h-2 rounded-full bg-zinc-400"></span>
+                            <span id="broadcastStateLabel">STANDBY</span>
+                        </span>
+                        <input id="deviceNameInput" type="text" value="Cam-01 (Main)" onchange="saveDeviceMetadata()"
+                            class="bg-white dark:bg-zinc-950 border border-zinc-300 dark:border-white/15 rounded-lg px-2.5 py-1 text-xs font-medium focus:outline-none focus:border-zinc-900 dark:focus:border-white w-36 sm:w-44"
+                            placeholder="Camera Name">
+                    </div>
+
+                    <!-- Recording Timer Pill -->
+                    <div id="recordingStatusPill" class="hidden items-center gap-2 px-2.5 py-1 rounded-full bg-red-500/15 border border-red-500/40 text-red-500 font-mono font-bold">
+                        <span class="relative w-2 h-2 rounded-full bg-red-500 rec-pulse"></span>
+                        <span>REC</span>
+                        <span id="recordingTimer">00:00</span>
+                    </div>
+
+                    <!-- Audio Level Meter -->
+                    <div class="flex items-center gap-2" title="Live Microphone Audio Level">
+                        <i id="micStatusIcon" data-lucide="mic" class="w-3.5 h-3.5 text-emerald-500"></i>
+                        <div class="w-20 sm:w-24 h-2 bg-zinc-200 dark:bg-zinc-800 rounded-full overflow-hidden p-0.5">
+                            <div id="audioLevelBar" class="h-full w-0 bg-emerald-500 rounded-full transition-all duration-75"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Compact Video Screen -->
+                <div class="relative w-full max-w-xl mx-auto my-3.5 px-3">
+                    <div class="relative aspect-video w-full bg-black rounded-2xl overflow-hidden border border-zinc-300 dark:border-white/15 flex items-center justify-center">
+                        <video id="localVideo" autoplay playsinline muted class="w-full h-full object-cover video-mirror"></video>
+
+                        <!-- Camera Permission Overlay -->
+                        <div id="cameraOverlay" class="absolute inset-0 bg-zinc-950/95 flex flex-col items-center justify-center p-5 text-center z-10 text-white">
+                            <div class="w-11 h-11 rounded-2xl bg-zinc-900 border border-white/10 flex items-center justify-center mb-2.5">
+                                <i data-lucide="camera" class="w-5 h-5 text-zinc-400"></i>
+                            </div>
+                            <h3 id="overlayTitle" class="text-sm font-semibold">Camera & Mic Ready</h3>
+                            <p id="overlayDesc" class="text-xs text-zinc-400 mt-1 max-w-xs">Live preview aur worldwide streaming ke liye camera permission allow karein.</p>
+                            <button onclick="initLocalMedia()" class="mt-3.5 px-4 py-2 rounded-xl bg-white hover:bg-zinc-200 text-black font-semibold text-xs transition">
+                                Enable Camera & Mic
+                            </button>
+                        </div>
+
+                        <!-- Minimalist HUD -->
+                        <div class="absolute bottom-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none">
+                            <span id="hudTimestamp" class="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-[11px] font-mono text-zinc-200 border border-white/10">
+                                00:00:00
+                            </span>
+                            <span id="hudResolution" class="px-2 py-0.5 rounded-md bg-black/75 backdrop-blur-md text-[11px] font-mono text-zinc-300 border border-white/10">
+                                HD • AUDIO READY
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Controls Bar -->
+                <div class="px-4 py-3 bg-zinc-100/80 dark:bg-zinc-900/80 border-t border-zinc-200 dark:border-white/10 flex flex-wrap items-center justify-center gap-2">
+                    <button id="btnToggleBroadcast" onclick="toggleCloudBroadcast()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 active:scale-95 text-white text-xs font-semibold shadow-sm transition">
+                        <i data-lucide="radio" class="w-3.5 h-3.5"></i>
+                        <span id="textToggleBroadcast">Start Live Broadcast</span>
+                    </button>
+
+                    <button id="btnShareLive" onclick="shareLiveLink()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-500 active:scale-95 text-white text-xs font-semibold shadow-sm transition">
+                        <i data-lucide="share-2" class="w-3.5 h-3.5"></i>
+                        <span>Share Live</span>
+                    </button>
+
+                    <button onclick="copyShareLink()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-white/10 text-xs font-medium transition">
+                        <i data-lucide="link" class="w-3.5 h-3.5"></i>
+                        <span>Copy Link</span>
+                    </button>
+
+                    <button id="btnRecord" onclick="toggleRecording()" class="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-red-600 hover:bg-red-500 active:scale-95 text-white text-xs font-semibold shadow-sm transition">
+                        <i data-lucide="circle-dot" class="w-3.5 h-3.5"></i>
+                        <span id="textRecord">Record Video</span>
+                    </button>
+
+                    <button onclick="switchCameraFacing()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-white/10 text-xs font-medium transition">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        <span>Flip Cam</span>
+                    </button>
+
+                    <button onclick="toggleAudioTrack()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-white/10 text-xs font-medium transition">
+                        <i id="iconToggleMic" data-lucide="mic" class="w-3.5 h-3.5 text-emerald-500"></i>
+                        <span id="textToggleMic">Mic On</span>
+                    </button>
+
+                    <button onclick="takeLocalSnapshot()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white dark:bg-zinc-800 hover:bg-zinc-200 dark:hover:bg-zinc-700 border border-zinc-200 dark:border-white/10 text-xs font-medium transition">
+                        <i data-lucide="aperture" class="w-3.5 h-3.5"></i>
+                        <span>Snapshot</span>
+                    </button>
+                </div>
+            </section>
+
+            <!-- Device Info Cards: IP Address, Port, 4-Digit PIN & Group CCTV ID -->
+                        <!-- ===== LIVE CCTV ON/OFF ===== -->
+            <section id="sanPublish" class="apple-card bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-white/10 rounded-3xl p-4 sm:p-5 flex flex-col gap-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-sm font-bold tracking-wide">📡 Live CCTV</h2>
+                    <span id="sanState" class="text-xs font-mono text-zinc-500">OFF</span>
+                </div>
+                <select id="sanCam" class="rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 px-3 py-2 outline-none"><option value="">Default camera</option></select>
+                <button id="sanBtn" onclick="sanToggle()" class="w-full py-3 rounded-2xl font-bold text-white bg-zinc-600">LIVE OFF - tap to start</button>
+                <div id="sanOut" class="hidden flex flex-col items-center gap-3 border-t border-zinc-200 dark:border-white/10 pt-4 text-sm">
+                    <div id="sanQR" class="bg-white p-3 rounded-2xl"></div>
+                    <p class="text-zinc-500 text-center">Scan this QR from another mobile to watch live</p>
+                    <div class="flex gap-2 w-full"><input id="sanLink" readonly class="flex-1 min-w-0 font-mono text-xs rounded-xl bg-zinc-100 dark:bg-zinc-900 px-3 py-2"><button onclick="sanCopy()" class="px-3 rounded-xl bg-zinc-200 dark:bg-zinc-800">Copy</button></div>
+                    <span class="text-zinc-500">👁 Viewers: <b id="sanViewers">0</b></span>
+                </div>
+            </section>
+
+            <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                <!-- 1. IP Address -->
+                <div class="apple-card bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-white/10 p-3.5 rounded-2xl flex flex-col justify-between gap-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="globe" class="w-3.5 h-3.5"></i>
+                            IP Address
+                        </span>
+                        <button onclick="copyText('ipAddressDisplay', 'IP Address')" class="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition" title="Copy IP">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <p id="ipAddressDisplay" class="font-mono text-base sm:text-lg font-bold truncate">Detecting...</p>
+                    <span id="ipTypeTag" class="text-[10px] text-zinc-500">Network Interface</span>
+                </div>
+
+                <!-- 2. Port Number -->
+                <div class="apple-card bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-white/10 p-3.5 rounded-2xl flex flex-col justify-between gap-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-semibold text-zinc-500 dark:text-zinc-400 uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="server" class="w-3.5 h-3.5"></i>
+                            Port Number
+                        </span>
+                        <button onclick="copyText('portNumberDisplay', 'Port Number')" class="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition" title="Copy Port">
+                            <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                    <p id="portNumberDisplay" class="font-mono text-base sm:text-lg font-bold">8080</p>
+                    <span class="text-[10px] text-zinc-500">WebRTC / STUN Port</span>
+                </div>
+
+                <!-- 3. 4-Digit Random Device PIN -->
+                <div class="apple-card bg-white/90 dark:bg-zinc-950/90 border border-emerald-500/30 p-3.5 rounded-2xl flex flex-col justify-between gap-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="key-round" class="w-3.5 h-3.5 text-emerald-500"></i>
+                            4-Digit PIN
+                        </span>
+                        <div class="flex items-center gap-1">
+                            <button onclick="generateNewDevicePin(true)" class="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition" title="New PIN">
+                                <i data-lucide="refresh-ccw" class="w-3 h-3"></i>
+                            </button>
+                            <button onclick="copyText('devicePinDisplay', '4-Digit PIN')" class="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition" title="Copy PIN">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <p id="devicePinDisplay" class="font-mono text-2xl font-extrabold tracking-[0.22em] text-emerald-500">----</p>
+                    <span class="text-[10px] text-zinc-500">Direct camera pair code</span>
+                </div>
+
+                <!-- 4. Group CCTV ID -->
+                <div class="apple-card bg-white/90 dark:bg-zinc-950/90 border border-sky-500/30 p-3.5 rounded-2xl flex flex-col justify-between gap-1.5">
+                    <div class="flex items-center justify-between">
+                        <span class="text-[11px] font-semibold uppercase tracking-wider flex items-center gap-1.5">
+                            <i data-lucide="layers" class="w-3.5 h-3.5 text-sky-500"></i>
+                            Group CCTV ID
+                        </span>
+                        <div class="flex items-center gap-1">
+                            <button onclick="generateRandomGroupId()" class="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition" title="Random Group ID">
+                                <i data-lucide="sparkles" class="w-3 h-3"></i>
+                            </button>
+                            <button onclick="copyInputText('groupRoomInput', 'Group ID')" class="p-1 rounded-lg bg-zinc-100 dark:bg-zinc-900 hover:bg-zinc-200 dark:hover:bg-zinc-800 transition" title="Copy Group ID">
+                                <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5">
+                        <input id="groupRoomInput" type="text" maxlength="10" value="SHOP-01" onchange="saveDeviceMetadata()"
+                            class="w-full bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 rounded-lg px-2.5 py-1 font-mono text-xs sm:text-sm font-bold uppercase text-sky-600 dark:text-sky-400 focus:outline-none">
+                        <button onclick="saveDeviceMetadata(true)" class="px-2.5 py-1 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-semibold">
+                            Set
+                        </button>
+                    </div>
+                    <span class="text-[10px] text-zinc-500">5-10 cameras ke liye shared ID</span>
+                </div>
+            </section>
+        </main>
+
+        <!-- ================================================================= -->
+        <!-- TAB 2: MULTI-VIEW CCTV GROUP WALL (5 TO 10+ CAMERAS)              -->
+        <!-- ================================================================= -->
+        <main id="section-multiview" class="hidden flex-1 w-full max-w-[1600px] mx-auto px-3 sm:px-5 py-4 flex flex-col gap-4">
+
+            <!-- Top CCTV Wall Controls -->
+            <section class="apple-card bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-white/10 rounded-2xl p-3.5 flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3">
+                <!-- Left: Sync My Account Cams or Add via Group ID / PIN -->
+                <div class="flex flex-wrap items-center gap-2">
+                    <button onclick="syncMyAccountCameras()" class="px-3.5 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition flex items-center gap-1.5 shadow-sm">
+                        <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        <span>Sync My Account Cams</span>
+                    </button>
+
+                    <div class="flex items-center gap-1.5 flex-1 sm:flex-initial">
+                        <input id="viewerAddCodeInput" type="text" maxlength="10" placeholder="Group ID ya 4-Digit PIN"
+                            onkeydown="if(event.key==='Enter') handleViewerAddCode()"
+                            class="w-full sm:w-48 px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono text-xs font-bold uppercase focus:outline-none">
+                        <button onclick="handleViewerAddCode()" class="px-3.5 py-2 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black font-semibold text-xs transition shrink-0">
+                            + Add
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right: Grid Selector & Demo Wall Button -->
+                <div class="flex flex-wrap items-center justify-between sm:justify-end gap-2">
+                    <div class="bg-zinc-100 dark:bg-zinc-900 p-1 rounded-xl border border-zinc-200 dark:border-white/10 flex items-center gap-1 text-xs">
+                        <button onclick="setGridLayout('auto')" id="gridBtn-auto" class="px-2.5 py-1 rounded-lg font-semibold bg-white dark:bg-zinc-800 shadow-sm transition">Auto</button>
+                        <button onclick="setGridLayout('2x2')" id="gridBtn-2x2" class="px-2.5 py-1 rounded-lg font-medium text-zinc-500 transition">2×2</button>
+                        <button onclick="setGridLayout('3x3')" id="gridBtn-3x3" class="px-2.5 py-1 rounded-lg font-medium text-zinc-500 transition">3×3</button>
+                        <button onclick="setGridLayout('4x3')" id="gridBtn-4x3" class="px-2.5 py-1 rounded-lg font-medium text-zinc-500 transition">4×3</button>
+                    </div>
+
+                    <button id="btnDemoMultiCam" onclick="toggleDemoMultiCam()" class="px-3.5 py-2 rounded-xl bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-900 dark:hover:bg-zinc-800 border border-zinc-200 dark:border-white/15 text-xs font-semibold flex items-center gap-1.5 transition">
+                        <i data-lucide="tv" class="w-4 h-4 text-emerald-500"></i>
+                        <span id="textDemoMultiCam">Load 6-Cam Demo Wall</span>
+                    </button>
+
+                    <button onclick="clearAllGridCameras()" class="p-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:text-red-500 border border-zinc-200 dark:border-white/10 transition" title="Clear Grid">
+                        <i data-lucide="trash-2" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </section>
+
+            <!-- CCTV Grid Wall -->
+            <section id="cctvGridWall" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 min-h-[54vh]">
+                <div id="emptyGridPlaceholder" class="col-span-full apple-card bg-white/80 dark:bg-zinc-950/80 border border-dashed border-zinc-300 dark:border-white/15 rounded-3xl p-8 flex flex-col items-center justify-center text-center">
+                    <div class="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mb-3">
+                        <i data-lucide="layout-grid" class="w-7 h-7 text-zinc-400"></i>
+                    </div>
+                    <h3 class="text-base font-bold">Multi-View CCTV Wall Ready</h3>
+                    <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 max-w-md leading-relaxed">
+                        Apne account se jude sabhi cameras dekhne ke liye <strong>Sync My Account Cams</strong> dabayein, ya koi bhi <strong>Group CCTV ID / 4-Digit PIN</strong> enter karein.
+                    </p>
+                    <button onclick="toggleDemoMultiCam()" class="mt-4 px-4 py-2 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-semibold transition flex items-center gap-1.5">
+                        <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                        <span>Load 6-Cam Demo Wall</span>
+                    </button>
+                </div>
+            </section>
+        </main>
+
+        <!-- ================================================================= -->
+        <!-- TAB 3: RECORDINGS (SAVED ON DEVICE)                              -->
+        <!-- ================================================================= -->
+        <main id="section-recordings" class="hidden flex-1 w-full max-w-6xl mx-auto px-4 py-5 flex flex-col gap-5">
+            <!-- Local Session Recordings & Snapshots -->
+            <section class="apple-card bg-white/90 dark:bg-zinc-950/90 border border-zinc-200 dark:border-white/10 rounded-3xl p-4 sm:p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-sm sm:text-base font-bold flex items-center gap-2">
+                        <i data-lucide="hard-drive" class="w-4 h-4 text-emerald-500"></i>
+                        <span>Saved Recordings & Snapshots (<span id="localClipCount">0</span>)</span>
+                    </h2>
+                    <span class="text-[11px] text-zinc-500">Device mein save hoti hain</span>
+                </div>
+
+                <div id="localRecordingsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+                    <div id="emptyLocalClipsMsg" class="col-span-full py-6 text-center text-xs text-zinc-500 border border-dashed border-zinc-300 dark:border-white/10 rounded-2xl">
+                        Abhi is session mein koi local recording nahi bani hai.
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Mobile Bottom Navigation Bar -->
+        <nav class="sm:hidden fixed bottom-0 inset-x-0 z-30 apple-card bg-white/95 dark:bg-zinc-950/95 border-t border-zinc-200 dark:border-white/10 grid grid-cols-3 py-1.5 px-2">
+            <button onclick="switchTab('broadcaster')" id="mobTab-broadcaster" class="flex flex-col items-center justify-center py-1 rounded-xl text-zinc-900 dark:text-white font-semibold text-[11px] gap-0.5">
+                <i data-lucide="video" class="w-4 h-4"></i>
+                <span>Camera</span>
+            </button>
+            <button onclick="switchTab('multiview')" id="mobTab-multiview" class="flex flex-col items-center justify-center py-1 rounded-xl text-zinc-500 dark:text-zinc-400 font-medium text-[11px] gap-0.5">
+                <i data-lucide="layout-grid" class="w-4 h-4"></i>
+                <span>CCTV Wall</span>
+            </button>
+            <button onclick="switchTab('recordings')" id="mobTab-recordings" class="flex flex-col items-center justify-center py-1 rounded-xl text-zinc-500 dark:text-zinc-400 font-medium text-[11px] gap-0.5">
+                <i data-lucide="cloud" class="w-4 h-4"></i>
+                <span>Recordings</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- SETTINGS MODAL (FIREBASE CONFIG FOR GITHUB PAGES DEPLOYMENT)          -->
+    <!-- ===================================================================== -->
+    <div id="settingsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-md p-4">
+        <div class="apple-card bg-white dark:bg-zinc-950 w-full max-w-lg rounded-3xl border border-zinc-200 dark:border-white/15 shadow-2xl overflow-hidden">
+            <div class="px-5 py-4 border-b border-zinc-200 dark:border-white/10 flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-black flex items-center justify-center">
+                        <i data-lucide="flame" class="w-4 h-4"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-sm sm:text-base font-bold">Firebase Cloud Configuration</h3>
+                        <p class="text-[11px] text-zinc-500 dark:text-zinc-400">GitHub Pages se worldwide live streaming & cloud storage ke liye</p>
+                    </div>
+                </div>
+                <button onclick="closeSettingsModal()" class="p-2 rounded-xl hover:bg-zinc-100 dark:hover:bg-zinc-900 transition">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+
+            <div class="p-5 space-y-3 max-h-[72vh] overflow-y-auto text-xs">
+                <div class="p-3 rounded-xl bg-zinc-100 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                    Firebase Console → Project Settings se apni web app keys yahan paste karein. Email/Password Auth aur Realtime Database enable rakhein.
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1">Firebase API Key <span class="text-red-500">*</span></label>
+                    <input id="cfgApiKey" type="text" placeholder="AIzaSy..."
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold mb-1">Auth Domain <span class="text-red-500">*</span></label>
+                        <input id="cfgAuthDomain" type="text" placeholder="your-app.firebaseapp.com"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-semibold mb-1">Project ID <span class="text-red-500">*</span></label>
+                        <input id="cfgProjectId" type="text" placeholder="your-app-id"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold mb-1">Realtime Database URL <span class="text-red-500">*</span></label>
+                    <input id="cfgDatabaseUrl" type="text" placeholder="https://your-app-default-rtdb.firebaseio.com"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold mb-1">Stream Port (label only)</label>
+                        <input id="cfgPort" type="number" value="8080"
+                            class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-1">
+                    <label class="block font-semibold mb-1">TURN Server URL (optional - file mein DEFAULT_TURN bhara ho to yahan kuch nahi chahiye)</label>
+                    <input id="cfgTurnUrl" type="text" placeholder="turn:standard.relay.metered.ca:80,turns:standard.relay.metered.ca:443?transport=tcp"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono focus:outline-none">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <input id="cfgTurnUser" type="text" placeholder="TURN username"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono focus:outline-none">
+                    <input id="cfgTurnPass" type="text" placeholder="TURN password"
+                        class="w-full px-3.5 py-2.5 rounded-xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-300 dark:border-white/15 font-mono focus:outline-none">
+                </div>
+            </div>
+
+            <div class="px-5 py-3.5 border-t border-zinc-200 dark:border-white/10 flex items-center justify-between gap-2">
+                <button onclick="resetFirebaseConfig()" class="px-3 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 hover:text-red-500 text-xs font-semibold transition">
+                    Clear Config
+                </button>
+                <div class="flex items-center gap-2">
+                    <button onclick="closeSettingsModal()" class="px-3.5 py-2 rounded-xl bg-zinc-100 dark:bg-zinc-900 text-xs font-semibold">
+                        Cancel
+                    </button>
+                    <button onclick="saveFirebaseConfig()" class="px-4 py-2 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-bold transition">
+                        Save & Initialize
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <canvas id="snapshotCanvas" class="hidden"></canvas>
+
+    <script>
+        // =====================================================================
+        // GLOBAL STATE & FIREBASE INSTANCES
+        // =====================================================================
+        function safeIcons() { try { lucide.createIcons(); } catch (e) {} }
+        function esc(v) {
+            return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+        }
+        function safeKey(v) { return String(v || '').replace(/[.#$\[\]\/\s]/g, '-'); }
+        function safeUrl(u) { return /^https:\/\//i.test(u || '') ? u : '#'; }
+
+        let authMode = 'login'; // 'login' | 'signup'
+        let isGuestMode = false;
+        let currentUser = null;
+
+        let fbApp = null;
+        let fbAuth = null;
+        let fbDb = null;
+
+        // Media & Device State
+        let localStream = null;
+        let currentFacingMode = 'user';
+        let isAudioEnabled = true;
+        let isBroadcasting = false;
+
+        let devicePin = '';
+        let deviceName = 'Cam-01 (Main)';
+        let groupCctvId = 'SHOP-01';
+        let currentPort = '8080';
+        let detectedIp = 'Detecting...';
+
+        // Audio Meter
+        let audioCtx = null;
+        let analyser = null;
+        let audioAnimId = null;
+
+        // Video Recording
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecording = false;
+        let recordStartTime = null;
+        let recordTimerInterval = null;
+        let localClipCounter = 0;
+
+        // WebRTC Peer Connections
+        const broadcasterPeers = new Map();
+        const gridCameras = new Map();
+        let activeDbListeners = [];
+        let isDemoWallActive = false;
+        let authListenerAttached = false;
+        let viewerOnlyMode = false;   // opened from a shared live link
+        let activePin = null;      // PIN currently registered in Firebase
+        let activeGroup = null;    // Group currently registered in Firebase
+        let wakeLock = null;
+        let recMime = '';
+        let recExt = 'webm';
+
+        // Public Google STUN Servers for Worldwide NAT Traversal
+        // =====================================================================
+        // TURN SERVER (built-in) - fill username & credential ONCE below.
+        // Free account: https://dashboard.metered.ca/signup  -> TURN Server -> Generate credential
+        // Ye TURN share link ke andar bhi chala jata hai, isliye viewers ko kuch dalna nahi padta.
+        // =====================================================================
+        // Built-in Firebase config (used when nothing is saved in Settings). Web API keys are public identifiers.
+        const DEFAULT_FB_CFG = {
+            apiKey: 'AIzaSyAZBuaMr43vYIM1lYmgrNabvRYduk2hDLE',
+            authDomain: 'cc-camera-4e2bb.firebaseapp.com',
+            projectId: 'cc-camera-4e2bb',
+            storageBucket: 'cc-camera-4e2bb.firebasestorage.app',
+            databaseURL: 'https://cc-camera-4e2bb-default-rtdb.firebaseio.com'  // <-- check in Firebase Console > Realtime Database
+        };
+        const DEFAULT_TURN = {
+            urls: [
+                'turn:standard.relay.metered.ca:80',
+                'turn:standard.relay.metered.ca:443',
+                'turns:standard.relay.metered.ca:443?transport=tcp'
+            ],
+            username: '',     // <-- yahan apna TURN username paste karein
+            credential: ''    // <-- yahan apna TURN password/credential paste karein
+        };
+        let sharedTurn = null; // TURN received via a shared live link
+
+        function cleanTurn(t) {
+            try {
+                if (!t || !Array.isArray(t.urls) || !t.urls.length) return null;
+                const urls = t.urls.map(String).filter(u => /^turns?:[\w.\-]+(:\d+)?(\?transport=(tcp|udp))?$/i.test(u));
+                if (!urls.length || !t.username || !t.credential) return null;
+                return { urls, username: String(t.username), credential: String(t.credential) };
+            } catch (e) { return null; }
+        }
+
+        function getTurnEntry() {
+            const lsUrl = localStorage.getItem('sancam_turn_url');
+            if (lsUrl) {
+                const own = cleanTurn({
+                    urls: lsUrl.split(',').map(u => u.trim()).filter(Boolean),
+                    username: localStorage.getItem('sancam_turn_user') || '',
+                    credential: localStorage.getItem('sancam_turn_pass') || ''
+                });
+                if (own) return own;
+            }
+            if (sharedTurn) return sharedTurn;
+            return cleanTurn(DEFAULT_TURN);
+        }
+
+        function getRtcConfig() {
+            const servers = [
+                { urls: 'stun:stun.l.google.com:19302' },
+                { urls: 'stun:stun1.l.google.com:19302' },
+                { urls: 'stun:stun2.l.google.com:19302' }
+            ];
+            const turn = getTurnEntry();
+            if (turn) servers.push(turn);
+            return { iceServers: servers };
+        }
+
+        // ICE candidates can arrive before the remote description -> queue them
+        function queueOrAddCandidate(pc, cand) {
+            if (pc.remoteDescription && pc.remoteDescription.type) {
+                pc.addIceCandidate(new RTCIceCandidate(cand)).catch(() => {});
+            } else {
+                (pc._pendingCands = pc._pendingCands || []).push(cand);
+            }
+        }
+        async function flushCandidates(pc) {
+            const list = pc._pendingCands || [];
+            pc._pendingCands = [];
+            for (const c of list) {
+                try { await pc.addIceCandidate(new RTCIceCandidate(c)); } catch (e) {}
+            }
+        }
+
+        // =====================================================================
+        // INITIALIZATION ON WINDOW LOAD
+        // =====================================================================
+        window.onload = () => {
+            safeIcons();
+            startHudClock();
+            const share = parseShareHash();
+            viewerOnlyMode = !!share;
+            loadSavedSettings();
+            detectDeviceIP();
+            const savedPin = localStorage.getItem('sancam_pin');
+            if (/^\d{4}$/.test(savedPin || '')) {
+                devicePin = savedPin;
+                document.getElementById('devicePinDisplay').textContent = devicePin;
+            } else {
+                generateNewDevicePin(false);
+            }
+            if (share) startSharedView(share);
+        };
+
+        function startHudClock() {
+            const hudEl = document.getElementById('hudTimestamp');
+            setInterval(() => {
+                hudEl.textContent = new Date().toLocaleTimeString('en-GB', { hour12: false });
+            }, 1000);
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const el = document.createElement('div');
+            const colors = {
+                success: 'bg-zinc-900/95 border-emerald-500/60 text-emerald-300',
+                error: 'bg-zinc-900/95 border-red-500/60 text-red-300',
+                info: 'bg-zinc-900/95 border-white/20 text-zinc-100'
+            };
+            el.className = `pointer-events-auto px-3.5 py-2.5 rounded-xl border shadow-2xl backdrop-blur-md text-xs font-medium transition-all duration-300 ${colors[type] || colors.info}`;
+            el.textContent = msg;
+            container.appendChild(el);
+            setTimeout(() => {
+                el.style.opacity = '0';
+                setTimeout(() => el.remove(), 300);
+            }, 3200);
+        }
+
+        function toggleTheme() {
+            document.documentElement.classList.toggle('dark');
+        }
+
+        // =====================================================================
+        // FIREBASE CONFIGURATION & AUTHENTICATION GATE
+        // =====================================================================
+        function openSettingsModal() {
+            const m = document.getElementById('settingsModal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeSettingsModal() {
+            const m = document.getElementById('settingsModal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function loadSavedSettings() {
+            currentPort = localStorage.getItem('sancam_port') || '8080';
+            document.getElementById('portNumberDisplay').textContent = currentPort;
+            document.getElementById('cfgPort').value = currentPort;
+
+            const savedName = localStorage.getItem('sancam_dev_name');
+            if (savedName) {
+                deviceName = savedName;
+                document.getElementById('deviceNameInput').value = savedName;
+            }
+
+            const savedGroup = localStorage.getItem('sancam_group_id');
+            if (savedGroup) {
+                groupCctvId = savedGroup;
+                document.getElementById('groupRoomInput').value = savedGroup;
+            }
+
+            document.getElementById('cfgTurnUrl').value = localStorage.getItem('sancam_turn_url') || '';
+            document.getElementById('cfgTurnUser').value = localStorage.getItem('sancam_turn_user') || '';
+            document.getElementById('cfgTurnPass').value = localStorage.getItem('sancam_turn_pass') || '';
+
+            const rawCfg = localStorage.getItem('sancam_fb_cfg') || JSON.stringify(DEFAULT_FB_CFG);
+            if (rawCfg) {
+                try {
+                    const cfg = JSON.parse(rawCfg);
+                    document.getElementById('cfgApiKey').value = cfg.apiKey || '';
+                    document.getElementById('cfgAuthDomain').value = cfg.authDomain || '';
+                    document.getElementById('cfgProjectId').value = cfg.projectId || '';
+                    document.getElementById('cfgDatabaseUrl').value = cfg.databaseURL || '';
+                    if (cfg.apiKey && cfg.databaseURL && !viewerOnlyMode) {
+                        initializeFirebaseServices(cfg);
+                    }
+                } catch (e) {}
+            }
+        }
+
+        function saveFirebaseConfig() {
+            currentPort = document.getElementById('cfgPort').value.trim() || '8080';
+            localStorage.setItem('sancam_port', currentPort);
+            document.getElementById('portNumberDisplay').textContent = currentPort;
+
+            localStorage.setItem('sancam_turn_url', document.getElementById('cfgTurnUrl').value.trim());
+            localStorage.setItem('sancam_turn_user', document.getElementById('cfgTurnUser').value.trim());
+            localStorage.setItem('sancam_turn_pass', document.getElementById('cfgTurnPass').value.trim());
+
+            const cfg = {
+                apiKey: document.getElementById('cfgApiKey').value.trim(),
+                authDomain: document.getElementById('cfgAuthDomain').value.trim(),
+                projectId: document.getElementById('cfgProjectId').value.trim(),
+                databaseURL: document.getElementById('cfgDatabaseUrl').value.trim(),
+            };
+
+            if (!cfg.apiKey || !cfg.databaseURL) {
+                showToast('API Key aur Realtime Database URL zaroori hain', 'error');
+                return;
+            }
+
+            localStorage.setItem('sancam_fb_cfg', JSON.stringify(cfg));
+            initializeFirebaseServices(cfg);
+            closeSettingsModal();
+            showToast('Firebase initialized! Ab login ya sign up karein.', 'success');
+        }
+
+        function resetFirebaseConfig() {
+            localStorage.removeItem('sancam_fb_cfg');
+            ['cfgApiKey', 'cfgAuthDomain', 'cfgProjectId', 'cfgDatabaseUrl'].forEach(id => {
+                document.getElementById(id).value = '';
+            });
+            fbApp = fbAuth = fbDb = null;
+            document.getElementById('authFbDot').className = 'w-2 h-2 rounded-full bg-amber-400';
+            document.getElementById('authFbStatusText').textContent = 'Firebase Config Pending';
+            showToast('Firebase configuration clear kar di gayi', 'info');
+            closeSettingsModal();
+        }
+
+        function initializeFirebaseServices(cfg) {
+            try {
+                if (!firebase.apps.length) {
+                    fbApp = firebase.initializeApp(cfg);
+                } else {
+                    fbApp = firebase.app();
+                }
+                fbAuth = firebase.auth();
+                fbDb = firebase.database();
+
+                document.getElementById('authFbDot').className = 'w-2 h-2 rounded-full bg-emerald-500';
+                document.getElementById('authFbStatusText').textContent = `Connected: ${cfg.projectId || 'Firebase'}`;
+
+                // Listen for Worldwide Auth State
+                if (!authListenerAttached) {
+                    authListenerAttached = true;
+                    fbAuth.onAuthStateChanged(user => {
+                        if (user && !viewerOnlyMode) {
+                            const already = currentUser && currentUser.uid === user.uid &&
+                                !document.getElementById('mainAppShell').classList.contains('hidden');
+                            currentUser = user;
+                            isGuestMode = false;
+                            if (!already) enterMainDashboard(user.email || 'Anonymous', true);
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('Firebase init error:', err);
+                showToast('Firebase init error: ' + (err.message || 'keys check karein'), 'error');
+            }
+        }
+
+        function setAuthMode(mode) {
+            authMode = mode;
+            const loginTab = document.getElementById('authTabLogin');
+            const signupTab = document.getElementById('authTabSignup');
+            const btn = document.getElementById('authSubmitBtn');
+
+            if (mode === 'login') {
+                loginTab.className = 'py-2 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm transition';
+                signupTab.className = 'py-2 rounded-lg text-zinc-500 dark:text-zinc-400 transition';
+                btn.textContent = 'Sign In to CCTV Hub';
+            } else {
+                signupTab.className = 'py-2 rounded-lg bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm transition';
+                loginTab.className = 'py-2 rounded-lg text-zinc-500 dark:text-zinc-400 transition';
+                btn.textContent = 'Create Worldwide Account';
+            }
+        }
+
+        async function handleAuthSubmit(e) {
+            e.preventDefault();
+            if (!fbAuth) {
+                showToast('Pehle Setup Firebase par click karke apni Firebase ID dalein', 'error');
+                openSettingsModal();
+                return;
+            }
+
+            const email = document.getElementById('authEmailInput').value.trim();
+            const pass = document.getElementById('authPasswordInput').value;
+            const btn = document.getElementById('authSubmitBtn');
+            btn.disabled = true;
+            btn.textContent = 'Connecting...';
+
+            try {
+                if (authMode === 'login') {
+                    await fbAuth.signInWithEmailAndPassword(email, pass);
+                    showToast('Welcome back! Cloud CCTV synced.', 'success');
+                } else {
+                    await fbAuth.createUserWithEmailAndPassword(email, pass);
+                    showToast('Account created! Worldwide CCTV ready.', 'success');
+                }
+            } catch (err) {
+                const M = {
+                    'auth/operation-not-allowed': 'Firebase Console > Authentication > Sign-in method me Email/Password ON karein',
+                    'auth/user-not-found': 'Account nahi mila - pehle Sign Up karein',
+                    'auth/invalid-credential': 'Email/password galat hai, ya account bana hi nahi - Sign Up karein',
+                    'auth/wrong-password': 'Password galat hai',
+                    'auth/email-already-in-use': 'Ye email already registered hai - Sign In karein',
+                    'auth/weak-password': 'Password kam se kam 6 characters ka rakhein',
+                    'auth/unauthorized-domain': 'Firebase > Authentication > Settings > Authorized domains me apna domain (yourname.github.io) add karein',
+                    'auth/network-request-failed': 'Internet ya API key restriction problem - key browser ke liye allowed honi chahiye',
+                    'auth/api-key-not-valid.-please-pass-a-valid-api-key.': 'API key galat hai - Web app ki key dalein',
+                    'auth/invalid-api-key': 'API key galat hai - Web app ki key dalein'
+                };
+                console.error('Auth error:', err.code, err.message);
+                showToast((M[err.code] || err.message || 'Authentication failed') + ' [' + (err.code || 'no-code') + ']', 'error');
+            } finally {
+                btn.disabled = false;
+                setAuthMode(authMode);
+            }
+        }
+
+        function enterGuestDemoMode() {
+            isGuestMode = true;
+            currentUser = null;
+            enterMainDashboard('Guest / Offline Demo Session', false);
+            showToast('Guest Demo Mode active. Full cloud sync ke liye Firebase login karein.', 'info');
+        }
+
+        function enterMainDashboard(userLabel, isCloudAuthenticated) {
+            document.getElementById('authGateScreen').classList.add('hidden');
+            document.getElementById('mainAppShell').classList.remove('hidden');
+            document.getElementById('loggedUserEmailLabel').textContent = userLabel;
+
+            const dot = document.getElementById('globalStatusDot');
+            const badgeText = document.getElementById('globalStatusText');
+            if (isCloudAuthenticated) {
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse';
+                badgeText.textContent = 'Cloud Synced';
+            } else {
+                dot.className = 'w-1.5 h-1.5 rounded-full bg-amber-400';
+                badgeText.textContent = 'Guest Mode';
+            }
+
+            initLocalMedia();
+        }
+
+        async function handleLogout() {
+            if (isRecording) stopVideoRecording();
+            stopCloudBroadcast();
+            clearAllGridCameras();
+            if (localStream) { localStream.getTracks().forEach(t => t.stop()); localStream = null; }
+            if (fbAuth && currentUser) {
+                await fbAuth.signOut();
+            }
+            currentUser = null;
+            isGuestMode = false;
+            document.getElementById('mainAppShell').classList.add('hidden');
+            document.getElementById('authGateScreen').classList.remove('hidden');
+            showToast('Logged out successfully', 'info');
+        }
+
+        // =====================================================================
+        // TAB NAVIGATION (DESKTOP + MOBILE BOTTOM BAR)
+        // =====================================================================
+        function switchTab(tabName) {
+            ['broadcaster', 'multiview', 'recordings'].forEach(t => {
+                document.getElementById(`section-${t}`).classList.toggle('hidden', t !== tabName);
+
+                const dBtn = document.getElementById(`deskTab-${t}`);
+                if (dBtn) {
+                    dBtn.className = t === tabName
+                        ? 'px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white shadow-sm'
+                        : 'px-3.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition text-zinc-500 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white';
+                }
+
+                const mBtn = document.getElementById(`mobTab-${t}`);
+                if (mBtn) {
+                    mBtn.className = t === tabName
+                        ? 'flex flex-col items-center justify-center py-1 rounded-xl text-zinc-900 dark:text-white font-semibold text-[11px] gap-0.5'
+                        : 'flex flex-col items-center justify-center py-1 rounded-xl text-zinc-500 dark:text-zinc-400 font-medium text-[11px] gap-0.5';
+                }
+            });
+
+            safeIcons();
+        }
+
+        // =====================================================================
+        // CAMERA & MIC INITIALIZATION, AUDIO METER & RECORDING
+        // =====================================================================
+        async function initLocalMedia() {
+            const overlay = document.getElementById('cameraOverlay');
+            const videoEl = document.getElementById('localVideo');
+
+            try {
+                if (localStream) {
+                    localStream.getTracks().forEach(t => t.stop());
+                }
+
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw Object.assign(new Error('HTTPS ya localhost chahiye'), { name: 'InsecureContext' });
+                }
+                const vConstraints = { facingMode: currentFacingMode, width: { ideal: 1280 }, height: { ideal: 720 } };
+                try {
+                    localStream = await navigator.mediaDevices.getUserMedia({
+                        video: vConstraints,
+                        audio: { echoCancellation: true, noiseSuppression: true }
+                    });
+                } catch (firstErr) {
+                    if (firstErr.name === 'NotAllowedError' || firstErr.name === 'SecurityError') throw firstErr;
+                    // Mic missing/busy -> try camera only
+                    localStream = await navigator.mediaDevices.getUserMedia({ video: vConstraints, audio: false });
+                    showToast('Mic nahi mila - sirf video chalu hai', 'info');
+                }
+
+                videoEl.srcObject = localStream;
+                videoEl.muted = true;
+                videoEl.classList.toggle('video-mirror', currentFacingMode === 'user');
+                overlay.classList.add('hidden');
+
+                const vTrack = localStream.getVideoTracks()[0];
+                if (vTrack) {
+                    const s = vTrack.getSettings();
+                    if (s.width && s.height) {
+                        document.getElementById('hudResolution').textContent = `${s.width}×${s.height} • MIC ON`;
+                    }
+                }
+
+                setupAudioVisualizer(localStream);
+            } catch (err) {
+                overlay.classList.remove('hidden');
+                console.error('getUserMedia error:', err);
+                const reasons = {
+                    NotAllowedError: 'Browser settings me Camera/Mic allow karein.',
+                    NotFoundError: 'Is device me camera nahi mila.',
+                    NotReadableError: 'Camera kisi aur app/tab me use ho raha hai - use band karein.',
+                    InsecureContext: 'Camera sirf HTTPS ya localhost par chalta hai (GitHub Pages / Netlify par host karein).',
+                    SecurityError: 'Camera sirf HTTPS ya localhost par chalta hai.'
+                };
+                document.getElementById('overlayTitle').textContent = 'Camera Start Nahi Hua (' + (err.name || 'Error') + ')';
+                document.getElementById('overlayDesc').textContent = reasons[err.name] || (err.message || 'Dubara try karein.');
+            }
+        }
+
+        function setupAudioVisualizer(stream) {
+            try {
+                if (audioAnimId) cancelAnimationFrame(audioAnimId);
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if (audioCtx.state === 'suspended') audioCtx.resume();
+
+                const tracks = stream.getAudioTracks();
+                if (!tracks.length) return;
+
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 64;
+                const source = audioCtx.createMediaStreamSource(stream);
+                source.connect(analyser);
+
+                const data = new Uint8Array(analyser.frequencyBinCount);
+                const bar = document.getElementById('audioLevelBar');
+
+                const updateMeter = () => {
+                    analyser.getByteFrequencyData(data);
+                    const avg = data.reduce((a, b) => a + b, 0) / data.length;
+                    const pct = isAudioEnabled ? Math.min(100, Math.round((avg / 128) * 100)) : 0;
+                    bar.style.width = `${pct}%`;
+                    audioAnimId = requestAnimationFrame(updateMeter);
+                };
+                updateMeter();
+            } catch (e) {}
+        }
+
+        async function switchCameraFacing() {
+            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+            await initLocalMedia();
+            if (isBroadcasting) {
+                // Replace track on active peers
+                broadcasterPeers.forEach(pc => {
+                    ['video', 'audio'].forEach(kind => {
+                        const newTrack = localStream.getTracks().find(t => t.kind === kind);
+                        const sender = pc.getSenders().find(s => (s.track && s.track.kind === kind));
+                        if (sender && newTrack) sender.replaceTrack(newTrack).catch(() => {});
+                    });
+                });
+            }
+            const localTileId = `tile_${devicePin}`;
+            const localVid = document.getElementById(`vid_${localTileId}`);
+            if (localVid && localStream) {
+                localVid.srcObject = localStream;
+                localVid.classList.toggle('video-mirror', currentFacingMode === 'user');
+                const entry = gridCameras.get(localTileId);
+                if (entry) entry.stream = localStream;
+            }
+        }
+
+        function toggleAudioTrack() {
+            if (!localStream) return;
+            const track = localStream.getAudioTracks()[0];
+            if (!track) return;
+            isAudioEnabled = !isAudioEnabled;
+            track.enabled = isAudioEnabled;
+            document.getElementById('textToggleMic').textContent = isAudioEnabled ? 'Mic On' : 'Muted';
+            document.getElementById('iconToggleMic').className = isAudioEnabled ? 'w-3.5 h-3.5 text-emerald-500' : 'w-3.5 h-3.5 text-red-500';
+            document.getElementById('micStatusIcon').className = isAudioEnabled ? 'w-3.5 h-3.5 text-emerald-500' : 'w-3.5 h-3.5 text-red-500';
+        }
+
+        // =====================================================================
+        // VIDEO RECORDING (SAVED ON DEVICE - BROADCASTER + VIEWER TILES)
+        // =====================================================================
+        function pickRecMime() {
+            const cands = ['video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm', 'video/mp4'];
+            const mime = (window.MediaRecorder && cands.find(m => MediaRecorder.isTypeSupported(m))) || '';
+            return { mime, ext: mime.startsWith('video/mp4') ? 'mp4' : 'webm' };
+        }
+
+        function triggerDownload(url, fileName) {
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        // Save finished recording to the device (auto download) + show in Recordings tab
+        function saveRecordingToDevice(chunks, mime, ext, baseName) {
+            if (!chunks.length) { showToast('Recording khali thi, save nahi hui', 'error'); return; }
+            const blob = new Blob(chunks, { type: mime || 'video/webm' });
+            const url = URL.createObjectURL(blob);
+            const fileName = `${baseName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${Date.now()}.${ext}`;
+            appendLocalClipCard(url, fileName, 'video');
+            triggerDownload(url, fileName);
+            showToast(`Recording device mein save ho gayi: ${fileName}`, 'success');
+        }
+
+        // ---- Viewer-side recording (any camera tile on the wall) ----
+        const tileRecorders = new Map();
+
+        function toggleTileRecording(tileId) {
+            if (tileRecorders.has(tileId)) { stopTileRecording(tileId); return; }
+            const entry = gridCameras.get(tileId);
+            const stream = entry && entry.stream;
+            if (!stream || !stream.getTracks().length) {
+                showToast('Camera abhi connect nahi hua, thoda ruk kar try karein', 'error');
+                return;
+            }
+            if (!window.MediaRecorder) { showToast('Is browser mein recording support nahi hai', 'error'); return; }
+            try {
+                const { mime, ext } = pickRecMime();
+                const mr = mime ? new MediaRecorder(stream, { mimeType: mime }) : new MediaRecorder(stream);
+                const chunks = [];
+                const camLabel = (document.querySelector(`#${tileId} .tile-name`) || {}).textContent || tileId;
+                mr.ondataavailable = e => { if (e.data && e.data.size > 0) chunks.push(e.data); };
+                mr.onstop = () => saveRecordingToDevice(chunks, mime, ext, `CCTV_${camLabel}`);
+                mr.start(1000);
+                tileRecorders.set(tileId, mr);
+                setTileRecUi(tileId, true);
+                showToast('Recording shuru. Dobara button dabane par device mein save hogi.', 'info');
+            } catch (err) {
+                console.error(err);
+                showToast('Recording start nahi ho saki: ' + (err.message || ''), 'error');
+            }
+        }
+
+        function stopTileRecording(tileId) {
+            const mr = tileRecorders.get(tileId);
+            tileRecorders.delete(tileId);
+            if (mr && mr.state !== 'inactive') { try { mr.stop(); } catch (e) {} }
+            setTileRecUi(tileId, false);
+        }
+
+        function setTileRecUi(tileId, on) {
+            const btn = document.getElementById(`recBtn_${tileId}`);
+            if (!btn) return;
+            btn.className = on
+                ? 'p-1 rounded-lg bg-red-600 hover:bg-red-500 text-white animate-pulse'
+                : 'p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300';
+            btn.title = on ? 'Stop & Save to device' : 'Record';
+        }
+
+        function toggleRecording() {
+            if (isRecording) stopVideoRecording();
+            else startVideoRecording();
+        }
+
+        function startVideoRecording() {
+            if (!localStream) {
+                showToast('Pehle camera enable karein', 'error');
+                return;
+            }
+            try {
+                recordedChunks = [];
+                const picked = pickRecMime();
+                recMime = picked.mime;
+                recExt = picked.ext;
+                mediaRecorder = recMime ? new MediaRecorder(localStream, { mimeType: recMime }) : new MediaRecorder(localStream);
+
+                mediaRecorder.ondataavailable = e => {
+                    if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    saveRecordingToDevice(recordedChunks, recMime, recExt, deviceName);
+                };
+
+                mediaRecorder.start(1000);
+                isRecording = true;
+
+                const btn = document.getElementById('btnRecord');
+                btn.classList.replace('bg-red-600', 'bg-zinc-800');
+                document.getElementById('textRecord').textContent = 'Stop Recording';
+
+                const pill = document.getElementById('recordingStatusPill');
+                pill.classList.remove('hidden');
+                pill.classList.add('flex');
+
+                recordStartTime = Date.now();
+                recordTimerInterval = setInterval(() => {
+                    const sec = Math.floor((Date.now() - recordStartTime) / 1000);
+                    document.getElementById('recordingTimer').textContent =
+                        `${String(Math.floor(sec / 60)).padStart(2, '0')}:${String(sec % 60).padStart(2, '0')}`;
+                }, 1000);
+            } catch (err) {
+                console.error(err); showToast('Recording start nahi ho saki: ' + (err.message || ''), 'error');
+            }
+        }
+
+        function stopVideoRecording() {
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+            isRecording = false;
+            clearInterval(recordTimerInterval);
+
+            const btn = document.getElementById('btnRecord');
+            btn.classList.replace('bg-zinc-800', 'bg-red-600');
+            document.getElementById('textRecord').textContent = 'Record Video';
+
+            document.getElementById('recordingStatusPill').classList.add('hidden');
+            document.getElementById('recordingStatusPill').classList.remove('flex');
+        }
+
+        function takeLocalSnapshot() {
+            const video = document.getElementById('localVideo');
+            if (!video.srcObject) return;
+            const canvas = document.getElementById('snapshotCanvas');
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 360;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            appendLocalClipCard(canvas.toDataURL('image/png'), `Snap_${devicePin}_${Date.now()}.png`, 'image');
+            showToast('Snapshot saved to Recordings tab!', 'success');
+        }
+
+        function appendLocalClipCard(url, fileName, type) {
+            const grid = document.getElementById('localRecordingsGrid');
+            const empty = document.getElementById('emptyLocalClipsMsg');
+            if (empty) empty.remove();
+
+            localClipCounter++;
+            document.getElementById('localClipCount').textContent = localClipCounter;
+
+            const card = document.createElement('div');
+            card.className = 'rounded-2xl bg-zinc-50 dark:bg-zinc-900 border border-zinc-200 dark:border-white/10 p-3 flex flex-col gap-2';
+            const mediaTag = type === 'video'
+                ? `<video src="${url}" controls class="w-full aspect-video rounded-xl bg-black object-cover"></video>`
+                : `<img src="${url}" alt="Snapshot" class="w-full aspect-video rounded-xl bg-black object-cover">`;
+
+            card.innerHTML = `
+                ${mediaTag}
+                <div class="flex items-center justify-between gap-2 text-xs">
+                    <span class="font-mono text-[11px] truncate">${esc(fileName)}</span>
+                    <a href="${esc(url)}" download="${esc(fileName)}" class="shrink-0 px-2.5 py-1.5 rounded-lg bg-zinc-900 dark:bg-white text-white dark:text-black text-[11px] font-semibold">
+                        Save File
+                    </a>
+                </div>
+            `;
+            grid.prepend(card);
+        }
+
+        // =====================================================================
+        // IP DETECTION, PIN & GROUP METADATA
+        // =====================================================================
+        async function detectDeviceIP() {
+            const ipEl = document.getElementById('ipAddressDisplay');
+            const tagEl = document.getElementById('ipTypeTag');
+            try {
+                const res = await fetch('https://api.ipify.org?format=json');
+                const data = await res.json();
+                detectedIp = data.ip || window.location.hostname || '192.168.1.100';
+                ipEl.textContent = detectedIp;
+                tagEl.textContent = 'Public Worldwide IP';
+            } catch (e) {
+                detectedIp = window.location.hostname || '192.168.1.100';
+                ipEl.textContent = detectedIp;
+                tagEl.textContent = 'Local Interface';
+            }
+        }
+
+        function generateNewDevicePin(notify = true) {
+            devicePin = String(Math.floor(1000 + Math.random() * 9000));
+            localStorage.setItem('sancam_pin', devicePin);
+            document.getElementById('devicePinDisplay').textContent = devicePin;
+            if (notify) showToast(`Naya PIN: ${devicePin} (purane share links ab kaam nahi karenge)`, 'success');
+            if (isBroadcasting) startCloudBroadcast();
+        }
+
+        function generateRandomGroupId() {
+            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+            let code = 'CAM-';
+            for (let i = 0; i < 4; i++) code += chars[Math.floor(Math.random() * chars.length)];
+            document.getElementById('groupRoomInput').value = code;
+            saveDeviceMetadata(true);
+        }
+
+        function saveDeviceMetadata(notify = false) {
+            deviceName = document.getElementById('deviceNameInput').value.trim() || `Cam-${devicePin}`;
+            groupCctvId = safeKey(document.getElementById('groupRoomInput').value.trim().toUpperCase()) || 'SHOP-01';
+            document.getElementById('groupRoomInput').value = groupCctvId;
+
+            localStorage.setItem('sancam_dev_name', deviceName);
+            localStorage.setItem('sancam_group_id', groupCctvId);
+
+            if (notify) showToast(`Group ID "${groupCctvId}" set!`, 'success');
+            if (isBroadcasting && fbDb) registerCameraInFirebase();
+        }
+
+        function copyText(elId, label) {
+            copyRawText(document.getElementById(elId).textContent.trim(), label);
+        }
+
+        function copyInputText(inputId, label) {
+            copyRawText(document.getElementById(inputId).value.trim(), label);
+        }
+
+        function copyRawText(text, label) {
+            if (!text) return;
+            const inp = document.createElement('input');
+            inp.value = text;
+            document.body.appendChild(inp);
+            inp.select();
+            document.execCommand('copy');
+            document.body.removeChild(inp);
+            showToast(`${label} (${text}) copied!`, 'success');
+        }
+
+        // =====================================================================
+        // WORLDWIDE WEBRTC BROADCASTING VIA FIREBASE REALTIME DATABASE
+        // =====================================================================
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator && !wakeLock) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    wakeLock.addEventListener('release', () => { wakeLock = null; });
+                }
+            } catch (e) {}
+        }
+        function releaseWakeLock() {
+            try { if (wakeLock) wakeLock.release(); } catch (e) {}
+            wakeLock = null;
+        }
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && isBroadcasting) requestWakeLock();
+        });
+
+        function closeBroadcasterPeer(viewerId, removeDb = true) {
+            const pc = broadcasterPeers.get(viewerId);
+            if (pc) {
+                try { if (pc._candRef) pc._candRef.off(); } catch (e) {}
+                try { pc.close(); } catch (e) {}
+                broadcasterPeers.delete(viewerId);
+            }
+            if (removeDb && fbDb && activePin) {
+                fbDb.ref(`public_nodes/${activePin}/viewerAnswers/${viewerId}`).remove().catch(() => {});
+            }
+        }
+
+        function removeActiveRegistration() {
+            if (!fbDb) return;
+            if (activePin) {
+                const old = fbDb.ref(`public_nodes/${activePin}`);
+                old.child('viewerRequests').off();
+                old.remove().catch(() => {});
+                if (currentUser) fbDb.ref(`users/${currentUser.uid}/cameras/${activePin}`).remove().catch(() => {});
+            }
+            if (activeGroup && activePin) {
+                fbDb.ref(`groups/${activeGroup}/${activePin}`).remove().catch(() => {});
+            }
+        }
+
+        // =====================================================================
+        // SHARE LIVE LINK (watch from anywhere, no login needed)
+        // =====================================================================
+        function b64urlEncode(obj) {
+            return btoa(unescape(encodeURIComponent(JSON.stringify(obj))))
+                .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+        }
+        function b64urlDecode(str) {
+            let b = str.replace(/-/g, '+').replace(/_/g, '/');
+            while (b.length % 4) b += '=';
+            return JSON.parse(decodeURIComponent(escape(atob(b))));
+        }
+
+        function parseShareHash() {
+            const m = location.hash.match(/^#v=([\w-]+)/);
+            if (!m) return null;
+            try {
+                const obj = b64urlDecode(m[1]);
+                const c = obj && obj.c;
+                if (!/^\d{4}$/.test(String(obj.p)) || !c || !c.apiKey || !c.databaseURL) return null;
+                // only real Firebase Realtime Database hosts
+                if (!/^https:\/\/[a-z0-9-]+(\.[a-z0-9-]+)*\.(firebaseio\.com|firebasedatabase\.app)\/?$/i.test(c.databaseURL)) return null;
+                return { p: String(obj.p), n: String(obj.n || ''), t: cleanTurn(obj.t), c: {
+                    apiKey: String(c.apiKey), authDomain: String(c.authDomain || ''),
+                    projectId: String(c.projectId || ''), databaseURL: String(c.databaseURL)
+                } };
+            } catch (e) { return null; }
+        }
+
+        function buildShareLink() {
+            const raw = localStorage.getItem('sancam_fb_cfg') || JSON.stringify(DEFAULT_FB_CFG);
+            if (!raw) {
+                showToast('Pehle Firebase config save karein, phir link banega', 'error');
+                openSettingsModal();
+                return null;
+            }
+            let cfg;
+            try { cfg = JSON.parse(raw); } catch (e) { return null; }
+            const payload = {
+                p: devicePin,
+                n: deviceName,
+                t: getTurnEntry(),
+                c: { apiKey: cfg.apiKey, authDomain: cfg.authDomain, projectId: cfg.projectId, databaseURL: cfg.databaseURL }
+            };
+            const link = location.href.split('#')[0] + '#v=' + b64urlEncode(payload);
+            if (location.protocol === 'file:') {
+                showToast('Ye file abhi device par khuli hai. Dusre device par link chalane ke liye file ko GitHub Pages / Netlify par host karein.', 'error');
+            } else if (!isBroadcasting) {
+                showToast('Link ban gaya. Camera ko "Start Live Broadcast" karna na bhoolein.', 'info');
+            }
+            return link;
+        }
+
+        async function shareLiveLink() {
+            const link = buildShareLink();
+            if (!link) return;
+            const text = `Live camera dekhein: ${deviceName}`;
+            if (navigator.share) {
+                try { await navigator.share({ title: 'SanCam Live', text, url: link }); return; } catch (e) {
+                    if (e && e.name === 'AbortError') return;
+                }
+            }
+            window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + link), '_blank', 'noopener');
+        }
+
+        function copyShareLink() {
+            const link = buildShareLink();
+            if (!link) return;
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(link).then(
+                    () => showToast('Live link copy ho gaya! Kahin bhi khol kar dekhein.', 'success'),
+                    () => copyRawText(link, 'Live link')
+                );
+            } else {
+                copyRawText(link, 'Live link');
+            }
+        }
+
+        function startSharedView(share) {
+            sharedTurn = share.t || null;
+            initializeFirebaseServices(share.c);
+            if (!fbDb) { showToast('Shared link ka Firebase config galat hai', 'error'); return; }
+
+            document.getElementById('authGateScreen').classList.add('hidden');
+            document.getElementById('mainAppShell').classList.remove('hidden');
+            document.getElementById('loggedUserEmailLabel').textContent = 'Shared Live View' + (share.n ? ` • ${share.n}` : '');
+            document.getElementById('globalStatusDot').className = 'w-1.5 h-1.5 rounded-full bg-sky-500 animate-pulse';
+            document.getElementById('globalStatusText').textContent = 'Viewer';
+            ['deskTab-broadcaster', 'mobTab-broadcaster'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.add('hidden');
+            });
+            switchTab('multiview');
+            document.getElementById('cctvGridWall').className = 'grid gap-3 grid-cols-1 max-w-4xl mx-auto w-full min-h-[40vh]';
+
+            const tileId = `tile_${share.p}`;
+            const pinRef = fbDb.ref(`public_nodes/${share.p}/pin`);
+            showToast('Camera se connect ho rahe hain...', 'info');
+
+            pinRef.on('value', async snap => {
+                if (snap.exists()) {
+                    if (gridCameras.has(tileId)) return;
+                    try {
+                        const full = await fbDb.ref(`public_nodes/${share.p}`).once('value');
+                        if (full.exists()) connectRemoteCameraToWall(full.val());
+                    } catch (e) {
+                        showToast('Firebase permission denied - Database Rules check karein', 'error');
+                    }
+                } else {
+                    if (gridCameras.has(tileId)) {
+                        removeCameraTile(tileId);
+                    }
+                    showToast('Camera abhi offline hai. Online aate hi video apne aap aa jayegi.', 'info');
+                }
+            }, err => showToast('Firebase permission denied - Database Rules check karein', 'error'));
+        }
+
+        function toggleCloudBroadcast() {
+            if (isBroadcasting) stopCloudBroadcast();
+            else startCloudBroadcast();
+        }
+
+        function startCloudBroadcast() {
+            if (!localStream) {
+                showToast('Pehle camera enable karein', 'error');
+                return;
+            }
+            if (!fbDb) {
+                showToast('Worldwide broadcast ke liye Firebase Config save karein', 'error');
+                openSettingsModal();
+                return;
+            }
+
+            isBroadcasting = true;
+            const btn = document.getElementById('btnToggleBroadcast');
+            btn.classList.replace('bg-emerald-600', 'bg-zinc-800');
+            document.getElementById('textToggleBroadcast').textContent = 'Stop Live Broadcast';
+
+            const badge = document.getElementById('broadcastLiveBadge');
+            badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-semibold bg-emerald-500/15 text-emerald-500 border border-emerald-500/30';
+            document.getElementById('broadcastDot').className = 'w-2 h-2 rounded-full bg-emerald-500 animate-ping';
+            document.getElementById('broadcastStateLabel').textContent = 'BROADCASTING LIVE';
+
+            registerCameraInFirebase();
+            requestWakeLock();
+            showToast(`Camera "${deviceName}" ab worldwide live hai!`, 'success');
+        }
+
+        function stopCloudBroadcast() {
+            isBroadcasting = false;
+            releaseWakeLock();
+            Array.from(broadcasterPeers.keys()).forEach(id => closeBroadcasterPeer(id, false));
+            removeActiveRegistration();
+            activePin = null;
+            activeGroup = null;
+
+            const btn = document.getElementById('btnToggleBroadcast');
+            if (btn) {
+                btn.classList.replace('bg-zinc-800', 'bg-emerald-600');
+                document.getElementById('textToggleBroadcast').textContent = 'Start Live Broadcast';
+            }
+            const badge = document.getElementById('broadcastLiveBadge');
+            if (badge) {
+                badge.className = 'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full font-semibold bg-zinc-200 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300';
+                document.getElementById('broadcastDot').className = 'w-2 h-2 rounded-full bg-zinc-400';
+                document.getElementById('broadcastStateLabel').textContent = 'STANDBY';
+            }
+        }
+
+        function registerCameraInFirebase() {
+            if (!fbDb || !devicePin) return;
+
+            // PIN or Group changed while live -> clean old entries first (no ghost cameras)
+            if (activePin && activePin !== devicePin) {
+                Array.from(broadcasterPeers.keys()).forEach(id => closeBroadcasterPeer(id, false));
+                removeActiveRegistration();
+            } else if (activeGroup && activeGroup !== groupCctvId) {
+                fbDb.ref(`groups/${activeGroup}/${activePin}`).remove().catch(() => {});
+            }
+            activePin = devicePin;
+            activeGroup = groupCctvId;
+
+            const camMeta = {
+                pin: devicePin,
+                name: deviceName,
+                ip: detectedIp,
+                port: currentPort,
+                groupId: groupCctvId,
+                ownerUid: currentUser ? currentUser.uid : 'guest',
+                online: true,
+                updatedAt: Date.now()
+            };
+
+            // 1. Public PIN directory
+            const nodeRef = fbDb.ref(`public_nodes/${devicePin}`);
+            nodeRef.update(camMeta).catch(err => {
+                console.error(err);
+                showToast('Firebase permission denied - Database Rules check karein', 'error');
+            });
+            nodeRef.onDisconnect().remove();
+
+            // 2. Group room index
+            if (groupCctvId) {
+                const grpRef = fbDb.ref(`groups/${groupCctvId}/${devicePin}`);
+                grpRef.set({ pin: devicePin, name: deviceName, joinedAt: Date.now() });
+                grpRef.onDisconnect().remove();
+            }
+
+            // 3. Personal account camera list
+            if (currentUser) {
+                const userCamRef = fbDb.ref(`users/${currentUser.uid}/cameras/${devicePin}`);
+                userCamRef.set(camMeta);
+                userCamRef.onDisconnect().remove();
+            }
+
+            // 4. Incoming WebRTC viewer offers (each offer handled only once)
+            const reqRef = nodeRef.child('viewerRequests');
+            reqRef.off();
+
+            reqRef.on('child_removed', snap => {
+                closeBroadcasterPeer(snap.key);
+            });
+
+            reqRef.on('child_added', async snap => {
+                const viewerId = snap.key;
+                const data = snap.val();
+                if (!data || !data.offer || !localStream) return;
+
+                const old = broadcasterPeers.get(viewerId);
+                if (old && old._offerStamp === data.createdAt) return; // already handled
+                if (old) closeBroadcasterPeer(viewerId, false);
+
+                try {
+                    const pc = new RTCPeerConnection(getRtcConfig());
+                    pc._offerStamp = data.createdAt;
+                    broadcasterPeers.set(viewerId, pc);
+
+                    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+                    const ansCandRef = nodeRef.child(`viewerAnswers/${viewerId}/candidates`);
+                    pc.onicecandidate = ev => {
+                        if (ev.candidate) ansCandRef.push(ev.candidate.toJSON());
+                    };
+
+                    let dropTimer = null;
+                    pc.onconnectionstatechange = () => {
+                        const st = pc.connectionState;
+                        clearTimeout(dropTimer);
+                        if (st === 'failed' || st === 'closed') {
+                            closeBroadcasterPeer(viewerId);
+                        } else if (st === 'disconnected') {
+                            dropTimer = setTimeout(() => {
+                                if (pc.connectionState === 'disconnected') closeBroadcasterPeer(viewerId);
+                            }, 10000);
+                        }
+                    };
+
+                    // Listen for viewer candidates (queued until remote description is set)
+                    const candRef = reqRef.child(`${viewerId}/candidates`);
+                    pc._candRef = candRef;
+                    candRef.on('child_added', cSnap => queueOrAddCandidate(pc, cSnap.val()));
+
+                    await pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+                    await flushCandidates(pc);
+                    const answer = await pc.createAnswer();
+                    await pc.setLocalDescription(answer);
+
+                    await nodeRef.child(`viewerAnswers/${viewerId}/answer`).set({
+                        type: answer.type,
+                        sdp: answer.sdp
+                    });
+                } catch (err) {
+                    console.error('WebRTC Broadcaster handshake error:', err);
+                    closeBroadcasterPeer(viewerId);
+                }
+            });
+        }
+
+        // =====================================================================
+        // MULTI-VIEW CCTV GROUP WALL (5 TO 10+ CAMERAS)
+        // =====================================================================
+        function setGridLayout(layout) {
+            const wall = document.getElementById('cctvGridWall');
+            ['auto', '2x2', '3x3', '4x3'].forEach(k => {
+                const btn = document.getElementById(`gridBtn-${k}`);
+                if (btn) {
+                    btn.className = k === layout
+                        ? 'px-2.5 py-1 rounded-lg font-semibold bg-white dark:bg-zinc-800 shadow-sm transition'
+                        : 'px-2.5 py-1 rounded-lg font-medium text-zinc-500 transition';
+                }
+            });
+
+            wall.className = 'grid gap-3 min-h-[54vh] ';
+            if (layout === '2x2') wall.className += 'grid-cols-1 sm:grid-cols-2';
+            else if (layout === '3x3') wall.className += 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3';
+            else if (layout === '4x3') wall.className += 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4';
+            else wall.className += 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4';
+        }
+
+        function syncMyAccountCameras() {
+            if (!fbDb || !currentUser) {
+                showToast('Account cameras sync karne ke liye Firebase email/password se login karein', 'error');
+                return;
+            }
+            const ref = fbDb.ref(`users/${currentUser.uid}/cameras`);
+            ref.off();
+            activeDbListeners.push(ref);
+
+            ref.on('child_added', snap => {
+                const cam = snap.val();
+                if (!cam) return;
+                if (cam.pin === devicePin) {
+                    if (localStream) addLocalDeviceToWall();
+                } else {
+                    connectRemoteCameraToWall(cam);
+                }
+            });
+
+            ref.on('child_removed', snap => {
+                const cam = snap.val();
+                if (cam && cam.pin) removeCameraTile(`tile_${cam.pin}`);
+            });
+
+            showToast('Aapke account ke online cameras sync ho rahe hain...', 'success');
+        }
+
+        async function handleViewerAddCode() {
+            const raw = safeKey(document.getElementById('viewerAddCodeInput').value.trim().toUpperCase());
+            if (!raw) {
+                showToast('Group CCTV ID ya 4-Digit PIN dalein', 'error');
+                return;
+            }
+            document.getElementById('viewerAddCodeInput').value = '';
+
+            if (raw === devicePin && localStream) {
+                addLocalDeviceToWall();
+                return;
+            }
+
+            if (!fbDb) {
+                showToast('Remote cameras connect karne ke liye Firebase Config save karein', 'error');
+                openSettingsModal();
+                return;
+            }
+
+            if (/^\d{4}$/.test(raw)) {
+                try {
+                    const snap = await fbDb.ref(`public_nodes/${raw}`).once('value');
+                    if (snap.exists()) {
+                        connectRemoteCameraToWall(snap.val());
+                        return;
+                    }
+                } catch (e) {
+                    showToast('Firebase permission denied - Database Rules check karein', 'error');
+                    return;
+                }
+            }
+
+            // Load Group CCTV Room
+            const grpRef = fbDb.ref(`groups/${raw}`);
+            activeDbListeners.push(grpRef);
+            try {
+                const gSnap = await grpRef.once('value');
+                if (!gSnap.exists()) {
+                    showToast(`"${raw}" par abhi koi camera online nahi hai. Online aate hi yahan dikhega.`, 'info');
+                }
+            } catch (e) {
+                showToast('Firebase permission denied - Database Rules check karein', 'error');
+                return;
+            }
+            grpRef.on('child_added', async snap => {
+                const member = snap.val();
+                if (!member || !member.pin) return;
+                if (member.pin === devicePin && localStream) {
+                    addLocalDeviceToWall();
+                    return;
+                }
+                const nodeSnap = await fbDb.ref(`public_nodes/${member.pin}`).once('value');
+                if (nodeSnap.exists()) connectRemoteCameraToWall(nodeSnap.val());
+            });
+            showToast(`Group "${raw}" ke cameras load ho rahe hain...`, 'success');
+        }
+
+        function addLocalDeviceToWall() {
+            if (!localStream) return;
+            const tileId = `tile_${devicePin}`;
+            if (gridCameras.has(tileId)) return;
+
+            renderCctvTile({
+                tileId,
+                pin: devicePin,
+                name: `${deviceName} (This Device)`,
+                ip: detectedIp,
+                port: currentPort,
+                stream: localStream,
+                isLocal: true
+            });
+        }
+
+        async function connectRemoteCameraToWall(camMeta) {
+            if (!camMeta) return;
+            camMeta = Object.assign({}, camMeta, { pin: String(camMeta.pin || '').replace(/\D/g, '') });
+            if (!/^\d{4}$/.test(camMeta.pin)) return;
+            const tileId = `tile_${camMeta.pin}`;
+            if (gridCameras.has(tileId)) return;
+
+            const viewerId = 'v_' + Math.random().toString(36).substring(2, 10);
+            const nodeRef = fbDb.ref(`public_nodes/${camMeta.pin}`);
+            const pc = new RTCPeerConnection(getRtcConfig());
+            const remoteStream = new MediaStream();
+
+            pc.addTransceiver('video', { direction: 'recvonly' });
+            pc.addTransceiver('audio', { direction: 'recvonly' });
+
+            renderCctvTile({
+                tileId,
+                pin: camMeta.pin,
+                name: camMeta.name || `Camera #${camMeta.pin}`,
+                ip: camMeta.ip || 'Cloud',
+                port: camMeta.port || '8080',
+                stream: remoteStream,
+                pc
+            });
+
+            pc.ontrack = event => {
+                if (!remoteStream.getTracks().includes(event.track)) remoteStream.addTrack(event.track);
+                const v = document.getElementById(`vid_${tileId}`);
+                if (v && v.paused) v.play().catch(() => {});
+            };
+
+            const setStatus = (txt, cls) => {
+                const el = document.getElementById(`status_${tileId}`);
+                if (el) { el.textContent = txt; el.className = `px-2 py-0.5 rounded bg-black/75 font-mono text-[10px] border border-white/10 ${cls}`; }
+            };
+            setStatus('CONNECTING', 'text-amber-400');
+            pc.onconnectionstatechange = () => {
+                const st = pc.connectionState;
+                if (st === 'connected') setStatus('LIVE', 'text-emerald-400');
+                else if (st === 'failed') setStatus('FAILED - TURN chahiye?', 'text-red-400');
+                else if (st === 'disconnected') setStatus('RECONNECTING', 'text-amber-400');
+                else if (st === 'closed') setStatus('OFFLINE', 'text-zinc-400');
+            };
+
+            const reqRef = nodeRef.child(`viewerRequests/${viewerId}`);
+            pc.onicecandidate = ev => {
+                if (!ev.candidate) return;
+                if (pc._offerSent) reqRef.child('candidates').push(ev.candidate.toJSON());
+                else (pc._queuedLocalCands = pc._queuedLocalCands || []).push(ev.candidate.toJSON());
+            };
+
+            const ansRef = nodeRef.child(`viewerAnswers/${viewerId}`);
+            const entry = gridCameras.get(tileId);
+            if (entry) Object.assign(entry, { viewerId, pin: camMeta.pin, ansRef, reqRef });
+
+            ansRef.child('answer').on('value', async snap => {
+                const ans = snap.val();
+                if (ans && !pc.currentRemoteDescription) {
+                    try {
+                        await pc.setRemoteDescription(new RTCSessionDescription(ans));
+                        await flushCandidates(pc);
+                    } catch (e) { console.error('setRemoteDescription failed:', e); }
+                }
+            });
+            ansRef.child('candidates').on('child_added', snap => queueOrAddCandidate(pc, snap.val()));
+
+            try {
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+                // set() first, THEN ICE candidates get pushed (set() would wipe earlier candidates)
+                await reqRef.set({ offer: { type: offer.type, sdp: offer.sdp }, createdAt: Date.now() });
+                reqRef.onDisconnect().remove();
+                pc._offerSent = true;
+                (pc._queuedLocalCands || []).forEach(c => reqRef.child('candidates').push(c));
+                pc._queuedLocalCands = [];
+            } catch (err) {
+                console.error('Viewer offer error:', err);
+                showToast('Camera connect nahi hua - Firebase Rules check karein', 'error');
+                removeCameraTile(tileId);
+            }
+        }
+
+        function renderCctvTile({ tileId, pin, name, ip, port, stream, pc = null, isLocal = false, demoInterval = null }) {
+            const wall = document.getElementById('cctvGridWall');
+            const placeholder = document.getElementById('emptyGridPlaceholder');
+            if (placeholder) placeholder.remove();
+
+            const tile = document.createElement('div');
+            tile.id = tileId;
+            tile.className = 'apple-card bg-black border border-zinc-300 dark:border-white/15 rounded-2xl overflow-hidden flex flex-col justify-between shadow-lg';
+
+            tile.innerHTML = `
+                <div class="px-3 py-2 bg-zinc-950 border-b border-white/10 flex items-center justify-between gap-2 text-[11px] text-white">
+                    <div class="flex items-center gap-2 truncate">
+                        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0"></span>
+                        <span class="font-semibold truncate tile-name">${esc(name)}</span>
+                        <span class="font-mono text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300">PIN:${esc(pin)}</span>
+                    </div>
+                    <div class="flex items-center gap-1 shrink-0">
+                        <button onclick="toggleTileRecording('${tileId}')" id="recBtn_${tileId}" class="p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300" title="Record">
+                            <i data-lucide="circle-dot" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="toggleTileMute('${tileId}')" id="muteBtn_${tileId}" class="p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300" title="Mute/Unmute">
+                            <i data-lucide="volume-x" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="snapshotTile('${tileId}')" class="p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300" title="Snapshot">
+                            <i data-lucide="aperture" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="toggleTileFullscreen('${tileId}')" class="p-1 rounded-lg bg-zinc-900 hover:bg-zinc-800 text-zinc-300" title="Fullscreen">
+                            <i data-lucide="maximize-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="removeCameraTile('${tileId}')" class="p-1 rounded-lg bg-zinc-900 hover:bg-red-950 text-zinc-400 hover:text-red-400" title="Remove">
+                            <i data-lucide="x" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="relative aspect-video w-full bg-black overflow-hidden">
+                    <video id="vid_${tileId}" autoplay playsinline muted class="w-full h-full object-cover ${isLocal && currentFacingMode === 'user' ? 'video-mirror' : ''}"></video>
+                    <div class="absolute bottom-2 left-2 right-2 flex items-center justify-between pointer-events-none">
+                        <span class="px-2 py-0.5 rounded bg-black/75 font-mono text-[10px] text-zinc-300 border border-white/10">${esc(ip)}:${esc(port)}</span>
+                        <span id="status_${tileId}" class="px-2 py-0.5 rounded bg-black/75 font-mono text-[10px] text-emerald-400 border border-white/10">LIVE</span>
+                    </div>
+                </div>
+            `;
+
+            wall.appendChild(tile);
+            document.getElementById(`vid_${tileId}`).srcObject = stream;
+            gridCameras.set(tileId, { pc, stream, demoInterval });
+            safeIcons();
+        }
+
+        function toggleTileMute(tileId) {
+            const vid = document.getElementById(`vid_${tileId}`);
+            const btn = document.getElementById(`muteBtn_${tileId}`);
+            if (!vid) return;
+            vid.muted = !vid.muted;
+            btn.innerHTML = vid.muted
+                ? `<i data-lucide="volume-x" class="w-3.5 h-3.5 text-zinc-400"></i>`
+                : `<i data-lucide="volume-2" class="w-3.5 h-3.5 text-emerald-400"></i>`;
+            safeIcons();
+        }
+
+        function toggleTileFullscreen(tileId) {
+            const tile = document.getElementById(tileId);
+            if (tile) tile.classList.toggle('tile-expanded');
+        }
+
+        function snapshotTile(tileId) {
+            const vid = document.getElementById(`vid_${tileId}`);
+            if (!vid) return;
+            const canvas = document.getElementById('snapshotCanvas');
+            canvas.width = vid.videoWidth || 640;
+            canvas.height = vid.videoHeight || 360;
+            canvas.getContext('2d').drawImage(vid, 0, 0, canvas.width, canvas.height);
+            appendLocalClipCard(canvas.toDataURL('image/png'), `CCTV_${tileId}_${Date.now()}.png`, 'image');
+            showToast('CCTV Snapshot saved!', 'success');
+        }
+
+        function removeCameraTile(tileId) {
+            if (tileRecorders.has(tileId)) stopTileRecording(tileId);
+            const entry = gridCameras.get(tileId);
+            if (entry) {
+                try { if (entry.ansRef) { entry.ansRef.child('answer').off(); entry.ansRef.child('candidates').off(); entry.ansRef.remove(); } } catch (e) {}
+                try { if (entry.reqRef) { entry.reqRef.remove(); } } catch (e) {}
+                if (entry.pc) entry.pc.close();
+                if (entry.demoInterval) clearInterval(entry.demoInterval);
+                gridCameras.delete(tileId);
+            }
+            const el = document.getElementById(tileId);
+            if (el) el.remove();
+
+            if (gridCameras.size === 0) {
+                const wall = document.getElementById('cctvGridWall');
+                wall.innerHTML = `
+                    <div id="emptyGridPlaceholder" class="col-span-full apple-card bg-white/80 dark:bg-zinc-950/80 border border-dashed border-zinc-300 dark:border-white/15 rounded-3xl p-8 flex flex-col items-center justify-center text-center">
+                        <div class="w-14 h-14 rounded-2xl bg-zinc-100 dark:bg-zinc-900 flex items-center justify-center mb-3">
+                            <i data-lucide="layout-grid" class="w-7 h-7 text-zinc-400"></i>
+                        </div>
+                        <h3 class="text-base font-bold">Multi-View CCTV Wall Ready</h3>
+                        <p class="text-xs text-zinc-500 dark:text-zinc-400 mt-1.5 max-w-md leading-relaxed">
+                            Apne account se jude sabhi cameras dekhne ke liye <strong>Sync My Account Cams</strong> dabayein, ya koi bhi <strong>Group CCTV ID / 4-Digit PIN</strong> enter karein.
+                        </p>
+                        <button onclick="toggleDemoMultiCam()" class="mt-4 px-4 py-2 rounded-xl bg-zinc-900 dark:bg-white text-white dark:text-black text-xs font-semibold transition flex items-center gap-1.5">
+                            <i data-lucide="play" class="w-3.5 h-3.5"></i>
+                            <span>Load 6-Cam Demo Wall</span>
+                        </button>
+                    </div>
+                `;
+                safeIcons();
+            }
+        }
+
+        function clearAllGridCameras() {
+            activeDbListeners.forEach(ref => ref.off());
+            activeDbListeners = [];
+            Array.from(gridCameras.keys()).forEach(id => removeCameraTile(id));
+            isDemoWallActive = false;
+            const btnLabel = document.getElementById('textDemoMultiCam');
+            if (btnLabel) btnLabel.textContent = 'Load 6-Cam Demo Wall';
+        }
+
+        // =====================================================================
+        // 6-CAMERA DEMO WALL SIMULATOR
+        // =====================================================================
+        function toggleDemoMultiCam() {
+            if (isDemoWallActive) {
+                clearAllGridCameras();
+                showToast('Demo CCTV Wall band kar di gayi', 'info');
+                return;
+            }
+
+            isDemoWallActive = true;
+            document.getElementById('textDemoMultiCam').textContent = 'Stop Demo Wall';
+
+            const demos = [
+                { pin: '1042', name: 'Cam-01 • Front Gate', ip: '192.168.1.101', port: '8080' },
+                { pin: '2891', name: 'Cam-02 • Cash Desk', ip: '192.168.1.102', port: '8081' },
+                { pin: '3740', name: 'Cam-03 • Office Laptop', ip: '192.168.1.103', port: '8082' },
+                { pin: '4915', name: 'Cam-04 • Warehouse', ip: '192.168.1.104', port: '8083' },
+                { pin: '6208', name: 'Cam-05 • Parking Lot', ip: '192.168.1.105', port: '8084' },
+                { pin: '8534', name: 'Cam-06 • Server Room', ip: '192.168.1.106', port: '8085' }
+            ];
+
+            demos.forEach((cam, idx) => {
+                const canvas = document.createElement('canvas');
+                canvas.width = 480;
+                canvas.height = 270;
+                const ctx = canvas.getContext('2d');
+                let tick = idx * 40;
+
+                const interval = setInterval(() => {
+                    tick++;
+                    ctx.fillStyle = '#09090b';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                    ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+                    for (let x = 0; x < canvas.width; x += 40) {
+                        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, canvas.height); ctx.stroke();
+                    }
+                    for (let y = 0; y < canvas.height; y += 40) {
+                        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(canvas.width, y); ctx.stroke();
+                    }
+
+                    const cx = 240 + Math.sin(tick * 0.03 + idx) * 110;
+                    const cy = 135 + Math.cos(tick * 0.02 + idx) * 45;
+                    ctx.strokeStyle = 'rgba(16, 185, 129, 0.75)';
+                    ctx.strokeRect(cx - 22, cy - 22, 44, 44);
+
+                    ctx.fillStyle = '#f4f4f5';
+                    ctx.font = 'bold 13px monospace';
+                    ctx.fillText(`CH-0${idx + 1} // ${cam.name.toUpperCase()}`, 14, 24);
+                    ctx.fillStyle = '#a1a1aa';
+                    ctx.font = '11px monospace';
+                    ctx.fillText(`${new Date().toLocaleTimeString('en-GB')}  |  CLOUD STREAM OK`, 14, canvas.height - 14);
+                }, 60);
+
+                renderCctvTile({
+                    tileId: `demo_${cam.pin}`,
+                    pin: cam.pin,
+                    name: cam.name,
+                    ip: cam.ip,
+                    port: cam.port,
+                    stream: canvas.captureStream(15),
+                    demoInterval: interval
+                });
+            });
+
+            showToast('6-Cam Live Demo Wall active!', 'success');
+        }
+    </script>
+<script src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+// ===== SIMPLE LIVE CCTV: ON/OFF button + QR (WebRTC via PeerJS, no backend / no key) =====
+(function () {
+    'use strict';
+    const $ = id => document.getElementById(id);
+    const toast = (m, t) => { try { showToast(m, t || 'info'); } catch (e) { alert(m); } };
+    const ICE = { iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: ['turn:openrelay.metered.ca:80', 'turn:openrelay.metered.ca:443', 'turn:openrelay.metered.ca:443?transport=tcp'], username: 'openrelayproject', credential: 'openrelayproject' }
+    ] };
+    const watchId = (new URLSearchParams(location.search).get('watch') || '').replace(/[^A-Za-z0-9]/g, '');
+    const newId = () => 'sancam' + Array.from(crypto.getRandomValues(new Uint8Array(8)), x => 'abcdefghjkmnpqrstuvwxyz23456789'[x % 31]).join('');
+
+    // ---------------- HOST ----------------
+    let peer = null, stream = null, ownStream = false, live = false, wake = null;
+    const calls = new Set();
+    const state = t => { $('sanState').textContent = t; };
+    const setBtn = on => {
+        const b = $('sanBtn');
+        b.textContent = on ? '● LIVE ON - tap to stop' : 'LIVE OFF - tap to start';
+        b.className = 'w-full py-3 rounded-2xl font-bold text-white ' + (on ? 'bg-red-600' : 'bg-zinc-600');
+    };
+    const count = () => { $('sanViewers').textContent = calls.size; };
+    async function loadCams() {
+        try {
+            const d = (await navigator.mediaDevices.enumerateDevices()).filter(x => x.kind === 'videoinput');
+            const cur = $('sanCam').value;
+            $('sanCam').innerHTML = '<option value="">Default camera</option>' + d.map((x, i) => `<option value="${esc(x.deviceId)}">${esc(x.label || 'Camera ' + (i + 1))}</option>`).join('');
+            $('sanCam').value = cur;
+        } catch (e) {}
+    }
+    async function getStream() {
+        if (typeof localStream !== 'undefined' && localStream && localStream.active) { ownStream = false; return localStream; }
+        const dev = $('sanCam').value;
+        const v = dev ? { deviceId: { exact: dev } } : { facingMode: 'environment' };
+        ownStream = true;
+        try { return await navigator.mediaDevices.getUserMedia({ video: v, audio: true }); }
+        catch (e) { return await navigator.mediaDevices.getUserMedia({ video: v, audio: false }); }
+    }
+    function openPeer(id) {
+        return new Promise((res, rej) => {
+            const p = new Peer(id, { config: ICE });
+            p.on('open', () => res(p));
+            p.on('error', e => { if (!peer || peer === p) { if (e.type === 'unavailable-id') { try { p.destroy(); } catch (x) {} return rej(e); } } });
+        });
+    }
+    function wirePeer(p) {
+        // viewer connects first, then host sends the video to that viewer
+        p.on('connection', conn => {
+            conn.on('open', () => {
+                if (!live || !stream) return;
+                const c = p.call(conn.peer, stream);
+                calls.add(c); count();
+                const gone = () => { calls.delete(c); count(); };
+                c.on('close', gone); c.on('error', gone);
+                conn.on('close', () => { try { c.close(); } catch (e) {} gone(); });
+            });
+        });
+        p.on('disconnected', () => { if (live) try { p.reconnect(); } catch (e) {} });
+    }
+    async function start() {
+        state('Starting...');
+        stream = await getStream();
+        loadCams();
+        let id = '';
+        for (let k = 0; k < 3 && !peer; k++) { try { id = newId(); peer = await openPeer(id); } catch (e) {} }
+        if (!peer) throw new Error('Server connect nahi hua, internet check karein');
+        wirePeer(peer);
+        live = true;
+        try { if (navigator.wakeLock) wake = await navigator.wakeLock.request('screen'); } catch (e) {}
+        const link = location.origin + location.pathname + '?watch=' + id;
+        $('sanLink').value = link;
+        $('sanQR').innerHTML = '';
+        try { new QRCode($('sanQR'), { text: link, width: 200, height: 200 }); } catch (e) {}
+        $('sanOut').classList.remove('hidden');
+        setBtn(true); state('● LIVE'); count();
+    }
+    function stop() {
+        live = false;
+        calls.forEach(c => { try { c.close(); } catch (e) {} }); calls.clear();
+        if (peer) { try { peer.destroy(); } catch (e) {} peer = null; }
+        if (stream && ownStream) stream.getTracks().forEach(t => t.stop());
+        stream = null;
+        if (wake) { try { wake.release(); } catch (e) {} wake = null; }
+        $('sanOut').classList.add('hidden'); $('sanQR').innerHTML = '';
+        setBtn(false); state('OFF'); count();
+    }
+    document.addEventListener('visibilitychange', async () => {
+        if (live && document.visibilityState === 'visible' && navigator.wakeLock) { try { wake = await navigator.wakeLock.request('screen'); } catch (e) {} }
+    });
+    let busy = false;
+    window.sanToggle = async () => {
+        if (busy) return; busy = true;
+        try { live ? stop() : await start(); }
+        catch (e) { stop(); toast(e.message || 'Live start nahi hua', 'error'); }
+        busy = false;
+    };
+    window.sanCopy = () => { const el = $('sanLink'); navigator.clipboard.writeText(el.value).then(() => toast('Link copied', 'success'), () => { el.select(); document.execCommand('copy'); }); };
+
+    // ---------------- VIEWER (other mobile, no login) ----------------
+    function initViewer() {
+        [...document.body.children].forEach(e => e.style.display = 'none');
+        const w = document.createElement('div');
+        w.className = 'fixed inset-0 bg-black text-white flex flex-col';
+        w.innerHTML = `
+        <div class="flex items-center justify-between px-4 py-3 border-b border-white/10"><div class="font-bold tracking-widest text-sm">SAN CAM <span class="text-red-500">LIVE</span></div><span id="wBadge" class="px-2 py-1 rounded bg-zinc-700 text-xs font-bold">CONNECTING</span></div>
+        <div class="relative flex-1 min-h-0 bg-black" id="wBox">
+            <video id="wVid" autoplay playsinline muted class="absolute inset-0 w-full h-full object-contain bg-black"></video>
+            <div id="wMsg" class="absolute inset-0 flex items-center justify-center text-center p-6 text-zinc-300 bg-black/70">Connecting to live camera...</div>
+            <div class="absolute bottom-0 inset-x-0 p-3 flex justify-center gap-2 text-sm bg-gradient-to-t from-black/80 to-transparent">
+                <button id="wMute" class="px-3 py-2 rounded-lg bg-white/15">🔇 Unmute</button><button id="wRe" class="px-3 py-2 rounded-lg bg-white/15">⟳ Reconnect</button><button id="wFs" class="px-3 py-2 rounded-lg bg-white/15">⛶ Full screen</button>
+            </div>
+        </div>`;
+        document.body.appendChild(w);
+        const g = id => w.querySelector('#' + id), v = g('wVid');
+        let vp = null, timer = null, got = false;
+        const msg = (t, show) => { g('wMsg').textContent = t; g('wMsg').classList.toggle('hidden', !show); };
+        const badge = (t, on) => { g('wBadge').textContent = t; g('wBadge').className = 'px-2 py-1 rounded text-xs font-bold ' + (on ? 'bg-red-600' : 'bg-zinc-700'); };
+        function connect() {
+            clearTimeout(timer); got = false;
+            if (vp) { try { vp.destroy(); } catch (e) {} vp = null; }
+            msg('Connecting to live camera...', true); badge('CONNECTING', false);
+            const p = new Peer({ config: ICE }); vp = p;
+            p.on('open', () => {
+                const conn = p.connect(watchId, { reliable: true });
+                conn.on('close', () => { if (vp === p) { badge('OFFLINE', false); msg('Live band ho gaya. Reconnect dabayein.', true); } });
+            });
+            p.on('call', c => {
+                c.answer();
+                c.on('stream', st => {
+                    got = true; v.srcObject = st; v.play().catch(() => {});
+                    msg('', false); badge('● LIVE', true);
+                });
+                c.on('close', () => { badge('OFFLINE', false); msg('Live band ho gaya. Reconnect dabayein.', true); });
+            });
+            p.on('error', e => { if (vp !== p) return; badge('OFFLINE', false); msg(e.type === 'peer-unavailable' ? 'Camera abhi LIVE nahi hai. Live ON karke Reconnect dabayein.' : 'Connection error. Reconnect dabayein.', true); });
+            timer = setTimeout(() => { if (!got && vp === p) { badge('OFFLINE', false); msg('Video nahi aa raha. Reconnect dabayein.', true); } }, 20000);
+        }
+        g('wRe').onclick = connect;
+        g('wMute').onclick = () => { v.muted = !v.muted; g('wMute').textContent = v.muted ? '🔇 Unmute' : '🔊 Mute'; v.play().catch(() => {}); };
+        g('wFs').onclick = () => { const b = g('wBox'); if (b.requestFullscreen) b.requestFullscreen(); else if (b.webkitRequestFullscreen) b.webkitRequestFullscreen(); else if (v.webkitEnterFullscreen) v.webkitEnterFullscreen(); };
+        connect();
+    }
+
+    // Login removed: silent anonymous Firebase session (keeps cloud sync), falls back to local mode
+    async function skipLogin() {
+        let ok = false;
+        try {
+            if (fbAuth) {
+                await Promise.race([fbAuth.signInAnonymously(), new Promise((_, r) => setTimeout(() => r(new Error('timeout')), 6000))]);
+                ok = true;
+            }
+        } catch (e) { console.warn('Anonymous sign-in failed:', e.code || e.message); }
+        if (document.getElementById('mainAppShell').classList.contains('hidden')) enterMainDashboard('SanCam', false);
+        if (!ok) toast('Cloud sync off: Firebase > Authentication > Anonymous ko ON karein', 'info');
+    }
+
+    const prev = window.onload;
+    window.onload = function () {
+        if (watchId.length >= 6) { initViewer(); return; }
+        if (prev) prev.apply(this, arguments);
+        const st = document.createElement('style');
+        st.textContent = '#authGateScreen{display:none!important}[onclick="handleLogout()"]{display:none!important}';
+        document.head.appendChild(st);
+        if (!viewerOnlyMode) skipLogin();
+        loadCams();
+    };
+})();
+</script>
+
 </body>
 </html>
